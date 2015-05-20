@@ -1,3 +1,5 @@
+pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 ;}
+
 STDERR() { cat - 1>&2; }
 
 strcontains() { test -z "${1##*$2*}" ; }; export -f strcontains
