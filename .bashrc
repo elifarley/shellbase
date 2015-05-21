@@ -6,26 +6,10 @@ test -f ~/.bash_private.gpg && \
 test -f ~/local/bin/bash_completion && \
   . ~/local/bin/bash_completion
 
-# Prompt
-BGREEN='\[\033[1;32m\]'
-GREEN='\[\033[0;32m\]'
-BRED='\[\033[1;31m\]'
-RED='\[\033[0;31m\]'
-BBLUE='\[\033[1;34m\]'
-BLUE='\[\033[0;34m\]'
-NORMAL='\[\033[00m\]'
-PS1="${BLUE}(${RED}\w${BLUE}) ${NORMAL}\h ${RED}\$ ${NORMAL}"
-
 pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 ;}
-
-psgrep() {
-	if test ! -z "$1" ; then
-		echo "Grepping for processes matching $1..."
-		ps aux | grep -i "$1" | grep -v grep
-	else
-		echo "!! Need name to grep for"
-	fi
-}
+alias p="ps aux |grep -i "
+alias h="history|grep -i "
+alias f="find . |grep -i "
 
 # ignore case, long prompt, exit if it fits on one screen, allow colors for ls and grep colors
 alias less='less -iMFSRX'
@@ -44,7 +28,10 @@ export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
 export GREP_OPTIONS='--color=auto'
- 
+
+# define color to additional file types
+export LS_COLORS=$LS_COLORS:"*.wmv=01;35":"*.wma=01;35":"*.flv=01;35":"*.m4a=01;35"
+
 export HISTFILESIZE=20000
 export HISTSIZE=10000
 shopt -s histappend
