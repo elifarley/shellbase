@@ -38,7 +38,10 @@ export GREP_OPTIONS='--color=auto'
 # define color to additional file types
 export LS_COLORS=$LS_COLORS:"*.wmv=01;35":"*.wma=01;35":"*.flv=01;35":"*.m4a=01;35"
 
- $(dircolors -b ~/.dir_colors)
+# Download solarized color scheme from
+# https://github.com/seebi/dircolors-solarized
+# https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-dark
+eval $(dircolors -b ~/.dir_colors)
 
 # Bash won't get SIGWINCH if another process is in the foreground.
 # Enable checkwinsize so that bash will check the terminal size when
