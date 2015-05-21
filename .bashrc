@@ -18,10 +18,10 @@ alias f="find . |grep -i "
 alias less='less -iMFSRX'
 
 # Puts the newest file at the bottom, right above the prompt
-# l=long : h=human readable sizes : a=all : r=reverse sort : t=time sort
-alias lt='ls --color=auto -lhart'
+# l=long : h=human readable sizes : a=all : r=reverse sort : t=time sort : F=append indicator (one of */=>@|)
+alias lt='ls --color=auto -lhFart'
 
-alias ls='ls --color=auto'
+alias ls='ls --color=auto -F'
 alias dir='dir --color=auto'
 
 # Color for manpages in less makes manpages a little easier to read:
