@@ -62,21 +62,3 @@ s() { # do sudo, or sudo the last command if no argument given
     	sudo "$@"
     fi
 }
-
-prompt_command() {
-    p=$PWD  # p is much easier to type in interactive shells
-    # a special IFS should be limited to 1 liners or inside scripts.
-    # Otherwise it only causes mistakes.
-    unset IFS
-}
-PROMPT_COMMAND=prompt_command
-
-test "$PS1" != "" -a "${STARTED_SCREEN:-x}" = x  -a "${SSH_TTY:-x}" != x && {
-STARTED_SCREEN=1 ; export STARTED_SCREEN
-[ -d $HOME/lib/screen-logs ] || mkdir -p $HOME/lib/screen-logs
-
-sleep 1
-screen -U -RR && exit 0
-
-echo "Screen failed! continuing with normal bash startup"
-}
