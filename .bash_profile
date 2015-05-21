@@ -1,3 +1,6 @@
+# See http://serverfault.com/questions/226783/how-to-tell-gnu-screen-to-run-bash-profile-in-each-new-window
+# Use 'shell -$SHELL' in ~/.screenrc to make screen load ~/.bash_profile
+
 set_prompt () {
   LastStatus=$? # Must come first!
 
