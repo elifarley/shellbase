@@ -1,2 +1,2 @@
 # shellbase
-Some useful shell scripting functions
+Some useful shell scripting functions and customizations
