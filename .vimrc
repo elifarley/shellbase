@@ -5,13 +5,14 @@ set showmode
 
 " Tips: http://dougblack.io/words/a-good-vimrc.html
 
+set t_Co=256 " enable colorscheme
+
 " https://raw.githubusercontent.com/sjl/badwolf/master/colors/badwolf.vim
 " save it to ~/.vim/colors/badwolf.vim
 "colorscheme badwolf
 
 " https://raw.githubusercontent.com/jnurmine/Zenburn/master/colors/zenburn.vim
 colorscheme zenburn
-
 
 syntax enable
 
