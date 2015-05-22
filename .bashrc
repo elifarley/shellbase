@@ -34,7 +34,7 @@ export GREP_OPTIONS='--color=auto'
 # ignore case, long prompt, exit if it fits on one screen, allow colors for ls and grep colors
 alias less='less -iMFSRX'
 
-# Color for manpages in less makes manpages a little easier to read:
+# Default colors for less
 # From https://linuxtidbits.wordpress.com/2009/03/23/less-colors-for-man-pages/
 # Based on Arch and Gentoo colors; good for Solarized dark theme
 export LESS_TERMCAP_mb=$'\E[01;31m'       # begin blinking
@@ -45,6 +45,18 @@ export LESS_TERMCAP_so=$'\E[38;5;246m'    # begin standout-mode - info box
 export LESS_TERMCAP_ue=$'\E[0m'           # end underline
 export LESS_TERMCAP_us=$'\E[04;38;5;146m' # begin underline
 
+# A different set of colors for manpages in less
+man() {
+	env \
+		LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+		LESS_TERMCAP_md=$(printf "\e[1;31m") \
+		LESS_TERMCAP_me=$(printf "\e[0m") \
+		LESS_TERMCAP_se=$(printf "\e[0m") \
+		LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+		LESS_TERMCAP_ue=$(printf "\e[0m") \
+		LESS_TERMCAP_us=$(printf "\e[1;32m") \
+			man "$@"
+}
 
 # Bash won't get SIGWINCH if another process is in the foreground.
 # Enable checkwinsize so that bash will check the terminal size when
