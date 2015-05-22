@@ -7,7 +7,11 @@ set showmode
 
 " https://raw.githubusercontent.com/sjl/badwolf/master/colors/badwolf.vim
 " save it to ~/.vim/colors/badwolf.vim
-colorscheme badwolf
+"colorscheme badwolf
+
+" https://raw.githubusercontent.com/jnurmine/Zenburn/master/colors/zenburn.vim
+colorscheme zenburn
+
 
 syntax enable
 
@@ -15,7 +19,7 @@ set tabstop=2       " number of visual spaces per TAB
 set softtabstop=2   " number of spaces in tab when editing
 set expandtab       " tabs are spaces
 
-" set number            " show line numbers
+"set number            " show line numbers
 set showcmd             " show command in bottom bar
 set cursorline          " highlight current line
 set wildmenu            " visual autocomplete for command menu
