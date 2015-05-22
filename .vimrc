@@ -3,7 +3,9 @@ nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
 
-" http://dougblack.io/words/a-good-vimrc.html
+" Tips: http://dougblack.io/words/a-good-vimrc.html
+
+" https://raw.githubusercontent.com/sjl/badwolf/master/colors/badwolf.vim
 " save it to ~/.vim/colors/badwolf.vim
 colorscheme badwolf
 
