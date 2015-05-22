@@ -9,30 +9,35 @@ set t_Co=256 " enable colorscheme
 
 " https://raw.githubusercontent.com/sjl/badwolf/master/colors/badwolf.vim
 " save it to ~/.vim/colors/badwolf.vim
+let g:badwolf_darkgutter = 1
+let g:badwolf_css_props_highlight = 1
 "colorscheme badwolf
 
 " https://raw.githubusercontent.com/jnurmine/Zenburn/master/colors/zenburn.vim
+let g:zenburn_alternate_Visual = 1 " More contrast in Visual Selection
+let g:zenburn_unified_CursorColumn = 1
+"let g:zenburn_high_Contrast = 1
 colorscheme zenburn
 
 syntax enable
 
-set tabstop=2       " number of visual spaces per TAB
-set softtabstop=2   " number of spaces in tab when editing
-set expandtab       " tabs are spaces
+set tabstop=2       " Number of visual spaces per TAB
+set softtabstop=2   " Number of spaces in tab when editing
+set expandtab       " Tabs are spaces
 
-"set number            " show line numbers
-set showcmd             " show command in bottom bar
-set cursorline          " highlight current line
-set wildmenu            " visual autocomplete for command menu
-set showmatch           " highlight matching [{()}]
-
-set incsearch           " search as characters are entered
-set hlsearch            " highlight matches
-
-" highlight last inserted text
+"set number             " Show line numbers
+set showcmd             " Show command in bottom bar
+set cursorline          " Highlight current line
+set cursorcolumn        " Highlight current column
+set wildmenu            " Visual autocomplete for command menu
+set showmatch           " Highlight matching [{()}]
+" Highlight last inserted text
 nnoremap gV `[v`]
 
-let mapleader=" "       " leader is space
+set hlsearch            " Highlight matches
+set incsearch           " Search as characters are entered
+
+let mapleader=" "       " Leader is space
 
 " edit vimrc and load vimrc bindings
 nnoremap <leader>ev :vsp ~/.vimrc<CR>
