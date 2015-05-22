@@ -1,9 +1,9 @@
+" Tips: http://dougblack.io/words/a-good-vimrc.html
+
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
-
-" Tips: http://dougblack.io/words/a-good-vimrc.html
 
 set t_Co=256 " enable colorscheme
 
