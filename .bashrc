@@ -85,7 +85,7 @@ shopt -s nullglob
 # fix spelling errors for cd, only in interactive shell
 shopt -s cdspell
 
-# vi mode
+# vi editing mode. Use it if you prefer vim over Emacs
 # See http://www.catonmat.net/download/bash-vi-editing-mode-cheat-sheet.txt
 set -o vi
 # http://unix.stackexchange.com/questions/104094/is-there-any-way-to-enable-ctrll-to-clear-screen-when-set-o-vi-is-set
