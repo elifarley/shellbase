@@ -73,6 +73,10 @@ set ignorecase smartcase " lowercase-only search terms will match uppercase text
 
 let mapleader=" "       " Leader is space
 
+" switches search-highlighting off until the next time you search.
+" http://www.bestofvim.com/tip/switch-off-current-search/
+nnoremap <silent> <Leader>/ :nohlsearch<CR>
+
 " http://vim.wikia.com/wiki/Easier_buffer_switching
 
 set hidden " so that buffers with unsaved changes can be hidden
