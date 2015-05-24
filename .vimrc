@@ -71,11 +71,11 @@ set hlsearch            " Highlight matches
 set incsearch           " Search as characters are entered
 set ignorecase smartcase " lowercase-only search terms will match uppercase text too
 
-let mapleader=" "       " Leader is space
-
 " switches search-highlighting off until the next time you search.
 " http://www.bestofvim.com/tip/switch-off-current-search/
-nnoremap <silent> <Leader>/ :nohlsearch<CR>
+nnoremap <silent> <C-l> :setlocal hlsearch!<CR>
+
+let mapleader=" "       " Leader is space
 
 " http://vim.wikia.com/wiki/Easier_buffer_switching
 
