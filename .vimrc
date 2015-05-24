@@ -1,7 +1,8 @@
 " Tips: http://dougblack.io/words/a-good-vimrc.html
 " scrooloose's vim configuraiton: https://github.com/scrooloose/vimfiles
+" Vim cheat sheet: http://www.viemu.com/vi-vim-cheat-sheet.gif
 
-" Tip: <Esc> alternatives: <ALT>-<ENTER>, <CTRL>-[
+" Tip: <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER>
 
 " Tip: use {count}CTRL-^ to edit buffer {count}
 " and CTRL-^ to edit last edited file
