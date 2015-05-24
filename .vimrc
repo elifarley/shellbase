@@ -123,7 +123,7 @@ nnoremap <leader>sv :source ~/.vimrc<CR>
   set statusline+=%-3n\                        " buffer number
   set statusline+=%f\                          " filename
   set statusline+=%h%m%r%w                     " status flags
-  set statusline=%{\"[\".(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\").\"]\ \"}%k
+  set statusline+=%{\"[\".(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\").\"]\ \"}%k
   set statusline+=\[%{strlen(&ft)?&ft:'none'}] " file type
   set statusline+=%=                           " right align remainder
   set statusline+=0x%-8B                       " character value
