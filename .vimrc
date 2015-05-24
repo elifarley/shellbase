@@ -1,4 +1,9 @@
 " Tips: http://dougblack.io/words/a-good-vimrc.html
+" scrooloose's vim configuraiton: https://github.com/scrooloose/vimfiles
+
+"Use Vim settings, rather then Vi settings (much better!).
+"This must be first, because it changes other options as a side effect.
+set nocompatible
 
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 nnoremap <F2> :set invpaste paste?<CR>
@@ -19,17 +24,36 @@ let g:zenburn_unified_CursorColumn = 1
 "let g:zenburn_high_Contrast = 1
 colorscheme zenburn
 
-syntax enable
-
 set tabstop=2       " Number of visual spaces per TAB
 set softtabstop=2   " Number of spaces in tab when editing
 set expandtab       " Tabs are spaces
 
+"store lots of :cmdline history
+set history=1000
+
 "set number             " Show line numbers
-set showcmd             " Show command in bottom bar
+set showcmd             " Show incomplete cmds down the bottom
+set showmode            " Show current mode down the bottom
 set cursorline          " Highlight current line
 set cursorcolumn        " Highlight current column
-set wildmenu wildmode=full " Visual autocomplete for command menu
+
+set formatoptions-=o "dont continue comments when pushing o/O
+"vertical/horizontal scroll off settings
+set scrolloff=3
+set sidescrolloff=7
+set sidescroll=1
+
+"some stuff to get the mouse going in term
+set mouse=a
+set ttymouse=xterm2
+
+set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
+set wildmode=list:longest   "make cmdline tab completion similar to bash
+set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
+
+"turn on syntax highlighting
+syntax on
+
 set showmatch           " Highlight matching [{()}]
 " Highlight last inserted text
 nnoremap gV `[v`]
@@ -92,6 +116,16 @@ nnoremap <leader>sv :source ~/.vimrc<CR>
 " let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 
 " http://vim.wikia.com/wiki/Show_fileencoding_and_bomb_in_the_status_line
-if has("statusline")
- set statusline=%<%f\ %h%m%r%=%{\"[\".(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\").\"]\ \"}%k\ %-14.(%l,%c%V%)\ %P
-endif
+" http://stackoverflow.com/questions/5547943/display-number-of-current-buffer
+" Status Line {
+  set laststatus=2                             " always show statusbar
+  set statusline=
+  set statusline+=%-3.3n\                      " buffer number
+  set statusline+=%f\                          " filename
+  set statusline+=%h%m%r%w                     " status flags
+  set statusline+=\[%{strlen(&ft)?&ft:'none'}] " file type
+  set statusline+=%=                           " right align remainder
+  set statusline+=0x%-8B                       " character value
+  set statusline+=%-14(%l,%c%V%)               " line, character
+  set statusline+=%<%P                         " file position
+"}
