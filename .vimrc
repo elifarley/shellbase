@@ -1,11 +1,13 @@
 " Tips: http://dougblack.io/words/a-good-vimrc.html
 " scrooloose's vim configuraiton: https://github.com/scrooloose/vimfiles
 
-" Tip: <Esc> alternatives: <ALT>-<ENTER>, <C-[>
+" Tip: <Esc> alternatives: <ALT>-<ENTER>, <CTRL>-[
 
 " Tip: use {count}CTRL-^ to edit buffer {count}
 " and CTRL-^ to edit last edited file
 " (or <F10> or <SPACE>-0)
+
+" Tip: <CTRL>-i and <CTRL>-o to navigate visited places
 
 "Use Vim settings, rather then Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
@@ -53,8 +55,9 @@ set sidescroll=1
 set mouse=a
 set ttymouse=xterm2
 
-set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
-set wildmode=list:longest   "make cmdline tab completion similar to bash
+set wildmenu                " Enable ctrl-n and ctrl-p to scroll thru matches
+"set wildmode=list:longest   " make cmdline tab completion similar to bash
+set wildmode=full           " better
 set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
 
 "turn on syntax highlighting
