@@ -29,15 +29,52 @@ set expandtab       " Tabs are spaces
 set showcmd             " Show command in bottom bar
 set cursorline          " Highlight current line
 set cursorcolumn        " Highlight current column
-set wildmenu            " Visual autocomplete for command menu
+set wildmenu wildmode=full " Visual autocomplete for command menu
 set showmatch           " Highlight matching [{()}]
 " Highlight last inserted text
 nnoremap gV `[v`]
 
 set hlsearch            " Highlight matches
 set incsearch           " Search as characters are entered
+set ignorecase smartcase " lowercase-only search terms will match uppercase text too
 
 let mapleader=" "       " Leader is space
+
+" http://vim.wikia.com/wiki/Easier_buffer_switching
+
+set hidden " so that buffers with unsaved changes can be hidden
+
+" list buffers and let you choose which to open
+nnoremap <F6> :ls!<CR>:buffer<Space>
+
+" Press F10 to open the buffer menu
+set wildcharm=<C-Z>
+nnoremap <F10> :b <C-Z>
+" Also useful: {count}CTRL-^ to edit buffer {count}
+" and CTRL-^ to edit last edited file
+
+" Next buffer
+nnoremap <silent> <F12> :bn<CR>
+" Previous buffer
+nnoremap <silent> <S-F12> :bp<CR>
+
+" List buffers
+nnoremap <Leader>l :ls!<CR>
+
+nnoremap <Leader>g :e#<CR>
+
+nnoremap <Leader>n :enew<CR>
+
+nnoremap <Leader>1 :1b<CR>
+nnoremap <Leader>2 :2b<CR>
+nnoremap <Leader>3 :3b<CR>
+nnoremap <Leader>4 :4b<CR>
+nnoremap <Leader>5 :5b<CR>
+nnoremap <Leader>6 :6b<CR>
+nnoremap <Leader>7 :7b<CR>
+nnoremap <Leader>8 :8b<CR>
+nnoremap <Leader>9 :9b<CR>
+nnoremap <Leader>0 :b <C-Z>
 
 " edit vimrc and load vimrc bindings
 nnoremap <leader>ev :vsp ~/.vimrc<CR>
