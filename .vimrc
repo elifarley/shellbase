@@ -1,6 +1,12 @@
 " Tips: http://dougblack.io/words/a-good-vimrc.html
 " scrooloose's vim configuraiton: https://github.com/scrooloose/vimfiles
 
+" Tip: <Esc> alternatives: <ALT>-<ENTER>, <C-[>
+
+" Tip: use {count}CTRL-^ to edit buffer {count}
+" and CTRL-^ to edit last edited file
+" (or <F10> or <SPACE>-0)
+
 "Use Vim settings, rather then Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
 set nocompatible
@@ -74,8 +80,6 @@ nnoremap <F6> :ls!<CR>:buffer<Space>
 " Press F10 to open the buffer menu
 set wildcharm=<C-Z>
 nnoremap <F10> :b <C-Z>
-" Also useful: {count}CTRL-^ to edit buffer {count}
-" and CTRL-^ to edit last edited file
 
 " Next buffer
 nnoremap <silent> <F12> :bn<CR>
