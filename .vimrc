@@ -1,5 +1,9 @@
 " Tips: http://dougblack.io/words/a-good-vimrc.html
 " scrooloose's vim configuraiton: https://github.com/scrooloose/vimfiles
+" http://vim.wikia.com/wiki/Example_vimrc
+" http://nvie.com/posts/how-i-boosted-my-vim/
+" https://news.ycombinator.com/item?id=856051
+" http://dougireton.com/blog/2013/02/23/layout-your-vimrc-like-a-boss/
 " Vim cheat sheet: http://www.viemu.com/vi-vim-cheat-sheet.gif
 
 " Tip: <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER>
@@ -14,10 +18,7 @@
 "This must be first, because it changes other options as a side effect.
 set nocompatible
 
-" http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
-nnoremap <F2> :set invpaste paste?<CR>
-set pastetoggle=<F2>
-set showmode
+set shortmess+=I                " hide the launch screen
 
 set t_Co=256 " enable colorscheme
 
@@ -33,15 +34,26 @@ let g:zenburn_unified_CursorColumn = 1
 "let g:zenburn_high_Contrast = 1
 colorscheme zenburn
 
+set autoread        " Automatically reload files changed outside of Vim
+
 set tabstop=2       " Number of visual spaces per TAB
 set softtabstop=2   " Number of spaces in tab when editing
+set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
 set expandtab       " Tabs are spaces
+set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set copyindent      " copy the previous indentation on autoindenting
 
-"store lots of :cmdline history
-set history=1000
+set backspace=indent,eol,start " allow backspacing over everything in insert mode
 
-"set number             " Show line numbers
+set history=1000 " Store lots of :cmdline history
+set undolevels=1000 " Use many muchos levels of undo
+
+set title              " change the terminal's title
+set number             " Show line numbers
 set showcmd             " Show incomplete cmds down the bottom
+" Set the command window height to 2 lines, to avoid many cases of having to
+" "press <Enter> to continue"
+set cmdheight=2
 set showmode            " Show current mode down the bottom
 set cursorline          " Highlight current line
 set cursorcolumn        " Highlight current column
@@ -56,13 +68,26 @@ set sidescroll=1
 set mouse=a
 set ttymouse=xterm2
 
+set hidden " so that buffers with unsaved changes can be hidden
+
 set wildmenu                " Enable ctrl-n and ctrl-p to scroll thru matches
 "set wildmode=list:longest   " make cmdline tab completion similar to bash
 set wildmode=list:longest,full " better
-set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
+set wildignore=*.o,*.obj,*~,*.swp,*.bak,*.pyc,*.class " Stuff to ignore when tab completing
 
-"turn on syntax highlighting
-syntax on
+filetype plugin indent on       " enable detection, plugins and indenting in one step
+syntax on " Turn on syntax highlighting
+
+" Highlight whitespaces and mark lines that extend off-screen
+set list
+set listchars=tab:▸\ ,trail:·,extends:#,nbsp:·,eol:¬
+
+" No whitespaces shown for these filetypes:
+autocmd filetype html,xml set listchars-=tab:>.
+
+" Highlight trailing whitespace
+hi TrailingSpace ctermbg=1
+au filetype c,cpp,python match TrailingSpace "\s\+\n"
 
 set showmatch           " Highlight matching [{()}]. Type % to go to it
 " Highlight last inserted text
@@ -71,10 +96,21 @@ nnoremap gV `[v`]
 set hlsearch            " Highlight matches
 set incsearch           " Search as characters are entered
 set ignorecase smartcase " lowercase-only search terms will match uppercase text too
+nnoremap / /\v
+vnoremap / /\v
+set gdefault " applies substitutions globally on lines
 
-" switches search-highlighting off until the next time you search.
-" http://www.bestofvim.com/tip/switch-off-current-search/
-nnoremap <silent> <C-l> :setlocal hlsearch!<CR>
+" Toggle search-highlighting
+"nnoremap <silent> <C-l> :setlocal hlsearch!<CR>
+" Map <C-L> (redraw screen) to also turn off search highlighting until the next search
+nnoremap <C-L> :nohl<CR><C-L>
+
+" Toggle line numbers
+nnoremap <C-N><C-N> :set number!<CR>
+
+" http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
+nnoremap <F2> :set invpaste paste?<CR>
+set pastetoggle=<F2>
 
 " http://unix.stackexchange.com/a/186558/46796
 nno : ;
@@ -82,11 +118,24 @@ nno ; :
 vno : ;
 vno ; :
 
+" Speed up scrolling of the viewport slightly
+nnoremap <C-e> 2<C-e>
+nnoremap <C-y> 2<C-y>
+
+" Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy,
+" which is the default
+map Y y$
+
+" from http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
+map H ^
+map L $
+
+" Quickly time out on keycodes
+set ttimeout ttimeoutlen=200
+
 let mapleader=" "       " Leader is space
 
 " http://vim.wikia.com/wiki/Easier_buffer_switching
-
-set hidden " so that buffers with unsaved changes can be hidden
 
 set wildcharm=<C-Z>
 
@@ -98,9 +147,18 @@ nnoremap <F10> :b <C-D>
 nnoremap <Leader>0 :b <C-Z>
 
 " Next buffer
-nnoremap <silent> <F12> :bn<CR>
+nnoremap <silent> <F8> :bn<CR>
+inoremap <silent> <F8> <ESC>:bn<CR>
 " Previous buffer
-nnoremap <silent> <S-F12> :bp<CR>
+nnoremap <silent> <F7> :bp<CR>
+inoremap <silent> <F7> <ESC>:bp<CR>
+
+" Next window
+nnoremap <F12> <C-W>w
+inoremap <F12> <C-W>w
+" Previous window
+nnoremap <S-F12> <C-W>W
+inoremap <S-F12> <C-W>W
 
 " List buffers
 nnoremap <Leader>l :ls!<CR>
@@ -150,6 +208,9 @@ nnoremap <Leader>x :xa<CR>
 nnoremap <C-X> :xa<CR>
 inoremap <C-X> <ESC>:xa<CR>
 
+" sudo to write
+cmap w!! w !sudo tee % >/dev/null
+
 " toggle gundo
 " http://sjl.bitbucket.org/gundo.vim/
 " nnoremap <leader>u :GundoToggle<CR>
@@ -164,6 +225,8 @@ inoremap <C-X> <ESC>:xa<CR>
 " http://vim.wikia.com/wiki/Show_fileencoding_and_bomb_in_the_status_line
 " http://stackoverflow.com/questions/5547943/display-number-of-current-buffer
 " Status Line {
+  hi StatusLine term=bold,reverse cterm=bold ctermfg=7 ctermbg=0
+  hi StatusLineNC term=reverse cterm=bold ctermfg=8
   set laststatus=2                             " always show statusbar
   set statusline=
   set statusline+=%-3n\                        " buffer number
