@@ -105,10 +105,6 @@ nnoremap <silent> <S-F12> :bp<CR>
 " List buffers
 nnoremap <Leader>l :ls!<CR>
 
-nnoremap <Leader>g :e#<CR>
-
-nnoremap <Leader>n :10new<CR>
-
 nnoremap <Leader>1 :1b<CR>
 nnoremap <Leader>2 :2b<CR>
 nnoremap <Leader>3 :3b<CR>
@@ -128,6 +124,18 @@ nnoremap <Leader>R :edit!<CR>
 
 " Open menu to select file to edit
 nnoremap <Leader>e :e <C-D>
+
+" Netrw directory listing
+nnoremap <Leader>E :Explore<CR>
+
+nnoremap <Leader>n :10new<CR>
+
+" To close current window but keep buffer (hide): Use <CTRL>-W c
+
+" Close buffer and its window, keeping changes
+nnoremap <Leader>w :bd<CR>
+" Close buffer and its window, discarding changes
+nnoremap <Leader>W :bd!<CR>
 
 " Quit if no changes. Prompt if there are unsaved buffers
 nnoremap <Leader>q :qa<CR>
