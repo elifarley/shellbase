@@ -8,11 +8,13 @@
 
 " Tip: <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER>
 
-" Tip: use {count}CTRL-^ to edit buffer {count}
+"Use {count}CTRL-^ to edit buffer {count}
 " and CTRL-^ to edit last edited file
-" (or <F10> or <SPACE>-0)
+" (or <F6> or <F10> or <SPACE>-0 to choose what buffer to edit)
 
-" Tip: <CTRL>-i and <CTRL>-o to navigate visited places
+" <CTRL>-i and <CTRL>-o to navigate visited places; Type ' twice to go to last place
+" <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
+
 
 "Use Vim settings, rather then Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
