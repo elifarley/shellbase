@@ -58,7 +58,7 @@ set ttymouse=xterm2
 
 set wildmenu                " Enable ctrl-n and ctrl-p to scroll thru matches
 "set wildmode=list:longest   " make cmdline tab completion similar to bash
-set wildmode=full           " better
+set wildmode=list:longest,full " better
 set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
 
 "turn on syntax highlighting
