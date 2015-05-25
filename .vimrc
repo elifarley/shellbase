@@ -64,7 +64,7 @@ set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
 "turn on syntax highlighting
 syntax on
 
-set showmatch           " Highlight matching [{()}]
+set showmatch           " Highlight matching [{()}]. Type % to go to it
 " Highlight last inserted text
 nnoremap gV `[v`]
 
@@ -76,18 +76,26 @@ set ignorecase smartcase " lowercase-only search terms will match uppercase text
 " http://www.bestofvim.com/tip/switch-off-current-search/
 nnoremap <silent> <C-l> :setlocal hlsearch!<CR>
 
+" http://unix.stackexchange.com/a/186558/46796
+nno : ;
+nno ; :
+vno : ;
+vno ; :
+
 let mapleader=" "       " Leader is space
 
 " http://vim.wikia.com/wiki/Easier_buffer_switching
 
 set hidden " so that buffers with unsaved changes can be hidden
 
-" list buffers and let you choose which to open
+set wildcharm=<C-Z>
+
+" List buffers and let you choose which to open
 nnoremap <F6> :ls!<CR>:buffer<Space>
 
 " Press F10 to open the buffer menu
-set wildcharm=<C-Z>
-nnoremap <F10> :b <C-Z>
+nnoremap <F10> :b <C-D>
+nnoremap <Leader>0 :b <C-Z>
 
 " Next buffer
 nnoremap <silent> <F12> :bn<CR>
@@ -99,7 +107,7 @@ nnoremap <Leader>l :ls!<CR>
 
 nnoremap <Leader>g :e#<CR>
 
-nnoremap <Leader>n :enew<CR>
+nnoremap <Leader>n :10new<CR>
 
 nnoremap <Leader>1 :1b<CR>
 nnoremap <Leader>2 :2b<CR>
@@ -110,11 +118,29 @@ nnoremap <Leader>6 :6b<CR>
 nnoremap <Leader>7 :7b<CR>
 nnoremap <Leader>8 :8b<CR>
 nnoremap <Leader>9 :9b<CR>
-nnoremap <Leader>0 :b <C-Z>
 
 " edit vimrc and load vimrc bindings
 nnoremap <leader>ev :vsp ~/.vimrc<CR>
 nnoremap <leader>sv :source ~/.vimrc<CR>
+
+" Reload from disk, discarding changes
+nnoremap <Leader>R :edit!<CR>
+
+" Open menu to select file to edit
+nnoremap <Leader>e :e <C-D>
+
+" Quit if no changes. Prompt if there are unsaved buffers
+nnoremap <Leader>q :qa<CR>
+" Discard changes and quit with an error
+nnoremap <Leader>Q :cq<CR>
+
+" Save all and quit
+nnoremap <Leader>x :xa<CR>
+
+" http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
+"Fast quit and save from normal and insert mode. ZZ is good too.
+map <C-X> <ESC>:xa<CR>
+imap <C-X> <ESC>:xa<CR>
 
 " toggle gundo
 " http://sjl.bitbucket.org/gundo.vim/
