@@ -147,8 +147,8 @@ nnoremap <Leader>x :xa<CR>
 
 " http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
 "Fast quit and save from normal and insert mode. ZZ is good too.
-map <C-X> <ESC>:xa<CR>
-imap <C-X> <ESC>:xa<CR>
+nnoremap <C-X> :xa<CR>
+inoremap <C-X> <ESC>:xa<CR>
 
 " toggle gundo
 " http://sjl.bitbucket.org/gundo.vim/
