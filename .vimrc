@@ -16,7 +16,7 @@
 " <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
 
 
-"Use Vim settings, rather then Vi settings (much better!).
+"Use Vim settings, rather than Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
 set nocompatible
 
