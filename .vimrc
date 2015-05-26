@@ -36,6 +36,14 @@ let g:zenburn_unified_CursorColumn = 1
 "let g:zenburn_high_Contrast = 1
 colorscheme zenburn
 
+if v:version >= 703
+  " Undo settings
+  set undodir=~/.vim/undofiles
+  set undofile
+
+  set colorcolumn=+1 " Mark the ideal max text width
+endif
+
 set autoread        " Automatically reload files changed outside of Vim
 
 set tabstop=2       " Number of visual spaces per TAB
@@ -82,7 +90,7 @@ syntax on " Turn on syntax highlighting
 
 " Highlight whitespaces and mark lines that extend off-screen
 set list
-set listchars=tab:▸\ ,trail:·,extends:#,nbsp:·,eol:¬
+set listchars=tab:▸\ ,trail:·,extends:>,precedes:<,nbsp:·,eol:¬
 
 " No whitespaces shown for these filetypes:
 autocmd filetype html,xml set listchars-=tab:>.
