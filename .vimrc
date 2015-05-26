@@ -344,8 +344,8 @@ highlight LineNr term=NONE cterm=NONE ctermfg=Green ctermbg=DarkGrey gui=NONE gu
 " http://vim.wikia.com/wiki/Show_fileencoding_and_bomb_in_the_status_line
 " http://stackoverflow.com/questions/5547943/display-number-of-current-buffer
 " Status Line {
-  hi StatusLine term=bold,reverse cterm=bold ctermfg=7 ctermbg=0
-  hi StatusLineNC term=reverse cterm=bold ctermfg=8
+  hi StatusLine term=bold,reverse cterm=bold ctermfg=White ctermbg=Black
+  hi StatusLineNC term=reverse cterm=italic ctermfg=Black ctermbg=DarkGrey
   set laststatus=2                             " always show statusbar
   set statusline=
   set statusline+=%-3n\                        " buffer number
