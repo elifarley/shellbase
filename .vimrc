@@ -195,8 +195,8 @@ endfunction
 " Map <C-L> (redraw screen) to also turn off search highlighting until the next search
 nnoremap <C-L> :nohl<CR><C-L>
 
-" Toggle line numbers
-nnoremap <C-N><C-N> :set number!<CR>
+" Toggle line numbers independently for each window
+nnoremap <C-N><C-N> :setlocal number!<CR>
 
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 set paste " start with paste mode enabled
