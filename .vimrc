@@ -7,20 +7,34 @@
 " https://wiki.archlinux.org/index.php/Vim#See_also
 " Vim cheat sheet: http://www.viemu.com/vi-vim-cheat-sheet.gif
 
-" Tip: <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER>
+" --
+
+" <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER> and <CTRL>-c
 
 "Use {count}CTRL-^ to edit buffer {count}
 " and CTRL-^ to edit last edited file
 " (or <F6> or <F10> or <SPACE>-0 to choose what buffer to edit)
 
 " <CTRL>-i and <CTRL>-o to navigate visited places; Type ' twice to go to last place
-" <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
+" <CTRL>-e / <CTRL>-d and <CTRL>-y / <CTRL>-u to scroll up or down
+
+"Normal mode:
+" "<register><yd> -> Text to <register>
+
+" Insert mode:
+" <C-W> del prev word. <C-U> del all chars before cursor
+" <C-T> indent one shiftwidth (Tabs). <C-D> remove one shiftwidth (Detabs)
+" <C-R><register> paste <register>'s contents
+" <C-P>, <C-N> word completion, like content assist
+" <C-o> perform a single NormalMode command
 
 " [range]:g//[cmd] executes [cmd] for every match
 " g/^#/d Delete all lines that begins with #
 " g/^$/d Delete all lines that are empty
 
 " #,#s/xxx/yyy/gc -> search and replace line range globally with confirmation
+
+" ----------
 
 "Use Vim settings, rather than Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
