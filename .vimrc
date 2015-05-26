@@ -9,35 +9,35 @@
 
 " --
 
-" <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER> and <CTRL>-c
+" <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER> and <CTRL>-C
 
-"Use {count}CTRL-^ to edit buffer {count}
-" and CTRL-^ to edit last edited file
+" Use {count}<CTRL>-^ to edit buffer {count}
+" and <CTRL>-^ to edit last edited file
 " (or <F6> or <F10> or <SPACE>-0 to choose what buffer to edit)
 
-" <CTRL>-i and <CTRL>-o to navigate visited places; Type ' twice to go to last place
-" <CTRL>-e / <CTRL>-d and <CTRL>-y / <CTRL>-u to scroll up or down
+" <CTRL>-I and <CTRL>-o to navigate visited places; Type ' twice to go to last place
+" <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
 
-"Normal mode:
-" "<register><yd> -> Text to <register>
+" Normal mode:
+" "{register}{yd} -> yank or delete text to {register}
 
 " Insert mode:
 " <C-W> del prev word. <C-U> del all chars before cursor
 " <C-T> indent one shiftwidth (Tabs). <C-D> remove one shiftwidth (Detabs)
-" <C-R><register> paste <register>'s contents
+" <C-R>{register} paste {register}'s contents
 " <C-P>, <C-N> word completion, like content assist
 " <C-o> perform a single NormalMode command
 
-" [range]:g//[cmd] executes [cmd] for every match
+" [range]:g//[cmd] executes [cmd] for every match.
 " g/^#/d Delete all lines that begins with #
 " g/^$/d Delete all lines that are empty
 
-" #,#s/xxx/yyy/gc -> search and replace line range globally with confirmation
+" 5,8s/xxx/yyy/gc -> search and replace all occurrences of xxx in lines 5 to 8 with confirmation
 
 " ----------
 
-"Use Vim settings, rather than Vi settings (much better!).
-"This must be first, because it changes other options as a side effect.
+" Use Vim settings, rather than Vi settings (much better!).
+" This must be first, because it changes other options as a side effect.
 set nocompatible
 
 set shortmess+=I                " hide the launch screen
@@ -88,14 +88,15 @@ set title              " change the terminal's title
 set number             " Show line numbers
 set showcmd             " Show incomplete cmds down the bottom
 " Set the command window height to 2 lines, to avoid many cases of having to
-" "press <Enter> to continue"
+" press <Enter> to continue"
 set cmdheight=2
 set showmode            " Show current mode down the bottom
 set cursorline          " Highlight current line
 set cursorcolumn        " Highlight current column
 
 set formatoptions-=o "dont continue comments when pushing o/O
-"vertical/horizontal scroll off settings
+
+" Vertical/horizontal scroll off settings
 set scrolloff=3
 set sidescrolloff=7
 set sidescroll=1
@@ -199,11 +200,11 @@ nnoremap <C-L> :nohl<CR><C-L>
 nnoremap <C-N><C-N> :setlocal number!<CR>
 
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
-set paste " start with paste mode enabled
+set paste " Start with paste mode enabled
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 
-" menu for encoding
+" Define menu for encoding
 noremenu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
 noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
@@ -229,7 +230,7 @@ nnoremap <C-y> 2<C-y>
 " rather than act as yy
 map Y y$
 
-" from http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
+" http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
 map H ^
 map L $
 
@@ -331,10 +332,10 @@ cmap w!! w !sudo tee % >/dev/null
 
 " CtrlP settings
 " https://github.com/kien/ctrlp.vim.git
-" let g:ctrlp_match_window = 'bottom,order:ttb'
-" let g:ctrlp_switch_buffer = 0
-" let g:ctrlp_working_path_mode = 0
-" let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+let g:ctrlp_match_window = 'bottom,order:ttb'
+let g:ctrlp_switch_buffer = 0
+let g:ctrlp_working_path_mode = 0
+let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 
 " http://vim.wikia.com/wiki/Display_line_numbers
 highlight LineNr term=NONE cterm=NONE ctermfg=Green ctermbg=DarkGrey gui=NONE guifg=DarkBlue guibg=NONE
