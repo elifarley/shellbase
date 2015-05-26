@@ -187,9 +187,9 @@ nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 
 " menu for encoding
-menu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
-menu Encoding.UTF-8  :e ++enc=utf-8<CR>
-menu Encoding.cp1251 :e ++enc=cp1251<CR>
+noremenu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
+noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
+noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
 nnoremap <F5> :emenu Encoding.<C-Z>
 
 " http://unix.stackexchange.com/a/186558/46796
