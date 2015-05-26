@@ -198,6 +198,12 @@ nno ; :
 vno : ;
 vno ; :
 
+let mapleader=" "       " Leader is space
+
+" http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
+source $VIMRUNTIME/menu.vim
+nnoremap \ :emenu <C-Z>
+
 " Speed up scrolling of the viewport slightly
 nnoremap <C-e> 2<C-e>
 nnoremap <C-y> 2<C-y>
@@ -212,8 +218,6 @@ map L $
 
 " Quickly time out on keycodes
 set ttimeout ttimeoutlen=200
-
-let mapleader=" "       " Leader is space
 
 " http://vim.wikia.com/wiki/Easier_buffer_switching
 
