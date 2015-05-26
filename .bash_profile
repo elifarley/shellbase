@@ -1,3 +1,5 @@
+# See http://tldp.yolinux.com/HOWTO/Bash-Prompt-HOWTO.html
+
 # See http://serverfault.com/questions/226783/how-to-tell-gnu-screen-to-run-bash-profile-in-each-new-window
 # Use 'shell -$SHELL' in ~/.screenrc to make screen load ~/.bash_profile
 
@@ -25,6 +27,9 @@ set_prompt () {
   [[ $LastStatus == 0 ]] && \
     PS1+="$GREEN$Checkmark" || \
     PS1+="$RED$FancyX$LastStatus"
+
+  # Job count
+  PS1+=" ${Blue}\j"
 
   # If root, just print the host in red. Otherwise, print the current user
   # and host.
