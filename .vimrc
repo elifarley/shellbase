@@ -44,6 +44,12 @@ if v:version >= 703
   set colorcolumn=+1 " Mark the ideal max text width
 endif
 
+" http://vim.wikia.com/wiki/Project_browsing_using_find
+" then you can type :find <full-file-name-including-extension>
+set path=$PWD/**
+
+" See also: http://vim.wikia.com/wiki/Find_in_files_within_Vim
+
 set autoread        " Automatically reload files changed outside of Vim
 
 set tabstop=2       " Number of visual spaces per TAB
@@ -110,6 +116,55 @@ nnoremap / /\v
 vnoremap / /\v
 set gdefault " applies substitutions globally on lines
 
+" http://vim.wikia.com/wiki/Searching
+" Apply smartcase to current word searches
+:nnoremap * /\<<C-R>=expand('<cword>')<CR>\><CR>
+:nnoremap # ?\<<C-R>=expand('<cword>')<CR>\><CR>
+
+" http://vim.wikia.com/wiki/VimTip14
+" Press <ENTER> to highlight current word without moving
+let g:highlighting = 0
+function! Highlighting()
+  if g:highlighting == 1 && @/ =~ '^\\<'.expand('<cword>').'\\>$'
+    let g:highlighting = 0
+    return ":silent nohlsearch\<CR>"
+  endif
+  let @/ = '\<'.expand('<cword>').'\>'
+  let g:highlighting = 1
+  return ":silent set hlsearch\<CR>"
+endfunction
+nnoremap <silent> <expr> <CR> Highlighting()
+
+" http://vim.wikia.com/wiki/VimTip528
+" {{ Make search results appear in the middle of the screen
+nnoremap <silent> <F4> :call <SID>SearchMode()<CR>
+function s:SearchMode()
+  if !exists('s:searchmode') || s:searchmode == 0
+    echo 'Search next: scroll hit to middle if not on same page'
+    nnoremap <silent> n n:call <SID>MaybeMiddle()<CR>
+    nnoremap <silent> N N:call <SID>MaybeMiddle()<CR>
+    let s:searchmode = 1
+  elseif s:searchmode == 1
+    echo 'Search next: scroll hit to middle'
+    nnoremap n nzz
+    nnoremap N Nzz
+    let s:searchmode = 2
+  else
+    echo 'Search next: normal'
+    nunmap n
+    nunmap N
+    let s:searchmode = 0
+  endif
+endfunction
+
+" If cursor is in first or last line of window, scroll to middle line.
+function s:MaybeMiddle()
+  if winline() == 1 || winline() == winheight(0)
+    normal! zz
+  endif
+endfunction
+" }}
+
 " Toggle search-highlighting
 "nnoremap <silent> <C-l> :setlocal hlsearch!<CR>
 " Map <C-L> (redraw screen) to also turn off search highlighting until the next search
@@ -132,8 +187,8 @@ vno ; :
 nnoremap <C-e> 2<C-e>
 nnoremap <C-y> 2<C-y>
 
-" Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy,
-" which is the default
+" Map Y to act like D and C, i.e. to yank until EOL (which is more logical, but not Vi-compatible),
+rather than act as yy
 map Y y$
 
 " from http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
@@ -184,14 +239,26 @@ nnoremap <Leader>8 :8b<CR>
 nnoremap <Leader>9 :9b<CR>
 
 " edit vimrc and load vimrc bindings
-nnoremap <leader>ev :vsp ~/.vimrc<CR>
+nnoremap <leader>vv :vsp ~/.vimrc<CR>
 nnoremap <leader>sv :source ~/.vimrc<CR>
 
 " Reload from disk, discarding changes
 nnoremap <Leader>R :edit!<CR>
 
-" Open menu to select file to edit
-nnoremap <Leader>e :e <C-D>
+" Based on http://vim.wikia.com/wiki/Easy_edit_of_files_in_the_same_directory
+" Open menu to select files in the same dir
+nnoremap <Leader>e :e <C-R>=expand('%:p:h') . '/'<CR><C-D>
+
+" Command line abbreviation: %% expands to file's directory.
+" Example: type :e %%/
+cabbr <expr> %% expand('%:p:h')
+
+" cd to file's directory
+" See http://vim.wikia.com/wiki/VimTip64
+nnoremap <Leader>cd :cd <C-R>=expand('%:p:h')<CR><CR>
+
+" Open menu to select file (from current dir) to edit
+nnoremap <Leader>ec :e <C-D>
 
 " Netrw directory listing
 nnoremap <Leader>E :Explore<CR>
