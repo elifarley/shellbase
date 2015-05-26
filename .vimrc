@@ -4,6 +4,7 @@
 " http://nvie.com/posts/how-i-boosted-my-vim/
 " https://news.ycombinator.com/item?id=856051
 " http://dougireton.com/blog/2013/02/23/layout-your-vimrc-like-a-boss/
+" https://wiki.archlinux.org/index.php/Vim#See_also
 " Vim cheat sheet: http://www.viemu.com/vi-vim-cheat-sheet.gif
 
 " Tip: <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER>
@@ -15,6 +16,11 @@
 " <CTRL>-i and <CTRL>-o to navigate visited places; Type ' twice to go to last place
 " <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
 
+" [range]:g//[cmd] executes [cmd] for every match
+" g/^#/d Delete all lines that begins with #
+" g/^$/d Delete all lines that are empty
+
+" #,#s/xxx/yyy/gc -> search and replace line range globally with confirmation
 
 "Use Vim settings, rather than Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
@@ -80,7 +86,7 @@ set scrolloff=3
 set sidescrolloff=7
 set sidescroll=1
 
-"some stuff to get the mouse going in term
+" Enable mouse. To copy to OS clipboard, keep <SHIFT> pressed
 set mouse=a
 set ttymouse=xterm2
 
@@ -102,13 +108,16 @@ set listchars=tab:▸\ ,trail:·,extends:>,precedes:<,nbsp:·,eol:¬
 autocmd filetype html,xml set listchars-=tab:>.
 
 " Highlight trailing whitespace
-hi TrailingSpace ctermbg=1
+hi TrailingSpace ctermbg=DarkGrey
 au filetype c,cpp,python match TrailingSpace "\s\+\n"
 
 set showmatch           " Highlight matching [{()}]. Type % to go to it
 " Highlight last inserted text
 nnoremap gV `[v`]
 
+" http://alvinalexander.com/linux/vi-vim-editor-color-scheme-syntax
+" Color table: https://github.com/guns/xterm-color-table.vim
+highlight Search ctermfg=White ctermbg=103
 set hlsearch            " Highlight matches
 set incsearch           " Search as characters are entered
 set ignorecase smartcase " lowercase-only search terms will match uppercase text too
@@ -137,7 +146,7 @@ nnoremap <silent> <expr> <CR> Highlighting()
 
 " http://vim.wikia.com/wiki/VimTip528
 " {{ Make search results appear in the middle of the screen
-nnoremap <silent> <F4> :call <SID>SearchMode()<CR>
+nnoremap <silent> <F3> :call <SID>SearchMode()<CR>
 function s:SearchMode()
   if !exists('s:searchmode') || s:searchmode == 0
     echo 'Search next: scroll hit to middle if not on same page'
@@ -176,6 +185,12 @@ nnoremap <C-N><C-N> :set number!<CR>
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
+
+" menu for encoding
+menu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
+menu Encoding.UTF-8  :e ++enc=utf-8<CR>
+menu Encoding.cp1251 :e ++enc=cp1251<CR>
+nnoremap <F5> :emenu Encoding.<C-Z>
 
 " http://unix.stackexchange.com/a/186558/46796
 nno : ;
@@ -257,7 +272,7 @@ cabbr <expr> %% expand('%:p:h')
 " See http://vim.wikia.com/wiki/VimTip64
 nnoremap <Leader>cd :cd <C-R>=expand('%:p:h')<CR><CR>
 
-" Open menu to select file (from current dir) to edit
+" Open menu to select file (from Current dir) to edit
 nnoremap <Leader>ec :e <C-D>
 
 " Netrw directory listing
@@ -265,7 +280,8 @@ nnoremap <Leader>E :Explore<CR>
 
 nnoremap <Leader>n :10new<CR>
 
-" To close current window but keep buffer (hide): Use <CTRL>-W c
+" Close current window but keep buffer (hide it)
+nnoremap <F4> <C-w>c
 
 " Close buffer and its window, keeping changes
 nnoremap <Leader>w :bd<CR>
@@ -298,6 +314,9 @@ cmap w!! w !sudo tee % >/dev/null
 " let g:ctrlp_switch_buffer = 0
 " let g:ctrlp_working_path_mode = 0
 " let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+
+" http://vim.wikia.com/wiki/Display_line_numbers
+highlight LineNr term=NONE cterm=NONE ctermfg=Green ctermbg=DarkGrey gui=NONE guifg=DarkBlue guibg=NONE
 
 " http://vim.wikia.com/wiki/Show_fileencoding_and_bomb_in_the_status_line
 " http://stackoverflow.com/questions/5547943/display-number-of-current-buffer
