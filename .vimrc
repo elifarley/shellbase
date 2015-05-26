@@ -349,7 +349,7 @@ highlight LineNr term=NONE cterm=NONE ctermfg=Green ctermbg=DarkGrey gui=NONE gu
   set laststatus=2                             " always show statusbar
   set statusline=
   set statusline+=%-3n\                        " buffer number
-  set statusline+=%t\                          " file name (no path)
+  set statusline+=%t\                          " file name (no path). Type <CTRL>-G to see full path
   set statusline+=%h%m%r%w                     " status flags
   set statusline+=%{\"[\".(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\").\"]\ \"}%k
   set statusline+=\[%{strlen(&ft)?&ft:'none'}] " file type
