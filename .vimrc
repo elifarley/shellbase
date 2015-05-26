@@ -183,6 +183,7 @@ nnoremap <C-L> :nohl<CR><C-L>
 nnoremap <C-N><C-N> :set number!<CR>
 
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
+set paste " start with paste mode enabled
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 
