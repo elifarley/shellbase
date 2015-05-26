@@ -188,7 +188,7 @@ nnoremap <C-e> 2<C-e>
 nnoremap <C-y> 2<C-y>
 
 " Map Y to act like D and C, i.e. to yank until EOL (which is more logical, but not Vi-compatible),
-rather than act as yy
+" rather than act as yy
 map Y y$
 
 " from http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
