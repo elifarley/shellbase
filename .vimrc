@@ -74,6 +74,7 @@ set autoread        " Automatically reload files changed outside of Vim
 
 set tabstop=2       " Number of visual spaces per TAB
 set softtabstop=2   " Number of spaces in tab when editing
+seet shiftwidth=2   " Used when indenting with >> and <<
 set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
 set expandtab       " Tabs are spaces
 set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
