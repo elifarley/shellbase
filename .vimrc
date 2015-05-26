@@ -129,6 +129,8 @@ set showmatch           " Highlight matching [{()}]. Type % to go to it
 " Highlight last inserted text
 nnoremap gV `[v`]
 
+hi Visual term=reverse cterm=reverse ctermfg=White
+
 " http://alvinalexander.com/linux/vi-vim-editor-color-scheme-syntax
 " Color table: https://github.com/guns/xterm-color-table.vim
 highlight Search ctermfg=White ctermbg=103
