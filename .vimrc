@@ -9,7 +9,9 @@
 
 " --
 
-" <Esc> alternatives: <CTRL>-[ and <ALT>-<ENTER> and <CTRL>-C
+" <Esc> alternatives: <CTRL>-[ and <CTRL>-C and <ALT>-<ENTER>
+" and <ALT>-<SPACE> or use <ALT>-<normal mode key>
+" See http://vim.wikia.com/wiki/Avoid_the_escape_key
 
 " Use {count}<CTRL>-^ to edit buffer {count}
 " and <CTRL>-^ to edit last edited file
