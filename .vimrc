@@ -167,7 +167,7 @@ nnoremap <silent> <expr> <CR> Highlighting()
 
 " http://vim.wikia.com/wiki/VimTip528
 " {{ Make search results appear in the middle of the screen
-nnoremap <silent> <F3> :call <SID>SearchMode()<CR>
+nnoremap <silent> <Leader>/ :call <SID>SearchMode()<CR>
 function s:SearchMode()
   if !exists('s:searchmode') || s:searchmode == 0
     echo 'Search next: scroll hit to middle if not on same page'
