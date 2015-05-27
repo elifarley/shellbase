@@ -242,6 +242,9 @@ vnoremap > >gv
 map H ^
 map L $
 
+" Start an external command with a single bang
+nnoremap ! :! 
+
 " Quickly time out on keycodes
 set ttimeout ttimeoutlen=200
 
