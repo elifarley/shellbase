@@ -232,6 +232,10 @@ nnoremap <C-y> 2<C-y>
 " rather than act as yy
 map Y y$
 
+" Repeatedly shift indenting while maintaining a visual selection
+vnoremap < <gv
+vnoremap > >gv
+
 " http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
 map H ^
 map L $
