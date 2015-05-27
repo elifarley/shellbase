@@ -258,10 +258,10 @@ nnoremap <Leader>0 :b <C-Z>
 
 " Next buffer
 nnoremap <silent> <F8> :bn<CR>
-imap <silent> <F8> <C-\><C-O><F8>
+imap <silent> <F8> <C-\><C-o><F8>
 " Previous buffer
 nnoremap <silent> <F7> :bp<CR>
-imap <silent> <F7> <C-\><C-O><F7>
+imap <silent> <F7> <C-\><C-o><F7>
 
 " Next window
 nnoremap <F12> <C-W>w
@@ -329,7 +329,7 @@ nnoremap <Leader>x :xa<CR>
 " http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
 "Fast quit and save from normal and insert mode. ZZ is good too.
 nnoremap <C-X> :xa<CR>
-imap <C-X> <C-\><C-O><C-X>
+imap <C-X> <C-\><C-o><C-X>
 
 " sudo to write
 cmap w!! w !sudo tee % >/dev/null
