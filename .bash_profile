@@ -1,4 +1,4 @@
-# See http://tldp.yolinux.com/HOWTO/Bash-Prompt-HOWTO.html
+# See http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
 
 # See http://serverfault.com/questions/226783/how-to-tell-gnu-screen-to-run-bash-profile-in-each-new-window
 # Use 'shell -$SHELL' in ~/.screenrc to make screen load ~/.bash_profile
