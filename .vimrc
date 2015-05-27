@@ -238,6 +238,17 @@ map Y y$
 vnoremap < <gv
 vnoremap > >gv
 
+" http://vimrcfu.com/snippet/77
+" Move visual block up and down and re-indent (if you don't like that, remove the 'gv=' in the middle)
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+http://usevim.com/2015/02/20/vim-tricks/
+nnoremap <C-J> :m+<CR>==
+nnoremap <C-K> :m-2<CR>==
+vnoremap <C-J> :m'>+<CR>gv=gv
+vnoremap <C-K> :m-2<CR>gv=gv
+
 " http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
 map H ^
 map L $
