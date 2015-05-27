@@ -327,18 +327,21 @@ nnoremap <Leader>n :10new<CR>
 " Close current window but keep buffer (hide it)
 nnoremap <F4> <C-w>c
 
-" Close buffer and its window, keeping changes
+" Close buffer and its window if no changes
 nnoremap <Leader>w :bd<CR>
 " Close buffer and its window, discarding changes
 nnoremap <Leader>W :bd!<CR>
 
 " Quit if no changes. Prompt if there are unsaved buffers
-nnoremap <Leader>q :qa<CR>
+nnoremap <Leader>q :confirm :qa<CR>
 " Discard changes and quit with an error
 nnoremap <Leader>Q :cq<CR>
 
-" Save all and quit
-nnoremap <Leader>x :xa<CR>
+" Save current buffer if modified
+nnoremap <Leader>s :update<CR>
+
+" Save all buffers
+nnoremap <Leader>S :wa<CR>
 
 " http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
 "Fast quit and save from normal and insert mode. ZZ is good too.
