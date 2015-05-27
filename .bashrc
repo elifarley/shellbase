@@ -24,7 +24,7 @@ alias dir='dir --color=auto'
 # Download solarized color scheme from
 # https://github.com/seebi/dircolors-solarized
 # https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-dark
-eval $(dircolors -b ~/.dir_colors)
+test -r ~/.dir_colors && eval $(dircolors -b ~/.dir_colors)
 
 # define color to additional file types
 export LS_COLORS=$LS_COLORS:"*.wmv=01;35":"*.wma=01;35":"*.flv=01;35":"*.m4a=01;35"
