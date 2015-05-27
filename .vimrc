@@ -243,7 +243,7 @@ vnoremap > >gv
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-http://usevim.com/2015/02/20/vim-tricks/
+" http://usevim.com/2015/02/20/vim-tricks/
 nnoremap <C-J> :m+<CR>==
 nnoremap <C-K> :m-2<CR>==
 vnoremap <C-J> :m'>+<CR>gv=gv
