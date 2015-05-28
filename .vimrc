@@ -8,6 +8,7 @@
 " http://dougireton.com/blog/2013/02/23/layout-your-vimrc-like-a-boss/
 " https://wiki.archlinux.org/index.php/Vim#See_also
 " Vim cheat sheet: http://www.viemu.com/vi-vim-cheat-sheet.gif
+" Vim movement cmds image: http://qph.is.quoracdn.net/main-qimg-6c3f7b7470cf8dc55fa4eaeab8a876ff
 
 " --
 
@@ -19,7 +20,9 @@
 " and <CTRL>-^ to edit last edited file
 " (or <F6> or <F10> or <SPACE>-0 to choose what buffer to edit)
 
-" <CTRL>-I and <CTRL>-o to navigate visited places
+" <CTRL>-I and <CTRL>-o to navigate visited places, even in closed buffers
+" or from the last time you opened vim.
+" (Ex.: open vim and type <C-o> to open last file)
 " http://vim.wikia.com/wiki/Using_marks:
 " Type ' twice to jump back to line or ( ` twice = pos in line ) 
 " `. to jump to last change; `0	jump to pos in last file edited (when exited Vim)
