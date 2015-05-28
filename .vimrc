@@ -102,6 +102,9 @@ set expandtab       " Tabs are spaces
 set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
 set copyindent      " copy the previous indentation on autoindenting
 
+" Quickly time out on keycodes
+set ttimeout ttimeoutlen=200
+
 set backspace=indent,eol,start " allow backspacing over everything in insert mode
 
 set history=1000 " Store lots of :cmdline history
@@ -135,12 +138,22 @@ set wildmenu                " Enable ctrl-n and ctrl-p to scroll thru matches
 set wildmode=list:longest,full " better
 set wildignore=*.o,*.obj,*~,*.swp,*.bak,*.pyc,*.class " Stuff to ignore when tab completing
 
+set wildcharm=<C-Z>
+
+let mapleader=" "       " Leader is space
+
+" http://unix.stackexchange.com/a/186558/46796
+nno : ;
+nno ; :
+vno : ;
+vno ; :
+
 filetype plugin indent on       " enable detection, plugins and indenting in one step
 syntax on " Turn on syntax highlighting
 
 " Highlight whitespaces and mark lines that extend off-screen
 set list
-set listchars=tab:▸\ ,trail:·,extends:>,precedes:<,nbsp:·,eol:¬
+set listchars=tab:?\ ,trail:·,extends:>,precedes:<,nbsp:·,eol:¬
 
 " No whitespaces shown for these filetypes:
 autocmd filetype html,xml set listchars-=tab:>.
@@ -233,14 +246,6 @@ noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
 nnoremap <F5> :emenu Encoding.<C-Z>
 
-" http://unix.stackexchange.com/a/186558/46796
-nno : ;
-nno ; :
-vno : ;
-vno ; :
-
-let mapleader=" "       " Leader is space
-
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
 if !empty(glob("$VIMRUNTIME/menu.vim"))
   source $VIMRUNTIME/menu.vim
@@ -254,6 +259,10 @@ nnoremap <C-y> 2<C-y>
 " Map Y to act like D and C, i.e. to yank until EOL (which is more logical, but not Vi-compatible),
 " rather than act as yy
 map Y y$
+
+" http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
+map H ^
+map L $
 
 " Repeatedly shift indenting while maintaining a visual selection
 vnoremap < <gv
@@ -270,19 +279,10 @@ nnoremap <C-K> :m-2<CR>==
 vnoremap <C-J> :m'>+<CR>gv=gv
 vnoremap <C-K> :m-2<CR>gv=gv
 
-" http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
-map H ^
-map L $
-
 " Start an external command with a single bang
 nnoremap ! :! 
 
-" Quickly time out on keycodes
-set ttimeout ttimeoutlen=200
-
 " http://vim.wikia.com/wiki/Easier_buffer_switching
-
-set wildcharm=<C-Z>
 
 " List buffers and pick by number
 nnoremap <Leader>0 :ls!<CR>:buffer #
