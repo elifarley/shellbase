@@ -53,7 +53,7 @@ hardstatus alwayslastline
 # See http://www.gnu.org/software/screen/manual/screen.html#String-Escapes
 
 # Very nice tabbed colored hardstatus line
-hardstatus string '%{= Kd} %{= Kd}%-w%{= Kr}[%{= KW}%n %t%{= Kr}]%{= Kd}%+w %-= %{KG} %H%{KW}|%{KY}%101`%{KW}|%D %M %d %Y%{= Kc} %C%A%{-}'
+hardstatus string '%{= Kd} %{= Kc}%-w%{= KG}[%{= }%n %t%{= }]%{= Kc}%+w %-= %{KG} %H|%{KY}%101`%{KG}|%D %M %d%{= Kc} %c%{-}'
 
 # Alternate
 # hardstatus string '%{= G}[ %{G}%H %{g}][%= %{= w}%?%-Lw%?%{= R}%n*%f %t%?%{= R}(%u)%?    %{= w}%+Lw%?%= %{= g}][ %{y}Load: %l %{g}][%{B}%m-%d %{W}%c %{g}]'
