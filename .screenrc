@@ -34,8 +34,10 @@ defscrollback 30000
 # Get rid of screen 0
 bind c screen 1
 bind ^c screen 1
-bind 0 select 10
 screen 1
+
+# <C-a> 0 to show window list in most-recently-used order
+bind 0 windowlist -m
 
 # Fix for Name column in windowlist only show "bash"
 # windowlist string "%4n %h%=%f"
