@@ -1,5 +1,6 @@
 " Tips:
 " https://www.cs.oberlin.edu/~kuperman/help/vim/home.html
+" http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
 " http://dougblack.io/words/a-good-vimrc.html
 " scrooloose's vim configuraiton: https://github.com/scrooloose/vimfiles
 " http://vim.wikia.com/wiki/Example_vimrc
@@ -232,8 +233,8 @@ endfunction
 " Map <C-L> (redraw screen) to also turn off search highlighting until the next search
 nnoremap <C-L> :nohl<CR><C-L>
 
-" Toggle line numbers independently for each window
-nnoremap <C-N><C-N> :setlocal number!<CR>
+" Toggle line numbers and special chars for each window
+nnoremap <C-N><C-N> :setlocal number!<BAR>setlocal list!<CR>
 
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 set paste " Start with paste mode enabled
