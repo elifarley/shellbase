@@ -153,7 +153,7 @@ syntax on " Turn on syntax highlighting
 
 " Highlight whitespaces and mark lines that extend off-screen
 set list
-set listchars=tab:?\ ,trail:·,extends:>,precedes:<,nbsp:·,eol:¬
+set listchars=tab:▸\ ,trail:·,extends:>,precedes:<,nbsp:·,eol:¬
 
 " No whitespaces shown for these filetypes:
 autocmd filetype html,xml set listchars-=tab:>.
