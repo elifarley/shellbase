@@ -386,7 +386,7 @@ let g:ctrlp_working_path_mode = 0
 let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 
 " http://vim.wikia.com/wiki/Display_line_numbers
-highlight LineNr term=NONE cterm=NONE ctermfg=0 ctermbg=101 gui=NONE guifg=DarkBlue guibg=NONE
+highlight LineNr term=NONE cterm=Italic ctermfg=Black ctermbg=Green gui=NONE guifg=DarkBlue guibg=NONE
 
 " http://vim.wikia.com/wiki/Show_fileencoding_and_bomb_in_the_status_line
 " http://stackoverflow.com/questions/5547943/display-number-of-current-buffer
