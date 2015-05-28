@@ -17,7 +17,9 @@
 " and <CTRL>-^ to edit last edited file
 " (or <F6> or <F10> or <SPACE>-0 to choose what buffer to edit)
 
-" <CTRL>-I and <CTRL>-o to navigate visited places; Type ' twice to go to last place
+" <CTRL>-I and <CTRL>-o to navigate visited places
+" Type ' twice to jump back
+" `. to jump to last change
 " <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
 
 " Normal mode:
