@@ -1,4 +1,6 @@
-" Tips: http://dougblack.io/words/a-good-vimrc.html
+" Tips:
+" https://www.cs.oberlin.edu/~kuperman/help/vim/home.html
+" http://dougblack.io/words/a-good-vimrc.html
 " scrooloose's vim configuraiton: https://github.com/scrooloose/vimfiles
 " http://vim.wikia.com/wiki/Example_vimrc
 " http://nvie.com/posts/how-i-boosted-my-vim/
