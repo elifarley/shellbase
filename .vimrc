@@ -318,8 +318,8 @@ nnoremap <Leader>8 :8b<CR>
 nnoremap <Leader>9 :9b<CR>
 
 " edit vimrc and load vimrc bindings
-nnoremap <leader>vv :vsp ~/.vimrc<CR>
-nnoremap <leader>sv :source ~/.vimrc<CR>
+nnoremap <leader>vv :vsp $MYVIMRC<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " Reload from disk, discarding changes
 nnoremap <Leader>R :edit!<CR>
