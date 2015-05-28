@@ -329,7 +329,7 @@ nnoremap <Leader>R :edit!<CR>
 
 " Based on http://vim.wikia.com/wiki/Easy_edit_of_files_in_the_same_directory
 " Open menu to select files in the same dir
-nnoremap <Leader>e :e <C-R>=expand('%:p:h') . '/'<CR><C-D>
+nnoremap <Leader>ee :e <C-R>=expand('%:p:h') . '/'<CR><C-D>
 
 " Command line abbreviation: %% expands to file's directory.
 " Example: type :e %%/
@@ -340,7 +340,7 @@ cabbr <expr> %% expand('%:p:h')
 nnoremap <Leader>cd :cd <C-R>=expand('%:p:h')<CR><CR>
 
 " Open menu to select file (from Current dir) to edit
-nnoremap <Leader>ec :e <C-D>
+nnoremap <Leader>e :e <C-D>
 
 " Netrw directory listing
 nnoremap <Leader>E :Explore<CR>
