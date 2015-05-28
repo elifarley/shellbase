@@ -57,15 +57,19 @@ set t_Co=256 " enable colorscheme
 
 " https://raw.githubusercontent.com/sjl/badwolf/master/colors/badwolf.vim
 " save it to ~/.vim/colors/badwolf.vim
-let g:badwolf_darkgutter = 1
-let g:badwolf_css_props_highlight = 1
-"colorscheme badwolf
+if !empty(glob("$HOME/.vim/badwolf.vim"))
+  let g:badwolf_darkgutter = 1
+  let g:badwolf_css_props_highlight = 1
+  "colorscheme badwolf
+endif
 
 " https://raw.githubusercontent.com/jnurmine/Zenburn/master/colors/zenburn.vim
-let g:zenburn_alternate_Visual = 1 " More contrast in Visual Selection
-let g:zenburn_unified_CursorColumn = 1
-"let g:zenburn_high_Contrast = 1
-colorscheme zenburn
+if !empty(glob("$HOME/.vim/zenburn.vim"))
+  let g:zenburn_alternate_Visual = 1 " More contrast in Visual Selection
+  let g:zenburn_unified_CursorColumn = 1
+  "let g:zenburn_high_Contrast = 1
+  colorscheme zenburn
+endif
 
 if v:version >= 703
   " Undo settings
