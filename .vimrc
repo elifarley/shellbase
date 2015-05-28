@@ -19,7 +19,7 @@
 
 " Use {count}<CTRL>-^ to edit buffer {count}
 " and <CTRL>-^ to edit last edited file
-" (or <F6> or <F10> or <SPACE>-0 to choose what buffer to edit)
+" (or <F8> or <SPACE>-0 to choose what buffer to edit)
 
 " <CTRL>-I and <CTRL>-o to navigate visited places, even in closed buffers
 " or from the last time you opened vim.
@@ -246,6 +246,8 @@ noremenu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
 noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
 nnoremap <F5> :emenu Encoding.<C-Z>
+
+nnoremap <F6> :browse oldfiles<CR>
 
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
 if !empty(glob("$VIMRUNTIME/menu.vim"))
