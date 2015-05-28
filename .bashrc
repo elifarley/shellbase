@@ -1,6 +1,9 @@
 # If not running interactively, don't do anyting
 [[ $- != *i* ]] && return
 
+# See http://stackoverflow.com/questions/6787734/strange-behavior-of-vim-color-inside-screen-with-256-colors
+export TERM=xterm-256color
+
 test -f ~/.bash_private.gpg && \
   eval "$(gpg --decrypt ~/.bash_private.gpg 2>/dev/null)"
 
