@@ -76,6 +76,13 @@ set path=$PWD/**
 
 " See also: http://vim.wikia.com/wiki/Find_in_files_within_Vim
 
+" http://vim.wikia.com/wiki/To_switch_back_to_normal_mode_automatically_after_inaction
+" Automatically leave insert mode after 'updatetime' milliseconds of inaction
+au CursorHoldI * stopinsert
+" Set 'updatetime' to 15 seconds when in insert mode
+au InsertEnter * let updaterestore=&updatetime | set updatetime=15000
+au InsertLeave * let &updatetime=updaterestore
+
 set autoread        " Automatically reload files changed outside of Vim
 
 set tabstop=2       " Number of visual spaces per TAB
