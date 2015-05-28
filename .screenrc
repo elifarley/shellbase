@@ -1,10 +1,13 @@
-shell -$SHELL # read ~/.bash_profile
-term screen-256color # enable colors
+# See https://wiki.archlinux.org/index.php/GNU_Screen#Tips_and_tricks
 
-# From https://gist.github.com/ChrisWills/1337178
-# GNU Screen - main configuration file
-# All other .screenrc files will source this file to inherit settings.
-# Author: Christian Wills - cwills.sys@gmail.com
+# Turn welcome message off
+startup_message off
+
+ # Read ~/.bash_profile
+shell -$SHELL
+
+# Enable colors
+term screen-256color
 
 # Erase background with current bg color
 defbce "on"
@@ -16,7 +19,7 @@ attrcolor b ".I"
 termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
 
 # Enables use of shift-PgUp and shift-PgDn
-termcapinfo xterm|xterms|xs|rxvt ti@:te@
+termcapinfo xterm*|xterms*|xs*|rxvt* ti@:te@
 
 # Cache 30000 lines for scroll back
 defscrollback 30000
@@ -27,11 +30,30 @@ defscrollback 30000
 # change command character from ctrl-a to ctrl-b (emacs users may want this)
 #escape ^Bb
 
+# http://unix.stackexchange.com/questions/35924/how-do-you-make-tmux-count-windows-starting-with-1-instead-of-0
+# Get rid of screen 0
+bind c screen 1
+bind ^c screen 1
+bind 0 select 10
+screen 1
+
+# Fix for Name column in windowlist only show "bash"
+# windowlist string "%4n %h%=%f"
+
+# Fix for residual editor text
+altscreen on
+
 # Hide hardstatus: ctrl-a f
 bind f eval "hardstatus ignore"
 # Show hardstatus: ctrl-a F
 bind F eval "hardstatus alwayslastline"
 
 hardstatus alwayslastline
+
+# See http://www.gnu.org/software/screen/manual/screen.html#String-Escapes
+
 # Very nice tabbed colored hardstatus line
 hardstatus string '%{= Kd} %{= Kd}%-w%{= Kr}[%{= KW}%n %t%{= Kr}]%{= Kd}%+w %-= %{KG} %H%{KW}|%{KY}%101`%{KW}|%D %M %d %Y%{= Kc} %C%A%{-}'
+
+# Alternate
+# hardstatus string '%{= G}[ %{G}%H %{g}][%= %{= w}%?%-Lw%?%{= R}%n*%f %t%?%{= R}(%u)%?    %{= w}%+Lw%?%= %{= g}][ %{y}Load: %l %{g}][%{B}%m-%d %{W}%c %{g}]'
