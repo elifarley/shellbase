@@ -275,19 +275,18 @@ set ttimeout ttimeoutlen=200
 
 set wildcharm=<C-Z>
 
-" List buffers and let you choose which to open
-nnoremap <F6> :ls!<CR>:buffer<Space>
+" List buffers and pick by number
+nnoremap <Leader>0 :ls!<CR>:buffer #
 
-" Press F10 to open the buffer menu
-nnoremap <F10> :b <C-D>
-nnoremap <Leader>0 :b <C-Z>
+" List buffers and pick by name fragment
+nnoremap <F8> :ls!<CR>:buffer<Space>
 
-" Next buffer
-nnoremap <silent> <F8> :bn<CR>
-imap <silent> <F8> <C-\><C-o><F8>
 " Previous buffer
-nnoremap <silent> <F7> :bp<CR>
-imap <silent> <F7> <C-\><C-o><F7>
+nnoremap <silent> <F9> :bp<CR>
+imap <silent> <F9> <C-\><C-o><F9>
+" Next buffer
+nnoremap <silent> <F10> :bn<CR>
+imap <silent> <F10> <C-\><C-o><F10>
 
 " Next window
 nnoremap <F12> <C-W>w
