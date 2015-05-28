@@ -238,7 +238,9 @@ vno ; :
 let mapleader=" "       " Leader is space
 
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
-source $VIMRUNTIME/menu.vim
+if !empty(glob("$VIMRUNTIME/menu.vim"))
+  source $VIMRUNTIME/menu.vim
+endif
 nnoremap \ :emenu <C-Z>
 
 " Speed up scrolling of the viewport slightly
