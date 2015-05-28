@@ -18,8 +18,9 @@
 " (or <F6> or <F10> or <SPACE>-0 to choose what buffer to edit)
 
 " <CTRL>-I and <CTRL>-o to navigate visited places
-" Type ' twice to jump back
-" `. to jump to last change
+" http://vim.wikia.com/wiki/Using_marks:
+" Type ' twice to jump back to line or ( ` twice = pos in line ) 
+" `. to jump to last change; `0	jump to pos in last file edited (when exited Vim)
 " <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
 
 " Normal mode:
