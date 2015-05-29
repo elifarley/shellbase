@@ -200,6 +200,11 @@ nnoremap / /\v
 vnoremap / /\v
 set gdefault " applies substitutions globally on lines
 
+" See https://github.com/mgedmin/dotvim/blob/master/plugin/keyboard-workarounds.vim
+map <ESC>[1;5R <C-F3>
+" Display all lines that contain the keyword under the cursor
+nnoremap <C-F3> [I
+
 " http://vim.wikia.com/wiki/Searching
 " Apply smartcase to current word searches
 :nnoremap * /\<<C-R>=expand('<cword>')<CR>\><CR>
