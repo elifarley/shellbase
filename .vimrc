@@ -149,6 +149,12 @@ nno ; :
 vno : ;
 vno ; :
 
+" Good for Brazillian ABNT2 keyboards
+nno ç :
+
+" qq to start recording macro, then q to stop; Q to play back
+nnoremap Q @q
+
 filetype plugin indent on       " enable detection, plugins and indenting in one step
 syntax on " Turn on syntax highlighting
 
@@ -249,6 +255,11 @@ nnoremap <F5> :emenu Encoding.<C-Z>
 
 nnoremap <F6> :browse oldfiles<CR>
 
+" Map <F3> and <S-F3> to jump between locations in a quickfix list, or
+" differences if in window in diff mode
+nnoremap <expr> <silent> <F3>   (&diff ? "]c" : ":cnext\<CR>")
+nnoremap <expr> <silent> <S-F3> (&diff ? "[c" : ":cprev\<CR>")
+
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
 if !empty(glob("$VIMRUNTIME/menu.vim"))
   source $VIMRUNTIME/menu.vim
@@ -256,12 +267,31 @@ endif
 nnoremap \ :emenu <C-Z>
 
 " Speed up scrolling of the viewport slightly
-nnoremap <C-e> 2<C-e>
-nnoremap <C-y> 2<C-y>
+nnoremap <C-E> 2<C-E>
+nnoremap <C-Y> 2<C-Y>
+
+" Use arrows to scroll
+nnoremap <C-UP> <C-E>
+nnoremap <C-DOWN> <C-Y>
+
+" Cursor movement by visual line
+inoremap <UP> <C-O>gk
+inoremap <DOWN> <C-O>gj
+nnoremap <UP> gk
+nnoremap <DOWN> gj
+vnoremap <UP> gk
+vnoremap <DOWN> gj
 
 " Map Y to act like D and C, i.e. to yank until EOL (which is more logical, but not Vi-compatible),
 " rather than act as yy
 map Y y$
+
+" Copy line N and paste it before the current line.
+" Ex.: 15_
+nnoremap _ ggyy``P
+
+" Delete to EOL in insert mode. Does it work?
+inoremap <C-DEL> <C-\><C-o>D
 
 " http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
 map H ^
@@ -376,6 +406,7 @@ nnoremap <Leader>S :wa<CR>
 " http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
 "Fast quit and save from normal and insert mode. ZZ is good too.
 nnoremap <C-X> :xa<CR>
+" Doesn't seem to work
 imap <C-X> <C-\><C-o><C-X>
 
 " sudo to write
