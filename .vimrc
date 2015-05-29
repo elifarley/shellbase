@@ -342,8 +342,15 @@ nnoremap <Leader>cd :cd <C-R>=expand('%:p:h')<CR><CR>
 " Open menu to select file (from Current dir) to edit
 nnoremap <Leader>e :e <C-D>
 
-" Netrw directory listing
-nnoremap <Leader>E :Explore<CR>
+" Netrw directory listing at current dir
+nnoremap <Leader>E :E<CR>
+
+" Netrw directory listing at file's directory
+nnoremap <Leader>EE :E <C-R>=expand('%:p:h') . '/'<CR><CR>
+
+nnoremap <Leader>f :find <C-R>='**'<CR>
+
+nnoremap <Leader>ff :find <C-R>=expand('%:p:h') . '/**'<CR>
 
 nnoremap <Leader>n :10new<CR>
 
