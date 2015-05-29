@@ -40,7 +40,12 @@ set_prompt () {
   # HH:MM and history index
   PS1+=" ${GREEN}\A #\!"
 
-  # [$PWD] with newline then $
-  PS1+=" ${Blue}[${DarkBlue}\w${Blue}]\n${Red}\$${NORMAL} "
+  # [$PWD] with newline
+  PS1+=" ${Blue}[${DarkBlue}\w${Blue}]\n"
+
+  # Set GNU Screen's window title
+  #PS1+="\[\ek${HOSTNAME%%.*}\e\\\\\]"
+
+  PS1+="${Red}\$${NORMAL} "
 
 }; PROMPT_COMMAND='set_prompt'
