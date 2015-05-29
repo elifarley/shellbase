@@ -422,8 +422,9 @@ nnoremap <Leader>s :update<CR>
 " http://vim.wikia.com/wiki/Map_Ctrl-S_to_save_current_or_new_files
 " Remember to set stty -ixon
 nnoremap <C-S> :<C-u>update<CR>
-inoremap <C-S> <C-\><C-o>:update<CR>
 vnoremap <C-S> <ESC>:update<CR>gv
+" Doesn't work if paste mode is on
+inoremap <C-S> <C-\><C-o>:update<CR>
 
 " Save all buffers
 nnoremap <Leader>S :wa<CR>
@@ -431,7 +432,7 @@ nnoremap <Leader>S :wa<CR>
 " http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
 "Fast quit and save from normal and insert mode. ZZ is good too.
 nnoremap <C-X> :xa<CR>
-" Doesn't seem to work
+" Doesn't work if paste mode is on
 imap <C-X> <C-\><C-o><C-X>
 
 " sudo to write
