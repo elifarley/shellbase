@@ -420,6 +420,12 @@ nnoremap <Leader>Q :cq<CR>
 " Save current buffer if modified
 nnoremap <Leader>s :update<CR>
 
+" http://vim.wikia.com/wiki/Map_Ctrl-S_to_save_current_or_new_files
+" Remember to set stty -ixon
+nnoremap <C-S> :<C-u>update<CR>
+inoremap <C-S> <C-\><C-o>:update<CR>
+vnoremap <C-S> <ESC>:update<CR>gv
+
 " Save all buffers
 nnoremap <Leader>S :wa<CR>
 
