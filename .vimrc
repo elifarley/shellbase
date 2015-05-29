@@ -19,7 +19,7 @@
 
 " Use {count}<CTRL>-^ to edit buffer {count}
 " and <CTRL>-^ to edit last edited file
-" (or <F8> or <SPACE>-0 to choose what buffer to edit)
+" (or <F10> or <SPACE>-0 to choose what buffer to edit)
 
 " <CTRL>-I and <CTRL>-o to navigate visited places, even in closed buffers
 " or from the last time you opened vim.
@@ -336,14 +336,14 @@ nnoremap ! :!
 nnoremap <Leader>0 :ls!<CR>:buffer #
 
 " List buffers and pick by name fragment
-nnoremap <F8> :ls!<CR>:buffer<Space>
+nnoremap <F10> :ls!<CR>:buffer<Space>
 
-" Previous buffer
-nnoremap <silent> <F9> :bp<CR>
-imap <silent> <F9> <C-\><C-o><F9>
 " Next buffer
-nnoremap <silent> <F10> :bn<CR>
-imap <silent> <F10> <C-\><C-o><F10>
+nnoremap <silent> <F9> :bn<CR>
+imap <silent> <F9> <C-\><C-o><F9>
+" Previous buffer
+nnoremap <silent> <S-F9> :bp<CR>
+imap <silent> <S-F9> <C-\><C-o><S-F9>
 
 " Next window
 nnoremap <F12> <C-W>w
