@@ -50,6 +50,8 @@ bind f eval "hardstatus ignore"
 # Show hardstatus: ctrl-a F
 bind F eval "hardstatus alwayslastline"
 
+caption always '%{= kG}%h'
+
 hardstatus alwayslastline
 
 # See http://www.gnu.org/software/screen/manual/screen.html#String-Escapes
