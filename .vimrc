@@ -271,8 +271,8 @@ nnoremap <C-E> 2<C-E>
 nnoremap <C-Y> 2<C-Y>
 
 " Use arrows to scroll
-nnoremap <C-UP> <C-E>
-nnoremap <C-DOWN> <C-Y>
+nnoremap <C-UP> <C-Y>
+nnoremap <C-DOWN> <C-E>
 
 " Cursor movement by visual line
 inoremap <UP> <C-O>gk
