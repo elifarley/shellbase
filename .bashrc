@@ -12,10 +12,12 @@ test -f ~/.bash_private.gpg && \
 test -f ~/local/bin/bash_completion && \
   . ~/local/bin/bash_completion
 
+
 pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 ;}
 alias p="ps aux |grep -i "
 alias h="history|grep -i "
 alias f="find . |grep -i "
+alias sc="screen -DR"
 
 # Puts the newest file at the bottom, right above the prompt
 # l=long : h=human readable sizes : a=all : r=reverse sort : t=time sort : F=append indicator (one of */=>@|)
