@@ -63,6 +63,11 @@ man() { env \
     man "$@"
 }
 
+# http://unix.stackexchange.com/questions/72086/ctrl-s-hang-terminal-emulator
+# See "The TTY demystified" - http://linusakesson.net/programming/tty/index.php
+# So as not to be disturbed by Ctrl-S ctrl-Q in terminals:
+stty -ixon
+
 # Bash won't get SIGWINCH if another process is in the foreground.
 # Enable checkwinsize so that bash will check the terminal size when
 # it regains control.  #65623
