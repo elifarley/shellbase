@@ -415,6 +415,10 @@ nnoremap <Leader>W :bd!<CR>
 nnoremap <Leader>q :confirm :qa<CR>
 " Discard changes and quit with an error
 nnoremap <Leader>Q :cq<CR>
+" Must enable <C-Q> in terminal using stty start undef
+" See http://stackoverflow.com/questions/21806168/vim-use-ctrl-q-for-visual-block-mode-in-vim-gnome
+nnoremap <C-Q> :cq<CR>
+inoremap <C-Q> <C-\><C-o>:cq<CR>
 
 " Save current buffer if modified
 nnoremap <Leader>s :update<CR>
