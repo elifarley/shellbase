@@ -68,6 +68,10 @@ man() { env \
 # So as not to be disturbed by Ctrl-S ctrl-Q in terminals:
 stty -ixon
 
+# http://stackoverflow.com/questions/21806168/vim-use-ctrl-q-for-visual-block-mode-in-vim-gnome
+# Allow <CTRL>-Q to be sent to terminal apps
+stty start undef
+
 # Bash won't get SIGWINCH if another process is in the foreground.
 # Enable checkwinsize so that bash will check the terminal size when
 # it regains control.  #65623
