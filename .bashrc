@@ -65,6 +65,7 @@ man() { env \
 
 # http://unix.stackexchange.com/questions/72086/ctrl-s-hang-terminal-emulator
 # See "The TTY demystified" - http://linusakesson.net/programming/tty/index.php
+# http://catern.com/posts/terminal_quirks.html
 # So as not to be disturbed by Ctrl-S ctrl-Q in terminals:
 stty -ixon
 
