@@ -1,7 +1,18 @@
-pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 ;}
+pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 "$@" ;}
 
 STDERR() { cat - 1>&2; }
 
+# Serial Distributed Unique TimeStamp
+dutstamp() { echo "$(date +%s)$(date +%N | head -c 3)" ;}
+
+# See https://gist.github.com/earthgecko/3089509
+mkrandom() { base64 /dev/urandom | tr -d "/+${2:-0Oo}" | dd bs="${1:-8}" count=1 2>/dev/null | xargs ;}
+mkrandomL() { mkrandom "$@" | tr '[[:upper:]]' '[[:lower:]]' ;}
+mkrandomU() { mkrandom "$@" | tr '[[:lower:]]' '[[:upper:]]' ;}
+
+# Disable file globbing; coalesce inner whitespace;
+# trim leading and trailing whitespace
+trim() { (set -f; echo $@) ;}
 strcontains() { test -z "${1##*$2*}" ; }; export -f strcontains
 strendswith() { test ! "${1%%*$2}"; }
 strstartswith() { test ! "${1##$2*}"; }
