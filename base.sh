@@ -2,8 +2,19 @@ pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 "$@" ;}
 
 STDERR() { cat - 1>&2; }
 
-# Serial Distributed Unique TimeStamp
+hex2bytes () {
+  local b=0; while test $b -lt ${#1} ; do
+  printf "\\x${1:$b:2}"; b=$((b += 2)); done
+}
+pipehex2bytes () { while read -r b file; do hex2bytes $b; done ;}
+
+# Serial Distributed Unique TimeStamp in Decimal
 dutstamp() { echo "$(date +%s)$(date +%N | head -c 3)" ;}
+# Serial Distributed Unique TimeStamp in Hex
+dutstamp_hex() { printf '%x\n' $(dutstamp) ;}
+# Serial Distributed Unique TimeStamp in Base64 - smaller, case-sensitive
+dutstamp_b64() { dutstamp_hex | pipehex2bytes | base64 ;}
+
 
 # See https://gist.github.com/earthgecko/3089509
 mkrandom() { base64 /dev/urandom | tr -d "/+${2:-0Oo}" | dd bs="${1:-8}" count=1 2>/dev/null | xargs ;}
