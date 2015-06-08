@@ -1,3 +1,10 @@
+# .bashrc
+
+# Source global definitions
+test -r /etc/bashrc && . /etc/bashrc
+
+# User specific aliases and functions
+
 # If not running interactively, don't do anyting
 [[ $- != *i* ]] && return
 
