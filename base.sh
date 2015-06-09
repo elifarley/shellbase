@@ -13,7 +13,7 @@ millistamp() { local n=$(date +%s%N); echo "${n%??????}" ;}
 # TimeStamp in Hex
 millistamp_hex() { printf '%x\n' $(millistamp) ;}
 # TimeStamp in Base64 - smaller, case-sensitive
-millistamp_b64_notrim() { millistamp_hex | pipehex2bytes | base64 -w0 | tr '/' '-' ;}
+millistamp_b64_notrim() { millistamp_hex | pipehex2bytes | base64 -w0 | tr '/' '_' ;}
 millistamp_b64() { local r=$(millistamp_b64_notrim); echo ${r%%=*} ;}
 
 # See https://gist.github.com/earthgecko/3089509
