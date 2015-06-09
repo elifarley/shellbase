@@ -8,13 +8,13 @@ hex2bytes () {
 }
 pipehex2bytes () { while read -r b file; do hex2bytes $b; done ;}
 
-# Serial Distributed Unique TimeStamp in Decimal
-dutstamp() { echo "$(date +%s)$(date +%N | head -c 3)" ;}
-# Serial Distributed Unique TimeStamp in Hex
-dutstamp_hex() { printf '%x\n' $(dutstamp) ;}
-# Serial Distributed Unique TimeStamp in Base64 - smaller, case-sensitive
-dutstamp_b64() { dutstamp_hex | pipehex2bytes | base64 ;}
-
+# TimeStamp in Decimal
+millistamp() { local n=$(date +%s%N); echo "${n%??????}" ;}
+# TimeStamp in Hex
+millistamp_hex() { printf '%x\n' $(millistamp) ;}
+# TimeStamp in Base64 - smaller, case-sensitive
+millistamp_b64_notrim() { millistamp_hex | pipehex2bytes | base64 -w0 | tr '/' '-' ;}
+millistamp_b64() { local r=$(millistamp_b64_notrim); echo ${r%%=*} ;}
 
 # See https://gist.github.com/earthgecko/3089509
 mkrandom() { base64 /dev/urandom | tr -d "/+${2:-0Oo}" | dd bs="${1:-8}" count=1 2>/dev/null | xargs ;}
