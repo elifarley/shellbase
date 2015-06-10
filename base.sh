@@ -8,6 +8,8 @@ hex2bytes () {
 }
 pipehex2bytes () { while read -r b file; do hex2bytes $b; done ;}
 
+int2b64() { hex2bytes $(printf '%x\n' $1) | base64 -w0 ;}
+
 hex2b64_padded() { pipehex2bytes | base64 -w0 | tr '/' '_' ;}
 hex2b64() { local r=$(hex2b64_padded); echo ${r%%=*} ;}
 
