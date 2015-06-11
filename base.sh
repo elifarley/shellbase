@@ -4,7 +4,7 @@ STDERR() { cat - 1>&2; }
 
 hex2bytes () {
   local b=0; while test $b -lt ${#1} ; do
-  printf "\\x${1:$b:2}"; b=$((b += 2)); done
+  printf "\\x${1:$b:2}"; ((b += 2)); done
 }
 pipehex2bytes () { while read -r b file; do hex2bytes $b; done ;}
 
