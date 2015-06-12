@@ -21,7 +21,7 @@ millistamp_hex() { printf '%x\n' $(millistamp) ;}
 millistamp_b64() { millistamp_hex | hex2b64 ;}
 
 # See https://gist.github.com/earthgecko/3089509
-mkrandom() { base64 /dev/urandom | tr -d "/+${2:-0Oo}" | dd bs="${1:-8}" count=1 2>/dev/null | xargs ;}
+mkrandom() { base64 -w0 /dev/urandom | tr -d "/+${2:-0Oo}" | dd bs="${1:-8}" count=1 2>/dev/null | xargs ;}
 mkrandomL() { mkrandom "$@" | tr '[[:upper:]]' '[[:lower:]]' ;}
 mkrandomU() { mkrandom "$@" | tr '[[:lower:]]' '[[:upper:]]' ;}
 
