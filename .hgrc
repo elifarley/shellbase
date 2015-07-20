@@ -4,6 +4,7 @@
 show = log -Cpr
 slog = log --template '{rev}:{node|short} {desc|firstline} (http://my.host.com/hg/rev/{node|short})\n'
 cf = status -qC --rev
+bc = bundle --base .^ -r .::
 nudge = push --rev .
 clean  = clean --abort-on-err
 cleana = clean --all
