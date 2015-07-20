@@ -2,16 +2,16 @@
  
 [alias]
 show = log -Cpr
-slog = log --template '{rev}:{node|short} {desc|firstline} (http://gcvc01.webb.net.br/hg/rev/{node|short})\n'
-cf     = status -qC --rev
+slog = log --template '{rev}:{node|short} {desc|firstline} (http://my.host.com/hg/rev/{node|short})\n'
+cf = status -qC --rev
 nudge = push --rev .
-clean = clean --abort-on-err
+clean  = clean --abort-on-err
 cleana = clean --all
 qic = !%HG% qimport -r .:: && %HG% qpop -a $@
 qfa = !%HG% qpush -a $@ && %HG% qfinish -a
-metaimport = !%HG% export $@ | %HG% import --user "%HGUSER%" --bypass -
+metaimport   = !%HG% export $@ | %HG% import --user "%HGUSER%" --bypass -
 metaimportnc = !%HG% export $@ | %HG% import --user "%HGUSER%" --no-commit --similarity 50 -
-upc = !%HG% cleana && %HG% up -C -r . $@
+upc  = !%HG% cleana && %HG% up -C -r . $@
 upcr = !%HG% cleana && %HG% up -C $@
 ul = !%HG% --config ui.merge=internal:local up $@
 uo = !%HG% --config ui.merge=internal:other up $@
