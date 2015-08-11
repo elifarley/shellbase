@@ -2,10 +2,11 @@
  
 [alias]
 show = log -Cpr
-slog = log --template '{rev}:{node|short} {desc|firstline} (http://my.host.com/hg/rev/{node|short})\n'
+slog    = log --template '{rev}:{node|short} {date|shortdate} {pad(author,15)} {desc|firstline} (http://gcvc01.webb.net.br/hg/rev/{node|short})\n'
+statlog = log --template '{rev}:{node|short} {date|shortdate} {pad(author,15)} ({pad(diffstat,12," ",True)}) {desc|firstline}\n' -M --removed
 cf = status -qC --rev
-bc = bundle --base .^ -r .::
 nudge = push --rev .
+bc = bundle --base .^ -r .::
 clean  = clean --abort-on-err
 cleana = clean --all
 qic = !%HG% qimport -r .:: && %HG% qpop -a $@
@@ -20,3 +21,4 @@ ml = merge --tool internal:local
 mo = merge --tool internal:other
 mi = !%HG% metaimport $@
 minc = !%HG% metaimportnc $@
+
