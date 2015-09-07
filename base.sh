@@ -25,6 +25,8 @@ mkrandom() { base64 -w0 /dev/urandom | tr -d "/+${2:-0Oo}" | dd bs="${1:-8}" cou
 mkrandomL() { mkrandom "$@" | tr '[[:upper:]]' '[[:lower:]]' ;}
 mkrandomU() { mkrandom "$@" | tr '[[:lower:]]' '[[:upper:]]' ;}
 
+strsplit() { IFS="$2" read -a $3 <<< "$1"; } # str, separator, outvarname
+
 # Disable file globbing; coalesce inner whitespace;
 # trim leading and trailing whitespace
 trim() { (set -f; echo $@) ;}
