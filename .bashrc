@@ -29,8 +29,9 @@ alias sc="screen -DR"
 # Puts the newest file at the bottom, right above the prompt
 # l=long : h=human readable sizes : a=all : r=reverse sort : t=time sort : F=append indicator (one of */=>@|)
 alias lt='ls --color=auto -lhFart'
-
-alias ls='ls --color=auto -F'
+alias ll='ls --color=auto -lhFa'
+alias ls='ls --color=auto -ghFA'
+alias  l='ls --color=auto -F'
 alias dir='dir --color=auto'
 
 # Download solarized color scheme from
