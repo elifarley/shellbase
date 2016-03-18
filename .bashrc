@@ -118,3 +118,7 @@ s() { # do sudo, or sudo the last command if no argument given
     sudo "$@"
   fi
 }
+
+# Docker
+alias docker-rm-unused='docker ps -q -f status=exited'
+alias docker-rmi-unused='docker images -q -f "dangling=true"'
