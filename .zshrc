@@ -1,3 +1,2 @@
-source $HOME/.shell-env
-source $HOME/.shell-aliases
-
+test -r ~/.shell-env && source ~/.shell-env
+test -r ~/.shell-aliases && source ~/.shell-aliases
