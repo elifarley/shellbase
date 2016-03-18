@@ -1,0 +1,22 @@
+alias p="ps aux |grep -i "
+alias h="history|grep -i "
+alias f="find . |grep -i "
+alias sc="screen -DR"
+
+# ignore case, long prompt, exit if it fits on one screen, allow colors for ls and grep colors
+alias less='less -iMFSRX'
+
+# Puts the newest file at the bottom, right above the prompt
+# l=long : h=human readable sizes : a=all : r=reverse sort : t=time sort : F=append indicator (one of */=>@|)
+alias lt='ls --color=auto -lhFart'
+alias ll='ls --color=auto -lhFa'
+alias ls='ls --color=auto -ghFA'
+alias  l='ls --color=auto -F'
+alias dir='dir --color=auto'
+
+# Docker
+alias docker-rm-unused='docker ps -q -f status=exited'
+alias docker-rmi-unused='docker images -q -f "dangling=true"'
+
+pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 ;}
+
