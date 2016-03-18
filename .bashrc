@@ -91,10 +91,8 @@ export HISTSIZE=10000
 shopt -s histappend
 # Combine multiline commands into one in history
 shopt -s cmdhist
-# Ignore duplicates, ls without options and builtin commands
-HISTCONTROL=ignoredups
-# commands with leading space do not get added to history
-HISTCONTROL=ignorespace
+# Ignore duplicates, ls without options, builtin commands and lines with leading spaces
+HISTCONTROL=ignoreboth
 
 export HISTIGNORE="&:ls:[bf]g:exit"
 
