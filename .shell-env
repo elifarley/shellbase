@@ -9,8 +9,6 @@ test -r ~/.dir_colors && eval $(dircolors -b ~/.dir_colors)
 # define color to additional file types
 export LS_COLORS=$LS_COLORS:"*.wmv=01;35":"*.wma=01;35":"*.flv=01;35":"*.m4a=01;35"
 
-export GREP_OPTIONS='--color=auto'
-
 # Default colors for less
 # From https://linuxtidbits.wordpress.com/2009/03/23/less-colors-for-man-pages/
 # Based on Arch and Gentoo colors; good for Solarized dark theme
