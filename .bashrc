@@ -17,13 +17,11 @@ test -f ~/.bash_private.gpg && \
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
-test ! shopt -oq posix && {
-  test -f /usr/share/bash-completion/bash_completion && . /usr/share/bash-completion/bash_completion
-  test -f /etc/bash_completion && . /etc/bash_completion
-  # smart advanced completion, download from
-  # http://bash-completion.alioth.debian.org/
-  test -f ~/local/bin/bash_completion && . ~/local/bin/bash_completion
-}
+test -f /usr/share/bash-completion/bash_completion && . /usr/share/bash-completion/bash_completion
+test -f /etc/bash_completion && . /etc/bash_completion
+# smart advanced completion, download from
+# http://bash-completion.alioth.debian.org/
+test -f ~/local/bin/bash_completion && . ~/local/bin/bash_completion
 
 # http://unix.stackexchange.com/questions/72086/ctrl-s-hang-terminal-emulator
 # See "The TTY demystified" - http://linusakesson.net/programming/tty/index.php
