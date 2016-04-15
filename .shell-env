@@ -7,10 +7,15 @@ export TERM=xterm-256color
 # Download solarized color scheme from
 # https://github.com/seebi/dircolors-solarized
 # https://raw.githubusercontent.com/seebi/dircolors-solarized/master/dircolors.ansi-dark
-test -r ~/.dir_colors && eval $(dircolors -b ~/.dir_colors)
+test -x /usr/bin/dircolors && {
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)" 
+}
 
 # define color to additional file types
 export LS_COLORS=$LS_COLORS:"*.wmv=01;35":"*.wma=01;35":"*.flv=01;35":"*.m4a=01;35"
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # Default colors for less
 # From https://linuxtidbits.wordpress.com/2009/03/23/less-colors-for-man-pages/
