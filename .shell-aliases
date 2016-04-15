@@ -18,4 +18,4 @@ alias dir='dir --color=auto'
 alias docker-rm-unused='docker ps -q -f status=exited'
 alias docker-rmi-unused='docker images -q -f "dangling=true"'
 
-pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 ;}
+pss() { ps -o uname,pid,ppid,c,%cpu,cputime=CPU-time,%mem,rss,start,wchan,args -C "$1" --cols 2000 ;}
