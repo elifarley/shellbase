@@ -14,6 +14,7 @@ alias ll='\ls --color=auto -lhFa'
 alias ls='\ls --color=auto -ghFA'
 alias  l='\ls --color=auto -F'
 alias dir='dir --color=auto'
+alias vdir='vdir --color=auto'
 
 # Docker
 alias docker-rm-unused='docker ps -q -f status=exited'
