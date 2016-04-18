@@ -344,10 +344,17 @@ nnoremap <F10> :ls!<CR>:buffer<Space>
 
 " Next buffer
 nnoremap <silent> <F9> :bn<CR>
+" ALT right-arrow
+nmap <silent> <Esc>[1;3C <F9>
 imap <silent> <F9> <C-\><C-o><F9>
+imap <silent> <Esc>[1;3C <C-\><C-o><F9>
+
 " Previous buffer
 nnoremap <silent> <S-F9> :bp<CR>
+" ALT left-arrow
+nmap <silent> <Esc>[1;3D <S-F9>
 imap <silent> <S-F9> <C-\><C-o><S-F9>
+imap <silent> <Esc>[1;3D <C-\><C-o><S-F9>
 
 " Next window
 nnoremap <F12> <C-W>w
@@ -402,6 +409,7 @@ nnoremap <Leader>f :find <C-R>='**'<CR>
 nnoremap <Leader>ff :find <C-R>=expand('%:p:h') . '/**'<CR>
 
 nnoremap <Leader>n :10new<CR>
+nnoremap <Leader>N :enew<CR>
 
 " Close current window but keep buffer (hide it)
 nnoremap <F4> <C-w>c
