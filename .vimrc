@@ -19,7 +19,7 @@
 
 " Use {count}<CTRL>-^ to edit buffer {count}
 " and <CTRL>-^ to edit last edited file
-" (or <F10> or <SPACE>-0 to choose what buffer to edit)
+" (or <F8> or <SPACE>-0 to choose what buffer to edit)
 
 " <CTRL>-I and <CTRL>-o to navigate visited places, even in closed buffers
 " or from the last time you opened vim.
@@ -270,9 +270,9 @@ set pastetoggle=<F2>
 noremenu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
 noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
-nnoremap <F5> :emenu Encoding.<C-Z>
+nnoremap <F12> :emenu Encoding.<C-Z>
 
-nnoremap <F6> :browse oldfiles<CR>
+nnoremap <F7> :browse oldfiles<CR>
 
 " Map <F3> and <S-F3> to jump between locations in a quickfix list, or
 " differences if in window in diff mode
@@ -340,7 +340,7 @@ nnoremap ! :!
 nnoremap <Leader>0 :ls!<CR>:buffer #
 
 " List buffers and pick by name fragment
-nnoremap <F10> :ls!<CR>:buffer<Space>
+nnoremap <F8> :ls!<CR>:buffer<Space>
 
 " Next buffer
 nnoremap <silent> <F9> :bn<CR>
@@ -357,11 +357,11 @@ imap <silent> <S-F9> <C-\><C-o><S-F9>
 imap <silent> <Esc>[1;3D <C-\><C-o><S-F9>
 
 " Next window
-nnoremap <F12> <C-W>w
-inoremap <F12> <C-W>w
+nnoremap <F5> <C-W>w
+inoremap <F5> <C-W>w
 " Previous window
-nnoremap <S-F12> <C-W>W
-inoremap <S-F12> <C-W>W
+nnoremap <S-F5> <C-W>W
+inoremap <S-F5> <C-W>W
 
 " List buffers
 nnoremap <Leader>l :ls!<CR>
