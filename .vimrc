@@ -447,11 +447,28 @@ cmap w!! w !sudo tee % >/dev/null
 " nnoremap <leader>u :GundoToggle<CR>
 
 " CtrlP settings
-" https://github.com/kien/ctrlp.vim.git
+" https://github.com/ctrlpvim/ctrlp.vim
 let g:ctrlp_match_window = 'bottom,order:ttb'
 let g:ctrlp_switch_buffer = 0
-let g:ctrlp_working_path_mode = 0
 let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+" See http://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/
+" Setup some default ignores
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
+  \ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg)$',
+\}
+" Use the nearest .git directory as the cwd
+" This makes a lot of sense if you are working on a project that is in version
+" control. It also supports works with .svn, .hg, .bzr.
+let g:ctrlp_working_path_mode = 'rw'
+
+" Use a leader instead of the actual named binding
+nmap <leader>p :CtrlP<cr>
+
+" Easy bindings for its various modes
+nmap <leader>bb :CtrlPBuffer<cr>
+nmap <leader>bm :CtrlPMixed<cr>
+nmap <leader>bs :CtrlPMRU<cr>
 
 " http://vim.wikia.com/wiki/Display_line_numbers
 highlight LineNr term=NONE cterm=Italic ctermfg=Black ctermbg=Green gui=NONE guifg=DarkBlue guibg=NONE
