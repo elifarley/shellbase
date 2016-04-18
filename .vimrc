@@ -272,7 +272,7 @@ noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
 nnoremap <F12> :emenu Encoding.<C-Z>
 
-nnoremap <F7> :browse oldfiles<CR>
+nnoremap <F8> :browse oldfiles<CR>
 
 " Map <F3> and <S-F3> to jump between locations in a quickfix list, or
 " differences if in window in diff mode
@@ -336,11 +336,8 @@ nnoremap ! :!
 
 " http://vim.wikia.com/wiki/Easier_buffer_switching
 
-" List buffers and pick by number
-nnoremap <Leader>0 :ls!<CR>:buffer #
-
-" List buffers and pick by name fragment
-nnoremap <F8> :ls!<CR>:buffer<Space>
+" List buffers and pick by number or name fragment
+nnoremap <Leader>0 :ls!<CR>:buffer<Space>
 
 " Next buffer
 nnoremap <silent> <F9> :bn<CR>
