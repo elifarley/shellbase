@@ -295,7 +295,8 @@ nnoremap <F9> <C-w>p
 nnoremap <S-F9> <C-w>P
 nnoremap <C-F9> :browse oldfiles<CR>
 
-nnoremap <expr> <silent> <F6> (&diff ? ":llist!\<CR>" : ":clist!\<CR>")
+nnoremap <expr> <F6> (&diff ? ":llist!\<CR>:ll<Space>" : ":clist!\<CR>:cc<Space>")
+nnoremap <expr> <C-F6> (&diff ? ":ll<Space>" : ":cc<Space>")
 
 " Map <F7> and <S-F7> to jump between locations in a quickfix list, or
 " differences if in window in diff mode
