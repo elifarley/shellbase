@@ -12,6 +12,18 @@
 " Vim movement cmds image: http://qph.is.quoracdn.net/main-qimg-6c3f7b7470cf8dc55fa4eaeab8a876ff
 
 " --
+" <F1> - Default (help)
+" <F2> - pastetoggle
+" <S-F2> - Toggle line numbers and special chars for each window
+" <F3> - :TagbarToggle
+" <F4> - Close current window but keep buffer
+" <F5> - Next/prev window
+" <F6> - llist! / clist!
+" <F7> - Jump between locations in a quickfix list
+" <F8,S-> - Next/prev buffer
+" <F9> - Browse oldfiles
+" <F10> - <F12> - unmapped
+" --
 
 " <Esc> alternatives: <CTRL>-[ and <CTRL>-C and <ALT>-<ENTER>
 " and <ALT>-<SPACE> or use <ALT>-<normal mode key>
@@ -19,7 +31,7 @@
 
 " Use {count}<CTRL>-^ to edit buffer {count}
 " and <CTRL>-^ to edit last edited file
-" (or <F8> or <SPACE>-0 to choose what buffer to edit)
+" (or <SPACE>-0 to choose what buffer to edit)
 
 " <CTRL>-I and <CTRL>-o to navigate visited places, even in closed buffers
 " or from the last time you opened vim.
@@ -53,6 +65,8 @@ set nocompatible
 
 " See http://vim.wikia.com/wiki/Mapping_fast_keycodes_in_terminal_Vim
 " More at http://mg.pov.lt/vim/vimrc
+" http://unix.stackexchange.com/questions/76566/where-do-i-find-a-list-of-terminal-key-codes-to-remap-shortcuts-in-bash
+" Try sed -n l
 set <S-F1>=^[[1;2P
 set <S-F2>=^[[1;2Q
 set <S-F3>=^[[1;2R
@@ -260,7 +274,8 @@ endfunction
 nnoremap <C-L> :nohl<CR><C-L>
 
 " Toggle line numbers and special chars for each window
-nnoremap <C-N><C-N> :setlocal number!<BAR>setlocal list!<CR>
+nnoremap <S-F2> :setlocal number!<BAR>setlocal list!<CR>
+nmap <C-N><C-N> <S-F2>
 
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 nnoremap <F2> :set invpaste paste?<CR>
@@ -272,12 +287,14 @@ noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
 nnoremap <F12> :emenu Encoding.<C-Z>
 
-nnoremap <F8> :browse oldfiles<CR>
+nnoremap <F9> :browse oldfiles<CR>
 
-" Map <F3> and <S-F3> to jump between locations in a quickfix list, or
+nnoremap <expr> <silent> <F6> (&diff ? ":llist!\<CR>" : ":clist!\<CR>")
+
+" Map <F7> and <S-F7> to jump between locations in a quickfix list, or
 " differences if in window in diff mode
-nnoremap <expr> <silent> <F3>   (&diff ? "]c" : ":cnext\<CR>")
-nnoremap <expr> <silent> <S-F3> (&diff ? "[c" : ":cprev\<CR>")
+nnoremap <expr> <silent> <F7>   (&diff ? "]c" : ":cnext\<CR>")
+nnoremap <expr> <silent> <S-F7> (&diff ? "[c" : ":cprev\<CR>")
 
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
 if !empty(glob("$VIMRUNTIME/menu.vim"))
@@ -340,18 +357,18 @@ nnoremap ! :!
 nnoremap <Leader>0 :ls!<CR>:buffer<Space>
 
 " Next buffer
-nnoremap <silent> <F9> :bn<CR>
+nnoremap <silent> <F8> :bn<CR>
 " ALT right-arrow
-nmap <silent> <Esc>[1;3C <F9>
-imap <silent> <F9> <C-\><C-o><F9>
-imap <silent> <Esc>[1;3C <C-\><C-o><F9>
+nmap <silent> <Esc>[1;3C <F8>
+imap <silent> <F8> <C-\><C-o><F8>
+imap <silent> <Esc>[1;3C <C-\><C-o><F8>
 
 " Previous buffer
-nnoremap <silent> <S-F9> :bp<CR>
+nnoremap <silent> <S-F8> :bp<CR>
 " ALT left-arrow
-nmap <silent> <Esc>[1;3D <S-F9>
-imap <silent> <S-F9> <C-\><C-o><S-F9>
-imap <silent> <Esc>[1;3D <C-\><C-o><S-F9>
+nmap <silent> <Esc>[1;3D <S-F8>
+imap <silent> <S-F8> <C-\><C-o><S-F8>
+imap <silent> <Esc>[1;3D <C-\><C-o><S-F8>
 
 " Next window
 nnoremap <F5> <C-W>w
@@ -360,8 +377,8 @@ inoremap <F5> <C-W>w
 nnoremap <S-F5> <C-W>W
 inoremap <S-F5> <C-W>W
 
-nnoremap <F6> :TagbarToggle<CR>
-inoremap <F6> :TagbarToggle<CR>
+nnoremap <F3> :TagbarToggle<CR>
+inoremap <F3> :TagbarToggle<CR>
 
 " List buffers
 nnoremap <Leader>l :ls!<CR>
