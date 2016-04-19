@@ -21,7 +21,11 @@
 " <F6> - llist! / clist!
 " <F7> - Jump between locations in a quickfix list
 " <F8,S-> - Next/prev buffer
-" <F9> - Browse oldfiles
+" <F9> - Previous window
+" <S-F9> - Preview window
+" <C-F9> - Browse oldfiles
+
+
 " <F10> - <F12> - unmapped
 " --
 
@@ -287,7 +291,9 @@ noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
 nnoremap <F12> :emenu Encoding.<C-Z>
 
-nnoremap <F9> :browse oldfiles<CR>
+nnoremap <F9> <C-w>p
+nnoremap <S-F9> <C-w>P
+nnoremap <C-F9> :browse oldfiles<CR>
 
 nnoremap <expr> <silent> <F6> (&diff ? ":llist!\<CR>" : ":clist!\<CR>")
 
@@ -353,9 +359,6 @@ nnoremap ! :!
 
 " http://vim.wikia.com/wiki/Easier_buffer_switching
 
-" List buffers and pick by number or name fragment
-nnoremap <Leader>0 :ls!<CR>:buffer<Space>
-
 " Next buffer
 nnoremap <silent> <F8> :bn<CR>
 " ALT right-arrow
@@ -380,8 +383,11 @@ inoremap <S-F5> <C-W>W
 nnoremap <F3> :TagbarToggle<CR>
 inoremap <F3> :TagbarToggle<CR>
 
-" List buffers
-nnoremap <Leader>l :ls!<CR>
+" List buffers and pick by number or name fragment
+nnoremap <Leader>l :ls!<CR>:buffer<Space>
+
+" List buffers and pick by number or name fragment
+nnoremap <Leader>0 :ls!<CR>:buffer<Space>
 
 nnoremap <Leader>1 :1b<CR>
 nnoremap <Leader>2 :2b<CR>
