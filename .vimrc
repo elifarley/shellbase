@@ -360,6 +360,9 @@ inoremap <F5> <C-W>w
 nnoremap <S-F5> <C-W>W
 inoremap <S-F5> <C-W>W
 
+nnoremap <F6> :TagbarToggle<CR>
+inoremap <F6> :TagbarToggle<CR>
+
 " List buffers
 nnoremap <Leader>l :ls!<CR>
 
