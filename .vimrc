@@ -18,9 +18,11 @@
 " <F3> - :TagbarToggle
 " <F4> - Close current window but keep buffer
 " <F5> - Next/prev window
-" <F6> - llist! / clist!
-" <F7> - Jump between locations in a quickfix list
-" <F8,S-> - Next/prev buffer
+" <F6,S-> - Next/prev buffer
+" <C-F6> - buffer list + go to buffer
+" <F7,S-> - Jump between locations in a quickfix or location list
+" <C-F7> - Show location or quickfix list + go to item (llist! / clist!)
+" <F8> - Go to location or quickfix item (ll! / cct!)
 " <F9> - Previous window
 " <S-F9> - Preview window
 " <C-F9> - Browse oldfiles
@@ -295,13 +297,13 @@ nnoremap <F9> <C-w>p
 nnoremap <S-F9> <C-w>P
 nnoremap <C-F9> :browse oldfiles<CR>
 
-nnoremap <expr> <F6> (&diff ? ":llist!\<CR>:ll<Space>" : ":clist!\<CR>:cc<Space>")
-nnoremap <expr> <C-F6> (&diff ? ":ll<Space>" : ":cc<Space>")
-
 " Map <F7> and <S-F7> to jump between locations in a quickfix list, or
 " differences if in window in diff mode
 nnoremap <expr> <silent> <F7>   (&diff ? "]c" : ":cnext\<CR>")
 nnoremap <expr> <silent> <S-F7> (&diff ? "[c" : ":cprev\<CR>")
+
+nnoremap <expr> <C-F7> (&diff ? ":llist!\<CR>:ll<Space>" : ":clist!\<CR>:cc<Space>")
+nnoremap <expr> <F8> (&diff ? ":ll<Space>" : ":cc<Space>")
 
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
 if !empty(glob("$VIMRUNTIME/menu.vim"))
@@ -361,18 +363,18 @@ nnoremap ! :!
 " http://vim.wikia.com/wiki/Easier_buffer_switching
 
 " Next buffer
-nnoremap <silent> <F8> :bn<CR>
+nnoremap <silent> <F6> :bn<CR>
 " ALT right-arrow
-nmap <silent> <Esc>[1;3C <F8>
-imap <silent> <F8> <C-\><C-o><F8>
-imap <silent> <Esc>[1;3C <C-\><C-o><F8>
+nmap <silent> <Esc>[1;3C <F6>
+imap <silent> <F6> <C-\><C-o><F6>
+imap <silent> <Esc>[1;3C <C-\><C-o><F6>
 
 " Previous buffer
-nnoremap <silent> <S-F8> :bp<CR>
+nnoremap <silent> <S-F6> :bp<CR>
 " ALT left-arrow
-nmap <silent> <Esc>[1;3D <S-F8>
-imap <silent> <S-F8> <C-\><C-o><S-F8>
-imap <silent> <Esc>[1;3D <C-\><C-o><S-F8>
+nmap <silent> <Esc>[1;3D <S-F6>
+imap <silent> <S-F6> <C-\><C-o><S-F6>
+imap <silent> <Esc>[1;3D <C-\><C-o><S-F6>
 
 " Next window
 nnoremap <F5> <C-W>w
@@ -385,6 +387,7 @@ nnoremap <F3> :TagbarToggle<CR>
 inoremap <F3> :TagbarToggle<CR>
 
 " List buffers and pick by number or name fragment
+nnoremap <C-F6> :ls!<CR>:buffer<Space>
 nnoremap <Leader>l :ls!<CR>:buffer<Space>
 
 " List buffers and pick by number or name fragment
