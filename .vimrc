@@ -14,10 +14,12 @@
 " --
 " <F1> - Default (help)
 " <F2> - pastetoggle
-" <S-F2> - Toggle line numbers and special chars for each window
+" <C-F2> - Toggle line numbers and special chars for each window
 " <F3> - :TagbarToggle
+" <C-F3> - :Lexplore
 " <F4> - Close current window but keep buffer
-" <F5> - Next/prev window
+" <F5,S-> - Next/prev window
+" <C-F5> - Only current window
 " <F6,S-> - Next/prev buffer
 " <C-F6> - buffer list + go to buffer
 " <F7,S-> - Jump between locations in a quickfix or location list
@@ -72,7 +74,21 @@ set nocompatible
 " See http://vim.wikia.com/wiki/Mapping_fast_keycodes_in_terminal_Vim
 " More at http://mg.pov.lt/vim/vimrc
 " http://unix.stackexchange.com/questions/76566/where-do-i-find-a-list-of-terminal-key-codes-to-remap-shortcuts-in-bash
-" Try sed -n l
+" Try cat
+" See https://github.com/mgedmin/dotvim/blob/master/plugin/keyboard-workarounds.vim
+map ^[[1;5P <C-F1>
+map ^[[1;5Q <C-F2>
+map ^[[1;5R <C-F3>
+map ^[[1;5S <C-F4>
+map ^[[15;5~ <C-F5>
+map ^[[17;5~ <C-F6>
+map ^[[18;5~ <C-F7>
+map ^[[19;5~ <C-F8>
+map ^[[20;5~ <C-F9>
+map ^[[21;5~ <C-F10>
+map ^[[23;5~ <C-F11>
+map ^[[24;5~ <C-F12>
+
 set <S-F1>=^[[1;2P
 set <S-F2>=^[[1;2Q
 set <S-F3>=^[[1;2R
@@ -220,10 +236,8 @@ nnoremap / /\v
 vnoremap / /\v
 set gdefault " applies substitutions globally on lines
 
-" See https://github.com/mgedmin/dotvim/blob/master/plugin/keyboard-workarounds.vim
-map <ESC>[1;5R <C-F3>
 " Display all lines that contain the keyword under the cursor
-nnoremap <C-F3> [I
+nnoremap & [I
 
 " http://vim.wikia.com/wiki/Searching
 " Apply smartcase to current word searches
@@ -280,8 +294,8 @@ endfunction
 nnoremap <C-L> :nohl<CR><C-L>
 
 " Toggle line numbers and special chars for each window
-nnoremap <S-F2> :setlocal number!<BAR>setlocal list!<CR>
-nmap <C-N><C-N> <S-F2>
+nnoremap <C-F2> :setlocal number!<BAR>setlocal list!<CR>
+nmap <C-N><C-N> <C-F2>
 
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 nnoremap <F2> :set invpaste paste?<CR>
@@ -378,13 +392,21 @@ imap <silent> <Esc>[1;3D <C-\><C-o><S-F6>
 
 " Next window
 nnoremap <F5> <C-W>w
-inoremap <F5> <C-W>w
+inoremap <F5> <C-\><C-o><C-W>w
 " Previous window
 nnoremap <S-F5> <C-W>W
-inoremap <S-F5> <C-W>W
+inoremap <S-F5> <C-\><C-o><C-W>W
+
+nnoremap <C-F5> :only<CR>
+inoremap <C-F5> <C-\><C-o>:only<CR>
 
 nnoremap <F3> :TagbarToggle<CR>
-inoremap <F3> :TagbarToggle<CR>
+imap <F3> <C-\><C-o><F3>
+
+nnoremap <C-F3> :Lexplore<CR>
+imap <C-F3> <C-\><C-o><C-F3>
+" Tree style for netrw
+let g:netrw_liststyle=3
 
 " List buffers and pick by number or name fragment
 nnoremap <C-F6> :ls!<CR>:buffer<Space>
