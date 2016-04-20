@@ -21,8 +21,8 @@
 " <F6,S-> - Next/prev buffer
 " <C-F6> - buffer list + go to buffer
 " <F7,S-> - Jump between locations in a quickfix or location list
-" <C-F7> - Show location or quickfix list + go to item (llist! / clist!)
-" <F8> - Go to location or quickfix item (ll! / cct!)
+" <C-F7> - Show location or quickfix list + go to item (llist! / clist!) + (ll / cc)
+" <F8> - Go to location or quickfix item (ll / cc)
 " <F9> - Previous window
 " <S-F9> - Preview window
 " <C-F9> - Browse oldfiles
