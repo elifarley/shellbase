@@ -195,10 +195,10 @@ set wildcharm=<C-Z>
 let mapleader=" "       " Leader is space
 
 " http://unix.stackexchange.com/a/186558/46796
-nno : ;
-nno ; :
-vno : ;
-vno ; :
+" nno : ;
+" nno ; :
+" vno : ;
+" vno ; :
 
 " Good for Brazillian ABNT2 keyboards
 nno ç :
