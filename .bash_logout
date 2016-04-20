@@ -6,5 +6,6 @@ if [ "$SHLVL" = 1 ]; then
 fi
 
 # DDE (Docker Development Environment) support
+# See https://github.com/elifarley/docker-rails/commit/5c1b77f8ce13c51f8dd4806c4f362a40a0b3f829
 DDE_VIMINFO=~/.vim/viminfo/"$(hostname -s)"
 test -f ~/.viminfo -a -d "$(dirname "$DDE_VIMINFO")" && cat ~/.viminfo > "$DDE_VIMINFO"
