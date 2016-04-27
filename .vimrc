@@ -106,6 +106,7 @@ set shortmess+=I                " hide the launch screen
 
 set t_Co=256 " enable colorscheme
 " Please add 'term screen-256color' to ~/.screenrc
+set background=dark
 
 " https://raw.githubusercontent.com/sjl/badwolf/master/colors/badwolf.vim
 " save it to ~/.vim/colors/badwolf.vim
