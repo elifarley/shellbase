@@ -426,6 +426,8 @@ nnoremap <Leader>7 :7b<CR>
 nnoremap <Leader>8 :8b<CR>
 nnoremap <Leader>9 :9b<CR>
 
+xnoremap <leader>p "_dP
+
 " edit vimrc and load vimrc bindings
 nnoremap <leader>vv :vsp $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
@@ -521,7 +523,7 @@ let g:ctrlp_custom_ignore = {
 let g:ctrlp_working_path_mode = 'rw'
 
 " Use a leader instead of the actual named binding
-nmap <leader>p :CtrlP<cr>
+nmap <leader>P :CtrlP<cr>
 
 " Easy bindings for its various modes
 nmap <leader>bb :CtrlPBuffer<cr>
