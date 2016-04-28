@@ -18,18 +18,16 @@
 " <F3> - :TagbarToggle
 " <C-F3> - :Lexplore
 " <F4> - Close current window but keep buffer
-" <F5,S-> - Next/prev window
-" <C-F5> - Only current window
+" <C-F4> - Only current window
+" <F5> - Previous window
+" <C-F5> - Preview window
 " <F6,S-> - Next/prev buffer
 " <C-F6> - buffer list + go to buffer
 " <F7,S-> - Jump between locations in a quickfix or location list
 " <C-F7> - Show location or quickfix list + go to item (llist! / clist!) + (ll / cc)
 " <F8> - Go to location or quickfix item (ll / cc)
-" <F9> - Previous window
-" <S-F9> - Preview window
-" <C-F9> - Browse oldfiles
-
-
+" <C-F8> - Browse oldfiles
+" <F9> - unmapped
 " <F10> - <F12> - unmapped
 " --
 
@@ -308,9 +306,10 @@ noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
 nnoremap <F12> :emenu Encoding.<C-Z>
 
-nnoremap <F9> <C-w>p
-nnoremap <S-F9> <C-w>P
-nnoremap <C-F9> :browse oldfiles<CR>
+nnoremap <F5> <C-w>p
+inoremap <F5> <C-\><C-o><C-w>p
+nnoremap <C-F5> <C-w>P
+inoremap <C-F5> <C-\><C-o><C-w>P
 
 " Map <F7> and <S-F7> to jump between locations in a quickfix list, or
 " differences if in window in diff mode
@@ -319,6 +318,9 @@ nnoremap <expr> <silent> <S-F7> (&diff ? "[c" : ":cprev\<CR>")
 
 nnoremap <expr> <C-F7> (&diff ? ":llist!\<CR>:ll<Space>" : ":clist!\<CR>:cc<Space>")
 nnoremap <expr> <F8> (&diff ? ":ll<Space>" : ":cc<Space>")
+
+nnoremap <C-F8> :browse oldfiles<CR>
+inoremap <C-F8> <C-\><C-o>:browse oldfiles<CR>
 
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
 if !empty(glob("$VIMRUNTIME/menu.vim"))
@@ -391,15 +393,10 @@ nmap <silent> <Esc>[1;3D <S-F6>
 imap <silent> <S-F6> <C-\><C-o><S-F6>
 imap <silent> <Esc>[1;3D <C-\><C-o><S-F6>
 
-" Next window
-nnoremap <F5> <C-W>w
-inoremap <F5> <C-\><C-o><C-W>w
-" Previous window
-nnoremap <S-F5> <C-W>W
-inoremap <S-F5> <C-\><C-o><C-W>W
-
-nnoremap <C-F5> :only<CR>
-inoremap <C-F5> <C-\><C-o>:only<CR>
+nnoremap <C-F4> :only<CR>
+inoremap <C-F4> <C-\><C-o>:only<CR>
+nnoremap <C-F9> :only<CR>
+inoremap <C-F9> <C-\><C-o>:only<CR>
 
 nnoremap <F3> :TagbarToggle<CR>
 imap <F3> <C-\><C-o><F3>
