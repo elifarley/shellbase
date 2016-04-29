@@ -19,6 +19,22 @@ alias  l='\ls --color=auto -F'
 alias dir='\dir --color=auto'
 alias vdir='\vdir --color=auto'
 
+mvln() {
+  test $# -ne 2 && echo "\
+$(basename "$0") - Moves a file or dir to <TARGET> and creates a relative symlink in its original place
+Usage: $0 <SRC> <TARGET>\
+" && return 1
+  local src="$1"; shift
+  local target="$1"; shift
+  local custom_target_name=1; test -e "$target" && custom_target_name=''
+  mv -iv "$src" "$target"
+  local basesrc="$(basename "$src")" dirsrc="$(dirname "$src")"
+  local basetarget="$basesrc"
+  test "$custom_target_name" &&  basetarget="$(basename "$target")" && target="$(dirname "$target")"
+  local relpath="$(realpath --relative-to "$dirsrc" "$target")"
+  ln -sv "$relpath/$basetarget" "$src"
+}
+
 # Docker
 alias docker-rm-unused='docker ps -q -f status=exited'
 alias docker-rmi-unused='docker images -q -f "dangling=true"'
