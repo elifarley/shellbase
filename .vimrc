@@ -1,4 +1,5 @@
 " Tips:
+" http://learnvimscriptthehardway.stevelosh.com/
 " https://www.cs.oberlin.edu/~kuperman/help/vim/home.html
 " http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
 " http://dougblack.io/words/a-good-vimrc.html
@@ -31,7 +32,7 @@
 " <F10> - <F12> - unmapped
 " --
 
-" <Esc> alternatives: <CTRL>-[ and <CTRL>-C and <ALT>-<ENTER>
+" <Esc> alternatives: jk and <CTRL>-[ and <CTRL>-C and <ALT>-<ENTER>
 " and <ALT>-<SPACE> or use <ALT>-<normal mode key>
 " See http://vim.wikia.com/wiki/Avoid_the_escape_key
 
@@ -201,6 +202,8 @@ let mapleader=" "       " Leader is space
 
 " Good for Brazillian ABNT2 keyboards
 nno ç :
+
+inoremap jk <esc>
 
 " qq to start recording macro, then q to stop; Q to play back
 nnoremap Q @q
