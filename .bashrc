@@ -63,12 +63,3 @@ shopt -s cdspell
 set -o vi
 # http://unix.stackexchange.com/questions/104094/is-there-any-way-to-enable-ctrll-to-clear-screen-when-set-o-vi-is-set
 bind -m vi-insert "\C-l":clear-screen
-
-s() { # do sudo, or sudo the last command if no argument given
-  if [[ $# == 0 ]]; then
-    sudo $(history -p '!!')
-  else
-    sudo "$@"
-  fi
-}
-
