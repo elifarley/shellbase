@@ -1,3 +1,6 @@
+# ignore case, long prompt, exit if it fits on one screen, allow colors for ls and grep colors
+alias less='less -iMFSRX'
+
 alias pss='ps -o uname,pid,ppid,c,%cpu,cputime=CPU-time,%mem,rss,start,wchan,args --cols 2000 -C'
 alias p="ps aux |grep -i "
 alias h="history|grep -i "
@@ -7,9 +10,6 @@ alias j='\jobs -l'
 alias fgg='\fg %'
 alias bgg='\bg %'
 
-# ignore case, long prompt, exit if it fits on one screen, allow colors for ls and grep colors
-alias less='less -iMFSRX'
-
 # Puts the newest file at the bottom, right above the prompt
 # l=long : h=human readable sizes : a=all : r=reverse sort : t=time sort : F=append indicator (one of */=>@|)
 alias lt='\ls --color=auto -lhFart'
@@ -18,6 +18,14 @@ alias ls='\ls --color=auto -ghFA'
 alias  l='\ls --color=auto -F'
 alias dir='\dir --color=auto'
 alias vdir='\vdir --color=auto'
+
+s() { # do sudo, or sudo the last command if no argument given
+  if [[ $# == 0 ]]; then
+    sudo $(history -p '!!')
+  else
+    sudo "$@"
+  fi
+}
 
 mvln() {
   test $# -ne 2 && echo "\
