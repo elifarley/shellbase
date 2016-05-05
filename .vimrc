@@ -1,5 +1,6 @@
 " Tips:
 " http://learnvimscriptthehardway.stevelosh.com/
+" https://www.cs.cornell.edu/courses/cs312/2006fa/software/quick-vim.pdf
 " https://www.cs.oberlin.edu/~kuperman/help/vim/home.html
 " http://vim.wikia.com/wiki/Mapping_keys_in_Vim_-_Tutorial_(Part_1)
 " http://dougblack.io/words/a-good-vimrc.html
