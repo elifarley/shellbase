@@ -16,10 +16,9 @@
 " <F1> - Default (help)
 " <F2> - pastetoggle
 " <C-F2> - Toggle line numbers and special chars for each window
-" <F3> - :TagbarToggle
-" <C-F3> - :Lexplore
+" <F3> - gd (go to definition, similar to Eclipse)
 " <F4> - Close current window but keep buffer
-" <C-F4> - Only current window
+" <C-F4> - Only current window ( not working - try <C-w>o )
 " <F5> - Previous window
 " <C-F5> - Preview window
 " <F6,S-> - Next/prev buffer
@@ -28,7 +27,8 @@
 " <C-F7> - Show location or quickfix list + go to item (llist! / clist!) + (ll / cc)
 " <F8> - Go to location or quickfix item (ll / cc)
 " <C-F8> - Browse oldfiles
-" <F9> - unmapped
+" <F9> - :TagbarToggle
+" <C-F9> - :Lexplore
 " <F10> - <F12> - unmapped
 " --
 
@@ -396,16 +396,17 @@ nmap <silent> <Esc>[1;3D <S-F6>
 imap <silent> <S-F6> <C-\><C-o><S-F6>
 imap <silent> <Esc>[1;3D <C-\><C-o><S-F6>
 
-nnoremap <C-F4> :only<CR>
-inoremap <C-F4> <C-\><C-o>:only<CR>
-nnoremap <C-F9> :only<CR>
-inoremap <C-F9> <C-\><C-o>:only<CR>
-
-nnoremap <F3> :TagbarToggle<CR>
+nnoremap <F3> gd
 imap <F3> <C-\><C-o><F3>
 
-nnoremap <C-F3> :Lexplore<CR>
-imap <C-F3> <C-\><C-o><C-F3>
+nnoremap <C-F4> :only<CR>
+inoremap <C-F4> <C-\><C-o>:only<CR>
+
+nnoremap <F9> :TagbarToggle<CR>
+imap <F9> <C-\><C-o><F9>
+
+nnoremap <C-F9> :Lexplore<CR>
+imap <C-F9> <C-\><C-o><C-F9>
 " Tree style for netrw
 let g:netrw_liststyle=3
 
