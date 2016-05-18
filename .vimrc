@@ -196,6 +196,11 @@ set wildignore=*.o,*.obj,*~,*.swp,*.bak,*.pyc,*.class " Stuff to ignore when tab
 
 set wildcharm=<C-Z>
 
+set omnifunc=syntaxcomplete#Complete
+
+# See http://vim.wikia.com/wiki/VimTip1386
+:inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
 let mapleader=" "       " Leader is space
 
 " http://unix.stackexchange.com/a/186558/46796
