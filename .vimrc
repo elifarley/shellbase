@@ -20,7 +20,7 @@
 " <F3> - gd (go to definition, similar to Eclipse)
 " <F4> - :bd (close buffer and its window if no changes)
 " <C-F4> - Only current window ( not working - try <C-w>o )
-" <F5> - <C-w>p (previous window)
+" <F5> - <C-w>p (previous / alternate window)
 " <C-F5> - Preview window
 " <F6,S-> - Next/prev buffer
 " <C-F6> - buffer list + go to buffer
@@ -28,7 +28,7 @@
 " <C-F7> - Show location or quickfix list + go to item (llist! / clist!) + (ll / cc)
 " <F8> - Go to location or quickfix item (ll / cc)
 " <C-F8> - Browse oldfiles
-" <F9> - Edit last file (<C-^> or :e #)
+" <F9> - Edit alternate file (<C-^> or :e #)
 " <C-F9> - :TagbarToggle
 " <F10> - <F12> - unmapped
 " --
