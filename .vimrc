@@ -18,9 +18,9 @@
 " <F2> - pastetoggle
 " <C-F2> - Toggle line numbers and special chars for each window
 " <F3> - gd (go to definition, similar to Eclipse)
-" <F4> - Close current window but keep buffer
+" <F4> - :bd (close buffer and its window if no changes)
 " <C-F4> - Only current window ( not working - try <C-w>o )
-" <F5> - Previous window
+" <F5> - <C-w>p (previous window)
 " <C-F5> - Preview window
 " <F6,S-> - Next/prev buffer
 " <C-F6> - buffer list + go to buffer
