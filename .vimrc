@@ -28,8 +28,8 @@
 " <C-F7> - Show location or quickfix list + go to item (llist! / clist!) + (ll / cc)
 " <F8> - Go to location or quickfix item (ll / cc)
 " <C-F8> - Browse oldfiles
-" <F9> - :TagbarToggle
-" <C-F9> - :Lexplore
+" <F9> - Edit last file (:e # or <C-^>)
+" <C-F9> - :TagbarToggle
 " <F10> - <F12> - unmapped
 " --
 
@@ -403,11 +403,12 @@ imap <F3> <C-\><C-o><F3>
 nnoremap <C-F4> :only<CR>
 inoremap <C-F4> <C-\><C-o>:only<CR>
 
-nnoremap <F9> :TagbarToggle<CR>
+nnoremap <F9> :e #<CR>
 imap <F9> <C-\><C-o><F9>
 
-nnoremap <C-F9> :Lexplore<CR>
+nnoremap <C-F9> :TagbarToggle<CR>
 imap <C-F9> <C-\><C-o><C-F9>
+
 " Tree style for netrw
 let g:netrw_liststyle=3
 
