@@ -466,11 +466,11 @@ nnoremap <Leader>ff :find <C-R>=expand('%:p:h') . '/**'<CR>
 nnoremap <Leader>n :10new<CR>
 nnoremap <Leader>N :enew<CR>
 
-" Close current window but keep buffer (hide it)
-nnoremap <F4> <C-w>c
-
 " Close buffer and its window if no changes
-nnoremap <Leader>w :bd<CR>
+nnoremap <F4> :bd<CR>
+
+" Close current window but keep buffer (hide it)
+nnoremap <Leader>w <C-w>c
 " Close buffer and its window, discarding changes
 nnoremap <Leader>W :bd!<CR>
 
