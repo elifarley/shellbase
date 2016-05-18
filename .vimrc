@@ -180,6 +180,9 @@ set scrolloff=3
 set sidescrolloff=7
 set sidescroll=1
 
+set splitbelow
+set splitright
+
 " Enable mouse. To copy to OS clipboard, keep <SHIFT> pressed
 set mouse=a
 set ttymouse=xterm2
