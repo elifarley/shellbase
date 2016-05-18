@@ -28,7 +28,7 @@
 " <C-F7> - Show location or quickfix list + go to item (llist! / clist!) + (ll / cc)
 " <F8> - Go to location or quickfix item (ll / cc)
 " <C-F8> - Browse oldfiles
-" <F9> - Edit last file (:e # or <C-^>)
+" <F9> - Edit last file (<C-^> or :e #)
 " <C-F9> - :TagbarToggle
 " <F10> - <F12> - unmapped
 " --
@@ -403,7 +403,7 @@ imap <F3> <C-\><C-o><F3>
 nnoremap <C-F4> :only<CR>
 inoremap <C-F4> <C-\><C-o>:only<CR>
 
-nnoremap <F9> :e #<CR>
+nnoremap <F9> <C-^>
 imap <F9> <C-\><C-o><F9>
 
 nnoremap <C-F9> :TagbarToggle<CR>
