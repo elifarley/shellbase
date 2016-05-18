@@ -198,7 +198,7 @@ set wildcharm=<C-Z>
 
 set omnifunc=syntaxcomplete#Complete
 
-# See http://vim.wikia.com/wiki/VimTip1386
+" See http://vim.wikia.com/wiki/VimTip1386
 :inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 let mapleader=" "       " Leader is space
