@@ -367,10 +367,6 @@ nnoremap _ ggyy``P
 " Delete to EOL in insert mode. Does it work?
 inoremap <C-DEL> <C-\><C-o>D
 
-" http://blog.learnr.org/post/59098925/configuring-vim-some-mo...
-map H ^
-map L $
-
 " Repeatedly shift indenting while maintaining a visual selection
 vnoremap < <gv
 vnoremap > >gv
