@@ -48,14 +48,18 @@ hg_paths() {
   git remote -v
 }
 
-hg_revert() {
-  case "$@" in
-    '-a')
+hg_revert() {   
+  case "$@" in  
+    '-a')          
       git reset --hard
-      ;;
-    *)
+      ;;           
+    '-a -r '*)  
+      local rev="$3"; shift 3
+      git reset --hard "$rev" --
+      ;;           
+    *)             
       echo hg_revert: TODO; return 1
-  esac
+  esac             
 }
 
 hg_status() {
