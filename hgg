@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# See http://stackoverflow.com/questions/4114095/revert-git-repo-to-a-previous-commit
+# See https://github.com/sympy/sympy/wiki/Git-hg-rosetta-stone
+# See http://stackoverflow.com/questions/1450348/git-equivalents-of-most-common-mercurial-commands
+
+hg_emu() {
+  local hgcmd="$1"; shift
+  case "$hgcmd" in
+    ci|commit)
+      hg_commit "$@"
+      ;;
+    man|mani|manifest)
+      hg_manifest "$@"
+      ;;
+    revert)
+      hg_revert "$@"
+      ;;
+    par|parent|parents)
+      hg_parents "$@"
+      ;;
+    path|paths)
+      hg_paths "$@"
+      ;;
+    st|status)
+      hg_status "$@"
+      ;;
+    up|update)
+      hg_update "$@"
+      ;;
+    *)
+      git $hgcmd "$@"
+  esac
+}
+
+hg_commit() {
+  git commit -a "$@"
+}
+
+hg_manifest() {
+  git ls-tree -r --name-only --full-tree HEAD
+}
+
+hg_parents() {
+  git show --pretty=format:'%P' -s
+}
+
+hg_paths() {
+  git remote -v
+}
+
+hg_revert() {
+  case "$@" in
+    '-a')
+      git reset --hard
+      ;;
+    *)
+      echo hg_revert: TODO; return 1
+  esac
+}
+
+hg_status() {
+  test "$2" = '-c' && git ls-files -t | grep '^H' || git status
+}
+
+hg_update() {
+  local p1="$1"; shift
+  case "$p1" in
+    '-C')
+      local p2="$1"; shift
+      test "$p2" = '.' && p2=''
+      git checkout -f $p2
+      ;;
+    *)
+      echo hg_revert: TODO; return 1
+  esac
+}
+
+hg_emu "$@"
