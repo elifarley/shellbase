@@ -9,6 +9,9 @@ hg_emu() {
     ci|commit)
       hg_commit "$@"
       ;;
+    config|showconfig|debugconfig|conf)
+      hg_config "$@"
+      ;;
     man|mani|manifest)
       hg_manifest "$@"
       ;;
@@ -34,6 +37,16 @@ hg_emu() {
 
 hg_commit() {
   git commit -a "$@"
+}
+
+hg_config() {
+  local params=("$@")
+  test $# -eq 0 && params=(--list) || {
+    params=("${params[@]/#-l/--local}")
+    params=("${params[@]/#-g/--global}")
+    params=("${params[@]/#--debug/--show-origin}")
+  }
+  git config "${params[@]}"
 }
 
 hg_manifest() {
