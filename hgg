@@ -74,7 +74,16 @@ hg_pull() {
     done
     params=(pull "${p2[@]}")
   } || {
-    params=(fetch --all "${params[@]}")
+    params=("${params[@]/#-r/--rev}")
+    [[ " ${params[@]} " =~ " --rev " ]] && {
+      local p2=()
+      for item in "${params[@]}"; do
+        test "$item" = '--rev' && skip=x1x || {
+          test "$skip" = 'x1x' && skip="$item" || p2+=("$item")
+        }
+      done
+      params=(fetch "${p2[@]}" "$skip")
+    } || params=(fetch --all "${params[@]}")
   }
   git "${params[@]}"
 }
