@@ -24,6 +24,9 @@ hg_emu() {
     path|paths)
       hg_paths "$@"
       ;;
+    pull)
+      hg_pull "$@"
+      ;;
     st|status)
       hg_status "$@"
       ;;
@@ -59,6 +62,21 @@ hg_parents() {
 
 hg_paths() {
   git remote -v
+}
+
+hg_pull() {
+  local params=("$@")
+  params=("${params[@]/#-u/--update}")
+  [[ " ${params[@]} " =~ " --update " ]] && {
+    local p2=()
+    for item in "${params[@]}"; do
+      test "$item" = '--update' || p2+=("$item")
+    done
+    params=(pull "${p2[@]}")
+  } || {
+    params=(fetch --all "${params[@]}")
+  }
+  git "${params[@]}"
 }
 
 hg_revert() {   
