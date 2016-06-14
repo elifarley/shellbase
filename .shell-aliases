@@ -46,7 +46,15 @@ Usage: $0 <SRC> <TARGET>\
 }
 
 # Docker
+
 # Remove unused containers
 alias docker-rm-unused='docker rm $(docker ps -q -f status=exited)'
 # Remove unused images
 alias docker-rmi-unused='docker rmi $(docker images -q -f "dangling=true")'
+
+docker_ls() {
+  local cmd="$1"; shift
+  local repo="$1"; shift
+  local lpw="$(jq -r '.auths["https://index.docker.io/v1/"].auth' ~/.docker/config.json | base64 -d)"
+  docker-ls "$cmd" --user "${lpw%:*}" --password "${lpw#*:}" "$repo"
+}
