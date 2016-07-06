@@ -1,0 +1,5 @@
+# See http://unix.stackexchange.com/a/43634/46796
+# Editline (http://thrysoee.dk/editline/) is a BSD licensed version library that provides readline-like services.
+# The .editrc will set your keybindings to vi mode in MySQL's command line shell, or any application
+# that does not use readline.
+bind -v
