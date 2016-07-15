@@ -54,6 +54,11 @@ alias docker-rmi-unused='docker rmi $(docker images -q -f dangling=true)'
 # Remove volumes
 alias docker-rmvolumes='docker volume rm $(docker volume ls -q -f dangling=true)'
 
+drunsh() {
+  name="${1##*/}"
+  docker run --rm -it --entrypoint=sh --name $(echo $name | tr ' :' '_.' ) "$1"
+}
+
 docker_ls() {
   local cmd="$1"; shift
   local repo="$1"; shift
