@@ -54,10 +54,12 @@ alias docker-rmi-unused='docker rmi $(docker images -q -f dangling=true)'
 # Remove volumes
 alias docker-rmvolumes='docker volume rm $(docker volume ls -q -f dangling=true)'
 
-drunsh() {
-  name="${1##*/}"
-  echo docker run --rm -it --entrypoint=sh --name $(echo $name | tr ' :' '_.' ) "$1"
-  docker run --rm -it --entrypoint=sh --name $(echo $name | tr ' :' '_.' ) "$1"
+# Examples:
+# drun elifarley/docker-cep:alpine bash -c ls
+# drun elifarley/docker-cep:alpine
+drun() {
+  im="$1"; shift; name="${im##*/}"; name=$(echo $name | tr ' :' '_.' ); ep=${1:-sh}; test $# -gt 0 && shift
+  ( set -x; docker run --rm -it --entrypoint="$ep" --name $name "$im" "$@")
 }
 
 docker_ls() {
