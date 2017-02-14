@@ -19,8 +19,6 @@ alias  l='\ls --color=auto -F'
 alias dir='\dir --color=auto'
 alias vdir='\vdir --color=auto'
 
-pss() { ps -o pid,user,c,start,args -C "$1" --cols 2000 "$@" ;}
-
 s() { # do sudo, or sudo the last command if no argument given
   if [[ $# == 0 ]]; then
     sudo $(history -p '!!')
