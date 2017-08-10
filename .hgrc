@@ -1,5 +1,17 @@
 # Save this file as %USERPROFILE%\mercurial.ini or ~/.hgrc
  
+[extensions]
+convert = 
+purge =
+hggit =
+graphlog = 
+highlight = 
+mq = 
+rebase = 
+shelve = 
+strip = 
+zeroconf =
+
 [alias]
 show = log -Cpr
 slog    = log --template '{rev}:{node|short} {date|shortdate} {pad(author,15)} {desc|firstline} (http://gcvc01.webb.net.br/hg/rev/{node|short})\n'
