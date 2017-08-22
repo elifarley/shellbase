@@ -360,6 +360,12 @@ vnoremap <DOWN> gj
 " rather than act as yy
 map Y y$
 
+" See http://vim.wikia.com/wiki/Replace_a_word_with_yanked_text
+" nnoremap S diw"0P
+nnoremap S "_diwP
+" vnoremap S "_d"0P
+vnoremap S "_dP
+
 " Copy line N and paste it before the current line.
 " Ex.: 15_
 nnoremap _ ggyy``P
@@ -433,6 +439,7 @@ nnoremap <Leader>7 :7b<CR>
 nnoremap <Leader>8 :8b<CR>
 nnoremap <Leader>9 :9b<CR>
 
+" Paste
 xnoremap <leader>p "_dP
 
 " edit vimrc and load vimrc bindings
