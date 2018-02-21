@@ -4,4 +4,4 @@ test -r /sys/kernel/debug/zswap/pool_total_size || {
   echo "ZSwap: No perm"
   exit 1
 }
-exec awk "BEGIN {print \"ZSwap: \" $(cat /sys/kernel/debug/zswap/pool_total_size) / 1024 / 1024}"
+exec awk "BEGIN {print \"zs\" $(cat /sys/kernel/debug/zswap/pool_total_size) / 1024 / 1024 \"M\"}"
