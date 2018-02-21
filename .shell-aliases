@@ -19,6 +19,22 @@ alias  l='\ls --color=auto -F'
 alias dir='\dir --color=auto'
 alias vdir='\vdir --color=auto'
 
+memstat() {
+  vmstat -SM -s | egrep -iv 'cpu|fork|boot|interrupts'
+  vmstat -SM --wide
+  echo '-------------------------------------------------------------------------------------------------------------'
+  free -m
+  echo '-------------------------------------------------------------------------------------------------------------'
+  swapon --show=TYPE,LABEL,PRIO,SIZE,USED
+  echo '-------------------------------------------------------------------------------------------------------------'
+
+  ( cd /sys/kernel/debug/zswap 2>/dev/null || { echo "Root access needed to show ZSWAP info"; return 1 ;}
+  test "$(cat pool_total_size)" -a "$(cat pool_total_size)" != '0' && {
+    echo "ZSWAP written_back_pages $(cat written_back_pages)"
+    echo "ZSWAP Compression factor $(perl -E "say $(cat stored_pages) * 4096 / $(cat pool_total_size)")" 
+  })
+}
+
 s() { # do sudo, or sudo the last command if no argument given
   if [[ $# == 0 ]]; then
     sudo $(history -p '!!')
