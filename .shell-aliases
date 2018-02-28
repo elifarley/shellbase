@@ -37,6 +37,7 @@ $(expr $(cat pool_total_size) / 1048576) MB \
 = $(awk "BEGIN {print $(cat stored_pages) * 4096 / $(cat pool_total_size)}") x"
   })
   ( cd /sys/module/zswap/parameters && grep -R . )
+  zramctl 2>/dev/null
 }
 
 s() { # do sudo, or sudo the last command if no argument given
