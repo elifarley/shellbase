@@ -26,6 +26,7 @@ memstat() {
   free -m
   echo '-------------------------------------------------------------------------------------------------------------'
   swapon --show=TYPE,LABEL,PRIO,SIZE,USED
+  zramctl 2>/dev/null
   echo '-------------------------------------------------------------------------------------------------------------'
 
   ( cd /sys/kernel/debug/zswap 2>/dev/null || { echo "Root access needed to show ZSWAP info"; return 1 ;}
@@ -37,7 +38,6 @@ $(expr $(cat pool_total_size) / 1048576) MB \
 = $(awk "BEGIN {print $(cat stored_pages) * 4096 / $(cat pool_total_size)}") x"
   })
   ( cd /sys/module/zswap/parameters && grep -R . )
-  zramctl 2>/dev/null
 }
 
 s() { # do sudo, or sudo the last command if no argument given
