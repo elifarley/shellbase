@@ -1,0 +1,15 @@
+[Unit]
+# systemctl --user enable kill-tracker.timer
+# systemctl --user start kill-tracker.timer
+# If you change this file, reload it:
+# systemctl --user daemon-reload
+# To see the logs:
+# journalctl --user -u kill-tracker.service
+
+Description=Periodically remove tracker and its files
+
+[Timer]
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target
