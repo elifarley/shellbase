@@ -1,6 +1,7 @@
 #!/bin/sh
+CMD_BASE="$(readlink -f "$0")" || CMD_BASE="$0"; CMD_BASE="$(dirname "$CMD_BASE")"
 
-TRACKER_DIR='/volumes/tmp/cache-ecc-tmpfs/tracker'
+TRACKER_DIR="$CMD_BASE/../.cache/tracker"
 test -d "$TRACKER_DIR" || exit 0
 
 killall /usr/lib/tracker-{miner-apps,extract,miner-fs,store}
