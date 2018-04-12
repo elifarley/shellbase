@@ -1,0 +1,12 @@
+[Unit]
+Description=Tracker Killer
+
+[Service]
+Type=simple
+Nice=19
+IOSchedulingClass=2
+IOSchedulingPriority=7
+ExecStart=%h/bin/kill-tracker.sh
+
+[Install]
+WantedBy=default.target
