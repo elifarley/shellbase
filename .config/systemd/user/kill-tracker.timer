@@ -6,7 +6,7 @@
 # To see the logs:
 # journalctl --user -u kill-tracker.service
 
-Description=Periodically remove tracker and its files
+Description=Periodically remove tracker and its files (replaces a crontab entry)
 
 [Timer]
 OnCalendar=hourly
