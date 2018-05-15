@@ -1,0 +1,12 @@
+#!/bin/sh
+test $(id -u) -eq 0 && test $# -gt 0 && test "$1" = '--setup' && \
+  chmod a+rx /sys/kernel/debug{,/zswap} && \
+  echo 'Byobu ZSwap setup complete.' && exit
+
+test -r /sys/kernel/debug/zswap/pool_total_size || {
+  echo "ZSwap: No perm"; exit 1
+}
+
+echo "zs$(expr $(cat /sys/kernel/debug/zswap/pool_total_size) / 1048576)M"
+#exec awk "BEGIN {print \"zs\" $(cat /sys/kernel/debug/zswap/pool_total_size) / 1024 / 1024 \"M\"}"
+

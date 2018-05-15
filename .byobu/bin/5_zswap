@@ -1,8 +1,0 @@
-#!/bin/sh
-# sudo chmod a+rx /sys/kernel/debug{,/zswap}
-test -r /sys/kernel/debug/zswap/pool_total_size || {
-  echo "ZSwap: No perm"
-  exit 1
-}
-echo "zs$(expr $(cat /sys/kernel/debug/zswap/pool_total_size) / 1048576)M"
-
