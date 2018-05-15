@@ -5,6 +5,7 @@
 # systemctl --user daemon-reload
 # To see the logs:
 # journalctl --user -u kill-tracker.service
+# More info: https://www.digitalocean.com/community/tutorials/how-to-use-journalctl-to-view-and-manipulate-systemd-logs
 
 Description=Periodically remove tracker and its files (replaces a crontab entry)
 
