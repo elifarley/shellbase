@@ -10,7 +10,8 @@
 Description=Periodically remove tracker and its files (replaces a crontab entry)
 
 [Timer]
-OnCalendar=hourly
+OnBootSec=10min
+OnUnitActiveSec=30min
 
 [Install]
 WantedBy=timers.target
