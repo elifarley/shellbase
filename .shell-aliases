@@ -21,7 +21,7 @@ alias vdir='\vdir --color=auto'
 
 # Example: export lsofwrite; watch 'lsofwrite -c chromium -r5'
 lsofwrite()  {
-  lsof "$@" | grep REG | grep -Pv 'mem |^[^\s]+\s+\d+\s+[^\s]+\s+\d+r'
+  lsof "$@" | egrep 'REG|DIR' | grep -Pv 'mem |^[^\s]+\s+\d+\s+[^\s]+\s+\d+r'
 }
 
 memstat() {
