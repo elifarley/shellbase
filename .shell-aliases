@@ -2,10 +2,10 @@
 alias less='less -iMFSRX'
 
 alias pss='ps -o uname,pid,ppid,c,%cpu,cputime=CPU-time,%mem,rss,start,wchan,args --cols 2000 -C'
-alias p="ps -fe |grep -i "
-alias h="history|grep -i "
-alias f="find . |grep -i "
-alias sc="screen -DR"
+alias p='ps -fe |grep -i'
+alias h='history|grep -i'
+alias f="find . -type d \(-name '.git' -o -name '.hg' \) -prune -o -print |grep -i"
+alias sc='screen -DR'
 alias j='\jobs -l'
 alias fgg='\fg %'
 alias bgg='\bg %'
