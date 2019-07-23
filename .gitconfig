@@ -1,0 +1,11 @@
+[alias]
+  co = checkout
+  ci = commit
+  st = status
+  br = branch
+  lol = log --oneline --graph --decorate
+  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  type = cat-file -t
+  dump = cat-file -p
+  last = log -1 HEAD
+  changed = diff-tree --no-commit-id --name-only -r
