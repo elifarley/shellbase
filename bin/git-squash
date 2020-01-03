@@ -1,0 +1,12 @@
+#!/bin/sh
+test $# -ne 0 || { cat <<EOF
+USAGE:
+git squash <N>
+(The last N commits will be squashed)
+After squashing, you need to (possibly force-) push.
+EOF
+exit 1
+}
+
+git reset --soft HEAD~$1 && git commit
+# git commit --edit -m"$(git log --format=%B --reverse HEAD..HEAD@{1})"
