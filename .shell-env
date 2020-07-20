@@ -1,6 +1,9 @@
 # make less more friendly for non-text input files, see lesspipe(1)
 test -x /usr/bin/lesspipe && eval "$(SHELL=/bin/sh lesspipe)"
 
+# See https://www.topbug.net/blog/2016/09/27/make-gnu-less-more-powerful/
+export LESS='--quit-if-one-screen --ignore-case --status-column --LONG-PROMPT --RAW-CONTROL-CHARS --HILITE-UNREAD --tabs=4 --no-init --window=-4'
+
 # See http://stackoverflow.com/questions/6787734/strange-behavior-of-vim-color-inside-screen-with-256-colors
 # See https://wiki.archlinux.org/index.php/Home_and_End_keys_not_working
 # DO NOT use this: export TERM=xterm-256color
