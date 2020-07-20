@@ -1,6 +1,3 @@
-# ignore case, long prompt, exit if it fits on one screen, allow colors for ls and grep colors
-alias less='less -iMFSRX'
-
 alias pss='ps -o uname,pid,ppid,c,%cpu,cputime=CPU-time,%mem,rss,start,wchan,args --cols 2000 -C'
 alias p='ps -fe |grep -i'
 alias h='history|grep -i'
