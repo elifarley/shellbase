@@ -75,7 +75,7 @@ mvnprop() {
   local prop="$1"; shift
   MAVEN_OPTS="$MAVEN_OPTS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" \
     mvn 2>/dev/null -B com.github.ekryd.echo-maven-plugin:echo-maven-plugin:echo -Decho.message='${'"$prop"'}' "$@" \
-      | grep -m1 -A1 echo-maven-plugin | tail -n1 | cut -d' ' -f2
+      | grep -A1 echo-maven-plugin | grep -v -- '--' | grep -v echo-maven-plugin | cut -d' ' -f2
 }
 mvndep() {
   local dep="$1"; shift
