@@ -18,11 +18,11 @@ alias vdir='\vdir --color=auto'
 
 # Example: export lsofwrite; watch 'lsofwrite -c chromium -r5'
 lsofwrite()  {
-  lsof "$@" | egrep 'REG|DIR' | grep -Pv 'mem |^[^\s]+\s+\d+\s+[^\s]+\s+\d+r'
+  lsof "$@" | grep -E 'REG|DIR' | grep -Pv 'mem |^[^\s]+\s+\d+\s+[^\s]+\s+\d+r'
 }
 
 memstat() {
-  vmstat -SM -s | egrep -iv 'cpu|fork|boot|interrupts'
+  vmstat -SM -s | grep -E -iv 'cpu|fork|boot|interrupts'
   vmstat -SM --wide
   echo '-------------------------------------------------------------------------------------------------------------'
   free -m
