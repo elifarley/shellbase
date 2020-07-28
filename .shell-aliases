@@ -71,6 +71,13 @@ alias smartctl='smartctl -s on -i -A -f brief -f hex,id -l devstat'
 
 # Maven
 
+# Shows 'null object or invalid expression' for some cases
+mvnprop() {
+  local prop="$1"; shift
+  mvn 2>/dev/null help:evaluate -q -DforceStdout -Dexpression="$prop" "$@" \
+  && echo
+}
+# Shows empty line
 mvnprop() {
   local prop="$1"; shift
   MAVEN_OPTS="$MAVEN_OPTS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" \
