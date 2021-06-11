@@ -87,7 +87,8 @@ mvnprop() {
 mvndep() {
   local dep="$1"; shift
   MAVEN_OPTS="$MAVEN_OPTS -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" \
-    mvn -B dependency:tree ${dep:+-Dincludes="$dep"} "$@"
+    mvn 2>&1 -B dependency:tree ${dep:+-Dincludes="$dep"} "$@" \
+    | sed -rn '/\[INFO\] --- /,/Reactor Summary for / s/\[INFO\] //p' | head -n-1
 }
 
 # jq
