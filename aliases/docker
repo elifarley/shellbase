@@ -1,0 +1,24 @@
+# Remove unused containers
+alias docker-rm-unused='docker rm $(docker ps -q -f status=exited)'
+# Remove unused images
+alias docker-rmi-unused='docker rmi $(docker images -q -f dangling=true)'
+# Remove volumes
+alias docker-rmvolumes='docker volume rm $(docker volume ls -q -f dangling=true)'
+
+# Examples:
+# drun elifarley/docker-cep:alpine bash -c ls
+# drun elifarley/docker-cep:alpine
+drun() {
+  im="$1"; shift; name="${im##*/}"; name=$(echo $name | tr ' :' '_.' ); ep=${1:-sh}; test $# -gt 0 && shift
+  ( set -x; docker run --rm -it --entrypoint="$ep" --name $name "$im" "$@")
+}
+
+dimg() { docker inspect "$1" |grep Image | grep -v sha256: | cut -d'"' -f4 ;}
+dstatus() { docker inspect "$1" | grep Status | cut -d'"' -f4 ;}
+
+docker_ls() {
+  local cmd="$1"; shift
+  local repo="$1"; shift
+  local lpw="$(jq -r '.auths["https://index.docker.io/v1/"].auth' ~/.docker/config.json | base64 -d)"
+  docker-ls "$cmd" --user "${lpw%:*}" --password "${lpw#*:}" "$repo"
+}
