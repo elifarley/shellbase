@@ -1,3 +1,5 @@
+test -f "$HOME"/.kubectl-completion-bash && . "$HOME"/.kubectl-completion-bash
+
 k() {
   kubectl ${KUBE_NAMESPACE:+-n "$KUBE_NAMESPACE"} "$@"
 }
