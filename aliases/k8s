@@ -1,4 +1,5 @@
 # https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+# https://opensource.com/article/20/2/kubectl-helm-commands
 
 test -f "$HOME"/.kubectl-completion-bash && . "$HOME"/.kubectl-completion-bash
 
