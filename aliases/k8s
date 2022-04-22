@@ -1,1 +1,39 @@
+k() {
+  kubectl ${KUBE_NAMESPACE:+-n "$KUBE_NAMESPACE"} "$@"
+}
+complete -F __start_kubectl k
 
+# permanently save the namespace for all subsequent kubectl commands in that context.
+alias k.ns=k_ns
+alias k.ctx=k_ctx
+k_ns() {
+  test $# -gt 0 || {
+    kubectl get ns
+    return
+  }
+  kubectl config set-context --current --namespace "$@"
+}
+k_ctx() {
+  test $# -gt 0 || {
+    kubectl config get-contexts
+    return
+  }
+  kubectl config use-context "$@"
+}
+
+k_getSecrets() {
+  test $# -eq 0 && {
+    echo "Missing deployment name" && k get deployments
+    return 1
+  }
+  local deployment="$1"; shift
+  kubectl get secrets "$deployment" -o jsonpath="{.data['$(echo "secrets.properties" | sed -E 's/\./\\./g')']}" \
+  | base64 --decode
+}
+alias k.get-secrets='k_getSecrets'
+
+for kube_aliases in ~/.kube/aliases-*; do
+  . "$kube_aliases"
+done
+
+# kubectl create configmap my-file.sh --from-file=my-file.sh
