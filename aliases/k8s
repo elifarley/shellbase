@@ -1,3 +1,5 @@
+# https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+
 test -f "$HOME"/.kubectl-completion-bash && . "$HOME"/.kubectl-completion-bash
 
 k() {
