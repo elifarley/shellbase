@@ -37,6 +37,29 @@ k_getSecrets() {
 }
 alias k.get-secrets='k_getSecrets'
 
+# https://stackoverflow.com/a/73525759/299109
+k_list_pods_in_deployment() {
+  test $# -eq 0 && {
+    echo "Missing deployment name" && kubectl get deployments
+    return 1
+  }
+  local deployment="$1"; shift
+  local replicaSet="$(kubectl describe deployment $deployment \
+    | grep '^NewReplicaSet' \
+    | awk '{print $2}'
+  )"
+
+  local podHashLabel="$(kubectl get rs $replicaSet \
+    -o jsonpath='{.metadata.labels.pod-template-hash}'
+  )"
+
+  kubectl get pods -l pod-template-hash=$podHashLabel --show-labels \
+    | tail -n +2 | awk '{print $1}'
+
+}
+alias k.list-pods-in-deployment=k_list_pods_in_deployment
+
+
 for kube_aliases in ~/.kube/aliases-*; do
   . "$kube_aliases"
 done
