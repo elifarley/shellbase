@@ -1,8 +1,4 @@
 #!/bin/bash
-test $# -eq 0 && cat <<EOF && exit 1
-USAGE:
-git hlog 
-EOF
 
 # Order-Preserving Base58 (OPB58)
 # Omit IOlo
@@ -42,4 +38,3 @@ while read rev ts author msg; do
     "$rev"
 done < <(git log --format='%H %at %an:%ae %s' "$@")
 )
-
