@@ -94,10 +94,8 @@ mvndep() {
 grdep() {
   local dep="$1"; shift
   # --configuration compileClasspath
-  ./gradlew 2>&1 :dependencyInsight ${dep:+--dependency "$dep"} "$@" \
+  ./gradlew 2>&1 :dependencyInsight ${dep:+--dependency="$dep"} "$@"
 }
-
-./gradlew  --dependency jackson-databind
 
 # jq
 
