@@ -91,6 +91,14 @@ mvndep() {
     | sed -rn '/\[INFO\] --- /,/Reactor Summary for / s/\[INFO\] //p' | head -n-1
 }
 
+grdep() {
+  local dep="$1"; shift
+  # --configuration compileClasspath
+  ./gradlew 2>&1 :dependencyInsight ${dep:+--dependency "$dep"} "$@" \
+}
+
+./gradlew  --dependency jackson-databind
+
 # jq
 
 jqlog() {
