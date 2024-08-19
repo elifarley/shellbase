@@ -98,6 +98,24 @@ gradle.dep() (
     ${dep:+--dependency="$dep"} "$@"
 )
 
+# git
+
+git.grep() {
+  local search_string="$1"; shift
+  local file_path="$1"
+  local files=()
+
+  test "$file_path" &&
+    files+=("--" "$file_path")
+
+  #git grep -B 1 "$search_string" $(git branch -l | grep -v '^\*' | awk '{print $1}') "${files[@]}"
+  git log --all --oneline  --graph -G"$search_string" "${files[@]}"
+  echo ' Then...
+# git branch -a --contains <commit hash>
+# git show <commit hash>
+'
+}
+
 # jq
 
 jqlog() {
