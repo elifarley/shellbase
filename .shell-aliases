@@ -100,6 +100,13 @@ gradle.dep() (
 
 # git
 
+git_ssh_use() {
+  new_repo_path=$(git remote get-url origin | sed -E 's/.+github\.com[\/:](.+)\.git/\1/')
+  git remote set-url origin "git@github.com:$new_repo_path.git"
+  git remote get-url origin
+}
+alias git.ssh-use=git_ssh_use
+
 git.grep() {
   local search_string="$1"; shift
   local file_path="$1"
