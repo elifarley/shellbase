@@ -109,7 +109,7 @@ git.squash() (
   git.squash <N>
   (The last N commits will be squashed)
   After squashing, you need to (possibly force-) push.
-  EOF
+EOF
   
   git reset --soft HEAD~$1 && git commit
   # git commit --edit -m"$(git log --format=%B --reverse HEAD..HEAD@{1})"
@@ -121,7 +121,7 @@ git.rename() (
   Renames the current branch ($currentBranch) both locally and remotely.
   USAGE:
   git rename <new branch name>
-  EOF
+EOF
   
   newBranch="$1"; shift
   git branch -m "$newBranch" && \
