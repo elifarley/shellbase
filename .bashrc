@@ -8,6 +8,7 @@ test -r /etc/bashrc && . /etc/bashrc
 
 test -r ~/.shell-aliases && . ~/.shell-aliases
 test -r ~/.shell-env && . ~/.shell-env
+test -r ~/.env && . ~/.env # Secret key
 
 # User specific aliases and functions
 
