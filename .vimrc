@@ -124,6 +124,8 @@ if !empty(glob("$HOME/.vim/colors/zenburn.vim"))
   colorscheme zenburn
 endif
 
+highlight CursorColumn ctermbg=234 guibg=#1c1c1c
+
 if v:version >= 703
   " Undo settings
   set undodir=~/.vim/undofiles
