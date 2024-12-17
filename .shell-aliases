@@ -99,7 +99,7 @@ gradle.dep() (
 )
 
 # git
-
+alias g=git
 # git branch -a --contains 8beeff00d
 # git show 8beeff00d
 
