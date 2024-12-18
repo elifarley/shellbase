@@ -3,7 +3,8 @@
   back = !git reset --soft HEAD~${1:-1}
   #back = reset --soft HEAD~1
   co = checkout
-  ci = commit
+  ci = commit -m
+  ca = commit --amend
   s = !echo "[$(git log -1 --format=%h)] $(git log -1 --pretty=%B)" && git status
   lol = log --oneline --graph --decorate
   h = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
@@ -16,3 +17,5 @@
   type = cat-file -t
   dump = cat-file -p
 
+[pull]
+	rebase = true
