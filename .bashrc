@@ -64,3 +64,10 @@ shopt -s cdspell
 set -o vi
 # http://unix.stackexchange.com/questions/104094/is-there-any-way-to-enable-ctrll-to-clear-screen-when-set-o-vi-is-set
 bind -m vi-insert "\C-l":clear-screen
+
+git alias
+test "$SSH_AUTH_SOCK" || {
+  eval $(ssh-agent)
+  ssh-add ~/.ssh/id_ed25519
+  ssh-add -l # show key's SHA256
+}
