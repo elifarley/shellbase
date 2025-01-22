@@ -238,9 +238,11 @@ test -r ~/.env && . ~/.env # Secret keys
 test -f ~/.bash_private.gpg && \
   eval "$(gpg --decrypt ~/.bash_private.gpg 2>/dev/null)"
 
-git alias
-
 test "$SSH_AUTH_SOCK" || {
    eval $(ssh-agent)
    ssh-add ~/.ssh/id_ed25519
 }
+
+# Local-only config
+test -r ~/.shell-local-conf && . ~/.shell-local-conf
+

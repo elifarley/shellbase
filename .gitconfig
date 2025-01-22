@@ -1,3 +1,11 @@
+## In ~/.gitconfig:
+# [include]
+#   path = ~/IdeaProjects/shellbase/.gitconfig
+#
+# [user]
+#   name = <name>
+#   email = <email>
+
 [alias]
   alias = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
 
