@@ -243,6 +243,9 @@ test "$SSH_AUTH_SOCK" || {
    ssh-add ~/.ssh/id_ed25519
 }
 
+# Activate Python in user's venv
+test -r ~/.venv/bin/activate && . ~/.venv/bin/activate
+
 # Local-only config
 test -r ~/.shell-local-conf && . ~/.shell-local-conf
 
