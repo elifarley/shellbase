@@ -1,0 +1,15 @@
+**/version/_version.py
+/src/**.egg-info
+__pycache__
+.pytest_cache
+/dist
+/build
+/out
+/.venv
+/.env
+/tmp
+.coverage
+.*.history*
+*.tags.cache*
+.git
+.idea
