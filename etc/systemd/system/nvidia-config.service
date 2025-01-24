@@ -1,0 +1,14 @@
+[Unit]
+# /etc/systemd/system/nvidia-config.service
+Description=NVIDIA (Secondary) GPU Deactivation
+After=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nvidia-smi -i 0000:28:00.0 -pm 0
+ExecStart=/usr/bin/nvidia-smi -pl 0 -i 0000:28:00.0
+ExecStart=/usr/bin/nvidia-smi drain -p 0000:28:00.0 -m 1
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+# custom IntelliJ IDEA VM options (expand/override 'bin/idea64.vmoptions')
+
+-Xms3g
+-Xmx12g
+
+# Use lower than 2 if editing many files at once
+-XX:NewRatio=1
