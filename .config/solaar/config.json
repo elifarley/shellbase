@@ -1,0 +1,49 @@
+{
+  "B36F:61092303": {
+    "_modelId": "B36F00000000",
+    "_name": "Logi K650",
+    "_sensitive": {
+      "disable-keyboard-keys": false,
+      "divert-keys": true,
+      "multiplatform": false
+    },
+    "_serial": "61092303",
+    "_unitId": "61092303",
+    "disable-keyboard-keys": {
+      "1": false,
+      "16": false,
+      "2": false,
+      "4": false,
+      "8": false
+    },
+    "divert-keys": {
+      "10": 0,
+      "110": 0,
+      "111": 1,
+      "166": 1,
+      "199": 1,
+      "200": 1,
+      "206": 0,
+      "212": 1,
+      "224": 1,
+      "228": 0,
+      "229": 0,
+      "230": 0,
+      "231": 0,
+      "232": 0,
+      "233": 0,
+      "238": 0,
+      "24": 1,
+      "259": 1,
+      "264": 1,
+      "265": 1,
+      "266": 1,
+      "284": 1,
+      "287": 0,
+      "288": 1
+    },
+    "fn-swap": true,
+    "multiplatform": 0
+  },
+  "_version": "1.1.1"
+}

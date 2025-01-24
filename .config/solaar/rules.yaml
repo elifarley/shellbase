@@ -1,0 +1,34 @@
+%YAML 1.3
+---
+- Modifiers: Shift
+- Key: [Metro Settings, pressed]
+- KeyPress: [Shift_R, Insert]
+...
+---
+- Modifiers: Control
+- Key: [Metro Settings, pressed]
+- KeyPress: [Control_L, Insert]
+...
+---
+- Modifiers: Shift
+- Key: [Multi Platform Language Switch, pressed]
+- KeyPress: [Shift_R, Insert]
+...
+---
+- Modifiers: Shift
+- Key: ['unknown:0120', pressed]
+- KeyPress: [Shift_R, Insert]
+...
+---
+- Modifiers: Control
+- Key: ['unknown:0120', pressed]
+- KeyPress: [Control_L, Insert]
+...
+---
+- Key: [Screenshot, pressed]
+- Execute: [ksnip, -r]
+...
+---
+- Key: [Print As Ctrl P, pressed]
+- Execute: [flameshot, gui]
+...
