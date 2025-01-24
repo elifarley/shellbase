@@ -206,12 +206,14 @@ au InsertLeave * let &updatetime=updaterestore
 
 set autoread        " Automatically reload files changed outside of Vim
 
-set tabstop=2       " Number of visual spaces per TAB
-set softtabstop=2   " Number of spaces in tab when editing
-set shiftwidth=2   " Used when indenting with >> and <<
-set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
+set completeopt=menuone,noinsert,noselect
+
 set expandtab       " Tabs are spaces
 set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
+set tabstop=2       " Number of visual spaces per TAB
+set shiftwidth=2   " Used when indenting with >> and <<
+set softtabstop=2   " Number of spaces in tab when editing
+set shiftround      " Use multiple of shiftwidth when indenting with '<' and '>'
 set copyindent      " copy the previous indentation on autoindenting
 
 " Quickly time out on keycodes
@@ -222,8 +224,11 @@ set backspace=indent,eol,start " allow backspacing over everything in insert mod
 set history=1000 " Store lots of :cmdline history
 set undolevels=1000 " Use many muchos levels of undo
 
+set hidden " so that buffers with unsaved changes can be hidden
+set nobackup
+set nowritebackup
+
 set title              " change the terminal's title
-set number             " Show line numbers
 set showcmd             " Show incomplete cmds down the bottom
 " Set the command window height to 2 lines, to avoid many cases of having to
 " press <Enter> to continue"
@@ -231,6 +236,12 @@ set cmdheight=2
 set showmode            " Show current mode down the bottom
 set cursorline          " Highlight current line
 set cursorcolumn        " Highlight current column
+set signcolumn=yes
+
+set number             " Show line numbers
+" http://vim.wikia.com/wiki/Display_line_numbers
+" Set the color for normal line numbers
+highlight LineNr term=NONE cterm=Italic ctermfg=Black ctermbg=DarkGrey gui=NONE guifg=DarkBlue guibg=NONE
 
 set formatoptions-=o "dont continue comments when pushing o/O
 
@@ -239,10 +250,8 @@ set scrolloff=3
 set sidescrolloff=7
 set sidescroll=1
 
-set splitbelow
 set splitright
-
-set hidden " so that buffers with unsaved changes can be hidden
+set splitbelow
 
 set wildmenu                " Enable ctrl-n and ctrl-p to scroll thru matches
 "set wildmode=list:longest   " make cmdline tab completion similar to bash
@@ -598,10 +607,6 @@ nmap <leader>P :CtrlP<cr>
 nmap <leader>bb :CtrlPBuffer<cr>
 nmap <leader>bm :CtrlPMixed<cr>
 nmap <leader>bs :CtrlPMRU<cr>
-
-" http://vim.wikia.com/wiki/Display_line_numbers
-" Set the color for normal line numbers
-highlight LineNr term=NONE cterm=Italic ctermfg=Black ctermbg=DarkGrey gui=NONE guifg=DarkBlue guibg=NONE
 
 " Set the color for the current line number
 " highlight CursorLineNr ctermfg=lightgreen ctermbg=darkgreen
