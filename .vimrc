@@ -45,7 +45,7 @@
 " or from the last time you opened vim.
 " (Ex.: open vim and type <C-o> to open last file)
 " http://vim.wikia.com/wiki/Using_marks:
-" Type ' twice to jump back to line or ( ` twice = pos in line ) 
+" Type ' twice to jump back to line or ( ` twice = pos in line )
 " `. to jump to last change; `0	jump to pos in last file edited (when exited Vim)
 " <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
 
@@ -70,6 +70,17 @@
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
+
+filetype off                  " required
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+" Add CtrlP plugin
+Plugin 'ctrlpvim/ctrlp.vim'
+call vundle#end()            " required
+filetype plugin indent on    " required
 
 " See http://vim.wikia.com/wiki/Mapping_fast_keycodes_in_terminal_Vim
 " More at http://mg.pov.lt/vim/vimrc
@@ -180,8 +191,6 @@ if filereadable(expand("~/.vim/colors/zenburn.vim"))
   colorscheme zenburn
 endif
 
-" Custom vertical highlight
-highlight CursorColumn ctermbg=234 guibg=#1c1c1c
 
 if v:version >= 703
   " Undo settings
@@ -238,10 +247,21 @@ set cursorline          " Highlight current line
 set cursorcolumn        " Highlight current column
 set signcolumn=yes
 
-set number             " Show line numbers
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu && mode() != "i" | set rnu   | endif
+  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
+augroup END
+set number relativenumber   " Show hybrid line numbers
 " http://vim.wikia.com/wiki/Display_line_numbers
 " Set the color for normal line numbers
 highlight LineNr term=NONE cterm=Italic ctermfg=Black ctermbg=DarkGrey gui=NONE guifg=DarkBlue guibg=NONE
+
+" Set the color for the current line number
+" highlight CursorLineNr ctermfg=lightgreen ctermbg=darkgreen
+
+" Custom vertical highlight
+highlight CursorColumn ctermbg=234 guibg=#1c1c1c
 
 set formatoptions-=o "dont continue comments when pushing o/O
 
@@ -252,6 +272,7 @@ set sidescroll=1
 
 set splitright
 set splitbelow
+" Use <C-w> s to split; <C-v> for a vertical split
 
 set wildmenu                " Enable ctrl-n and ctrl-p to scroll thru matches
 "set wildmode=list:longest   " make cmdline tab completion similar to bash
@@ -380,7 +401,7 @@ set pastetoggle=<F2>
 noremenu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
 noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
 noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
-nnoremap <F12> :emenu Encoding.<C-Z>
+nnoremap <F10> :emenu Encoding.<C-Z>
 
 nnoremap <F5> <C-w>p
 inoremap <F5> <C-\><C-o><C-w>p
@@ -447,15 +468,29 @@ vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
 " http://usevim.com/2015/02/20/vim-tricks/
+" Move current line or visual selection, adjusting indentation
 nnoremap <C-J> :m+<CR>==
 nnoremap <C-K> :m-2<CR>==
 vnoremap <C-J> :m'>+<CR>gv=gv
 vnoremap <C-K> :m-2<CR>gv=gv
 
 " Start an external command with a single bang
-nnoremap ! :! 
+nnoremap ! :!
+
+" edit vimrc and load vimrc bindings
+nnoremap <leader>vv :vsp $MYVIMRC<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+" Go to definition, NOT the same as <C-]>
+nnoremap <F3> gd
+imap <F3> <C-\><C-o><F3>
+
+" Buffer Management
 
 " http://vim.wikia.com/wiki/Easier_buffer_switching
+
+nnoremap <Leader>n :10new<CR>
+nnoremap <Leader>N :enew<CR>
 
 " Next buffer
 nnoremap <silent> <F6> :bn<CR>
@@ -471,25 +506,20 @@ nmap <silent> <Esc>[1;3D <S-F6>
 imap <silent> <S-F6> <C-\><C-o><S-F6>
 imap <silent> <Esc>[1;3D <C-\><C-o><S-F6>
 
-nnoremap <F3> gd
-imap <F3> <C-\><C-o><F3>
-
+" Same as <C-w>o
 nnoremap <C-F4> :only<CR>
 inoremap <C-F4> <C-\><C-o>:only<CR>
 
-nnoremap <F9> <C-^>
-imap <F9> <C-\><C-o><F9>
+" Switch buffers (go to last used)
+nnoremap <F12> <C-^>
+imap <F12> <C-\><C-o><F12>
 
 nnoremap <C-F9> :TagbarToggle<CR>
 imap <C-F9> <C-\><C-o><C-F9>
 
-" Tree style for netrw
-let g:netrw_liststyle=3
-
 " List buffers and pick by number or name fragment
-nnoremap <C-F6> :ls!<CR>:buffer<Space>
+nnoremap <S-F12> :ls!<CR>:buffer<Space>
 nnoremap <Leader>l :ls!<CR>:buffer<Space>
-
 " List buffers and pick by number or name fragment
 nnoremap <Leader>0 :ls!<CR>:buffer<Space>
 
@@ -505,10 +535,6 @@ nnoremap <Leader>9 :9b<CR>
 
 " Paste
 xnoremap <leader>p "_dP
-
-" edit vimrc and load vimrc bindings
-nnoremap <leader>vv :vsp $MYVIMRC<CR>
-nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " Reload from disk, discarding changes
 nnoremap <Leader>R :edit!<CR>
@@ -528,6 +554,9 @@ nnoremap <Leader>cd :cd <C-R>=expand('%:p:h')<CR><CR>
 " Open menu to select file (from Current dir) to edit
 nnoremap <Leader>e :e <C-D>
 
+" Tree style for netrw
+let g:netrw_liststyle=3
+
 " Netrw directory listing at current dir
 nnoremap <Leader>E :E<CR>
 
@@ -538,8 +567,27 @@ nnoremap <Leader>f :find <C-R>='**'<CR>
 
 nnoremap <Leader>ff :find <C-R>=expand('%:p:h') . '/**'<CR>
 
-nnoremap <Leader>n :10new<CR>
-nnoremap <Leader>N :enew<CR>
+" Save current buffer if modified
+nnoremap <Leader>s :update<CR>
+
+" http://vim.wikia.com/wiki/Map_Ctrl-S_to_save_current_or_new_files
+" Remember to set stty -ixon
+nnoremap <C-S> :<C-u>update<CR>
+vnoremap <C-S> <ESC>:update<CR>gv
+" Doesn't work if paste mode is on
+inoremap <C-S> <C-\><C-o>:update<CR>
+
+" Save all buffers
+nnoremap <Leader>S :wa<CR>
+
+" sudo to write
+cmap w!! w !sudo tee % >/dev/null
+
+" http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
+"Fast save and quit from normal and insert mode. ZZ is good too.
+nnoremap <C-X> :xa<CR>
+" Doesn't work if paste mode is on
+imap <C-X> <C-\><C-o><C-X>
 
 " Close buffer and its window if no changes
 nnoremap <F4> :bd<CR>
@@ -558,28 +606,6 @@ nnoremap <Leader>Q :cq<CR>
 nnoremap <C-Q> :cq<CR>
 inoremap <C-Q> <C-\><C-o>:cq<CR>
 
-" Save current buffer if modified
-nnoremap <Leader>s :update<CR>
-
-" http://vim.wikia.com/wiki/Map_Ctrl-S_to_save_current_or_new_files
-" Remember to set stty -ixon
-nnoremap <C-S> :<C-u>update<CR>
-vnoremap <C-S> <ESC>:update<CR>gv
-" Doesn't work if paste mode is on
-inoremap <C-S> <C-\><C-o>:update<CR>
-
-" Save all buffers
-nnoremap <Leader>S :wa<CR>
-
-" http://unix.stackexchange.com/questions/93144/exit-vim-more-quickly
-"Fast quit and save from normal and insert mode. ZZ is good too.
-nnoremap <C-X> :xa<CR>
-" Doesn't work if paste mode is on
-imap <C-X> <C-\><C-o><C-X>
-
-" sudo to write
-cmap w!! w !sudo tee % >/dev/null
-
 " toggle gundo
 " http://sjl.bitbucket.org/gundo.vim/
 " nnoremap <leader>u :GundoToggle<CR>
@@ -588,7 +614,11 @@ cmap w!! w !sudo tee % >/dev/null
 " https://github.com/ctrlpvim/ctrlp.vim
 let g:ctrlp_match_window = 'bottom,order:ttb'
 let g:ctrlp_switch_buffer = 0
-let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+"let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+if executable('rg')
+  let g:ctrlp_user_command = 'rg %s --files --hidden --color=never --glob ""'
+endif
+
 " See http://joshldavis.com/2014/04/05/vim-tab-madness-buffers-vs-tabs/
 " Setup some default ignores
 let g:ctrlp_custom_ignore = {
@@ -600,16 +630,17 @@ let g:ctrlp_custom_ignore = {
 " control. It also supports works with .svn, .hg, .bzr.
 let g:ctrlp_working_path_mode = 'rw'
 
+" Restore default <C-p> behavior
+nnoremap <C-p> :<C-p>
+
 " Use a leader instead of the actual named binding
 nmap <leader>P :CtrlP<cr>
+nnoremap <C-F12> :CtrlP<cr>
 
 " Easy bindings for its various modes
 nmap <leader>bb :CtrlPBuffer<cr>
 nmap <leader>bm :CtrlPMixed<cr>
 nmap <leader>bs :CtrlPMRU<cr>
-
-" Set the color for the current line number
-" highlight CursorLineNr ctermfg=lightgreen ctermbg=darkgreen
 
 " http://vim.wikia.com/wiki/Show_fileencoding_and_bomb_in_the_status_line
 " http://stackoverflow.com/questions/5547943/display-number-of-current-buffer
