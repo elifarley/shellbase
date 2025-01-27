@@ -20,17 +20,18 @@
 " <F3> - gd (go to definition, similar to Eclipse)
 " <F4> - :bd (close buffer and its window if no changes)
 " <C-F4> - Only current window ( not working - try <C-w>o )
-" <F5> - <C-w>p (previous / alternate window)
-" <C-F5> - Preview window
+" <F5> - Preview window
 " <F6,S-> - Next/prev buffer
-" <C-F6> - buffer list + go to buffer
 " <F7,S-> - Jump between locations in a quickfix or location list
 " <C-F7> - Show location or quickfix list + go to item (llist! / clist!) + (ll / cc)
 " <F8> - Go to location or quickfix item (ll / cc)
-" <C-F8> - Browse oldfiles
-" <F9> - Edit alternate file (<C-^> or :e #)
+" <F9> - <C-w>p (previous / alternate window)
 " <C-F9> - :TagbarToggle
-" <F10> - <F12> - unmapped
+" <C-F10> Menu: Encoding
+" <F11> - Browse oldfiles
+" <F12> Alternate buffers (current and last)
+" <S-F12> List buffers and pick by number or name fragment
+" <C-F12> CtrlP
 " --
 
 " <Esc> alternatives: jk and <CTRL>-[ and <CTRL>-C and <ALT>-<ENTER>
@@ -45,8 +46,12 @@
 " or from the last time you opened vim.
 " (Ex.: open vim and type <C-o> to open last file)
 " http://vim.wikia.com/wiki/Using_marks:
+" Type m followed by lowercase letter to mark pos in current file
+"   Use UPPERCASE to set global mark
+"   ' or ` to jump to a mark
 " Type ' twice to jump back to line or ( ` twice = pos in line )
 " `. to jump to last change; `0	jump to pos in last file edited (when exited Vim)
+
 " <CTRL>-E / <CTRL>-D and <CTRL>-Y / <CTRL>-U to scroll up or down
 
 " Normal mode:
@@ -199,6 +204,9 @@ if v:version >= 703
 
   set colorcolumn=+1 " Mark the ideal max text width
 endif
+set history=10000 " Store lots of :cmdline history
+set undolevels=10000 " Use many muchos levels of undo
+set undoreload=50000
 
 " http://vim.wikia.com/wiki/Project_browsing_using_find
 " then you can type :find <full-file-name-including-extension>
@@ -217,6 +225,20 @@ set autoread        " Automatically reload files changed outside of Vim
 
 set completeopt=menuone,noinsert,noselect
 
+set omnifunc=syntaxcomplete#Complete
+
+" See http://vim.wikia.com/wiki/VimTip1386
+:inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+
+" Omni completion mapping
+inoremap <C-Space> <C-x><C-o>
+" Some terminals send <C-@> for Ctrl+Space
+inoremap <C-@> <C-x><C-o>
+
 set expandtab       " Tabs are spaces
 set smarttab        " Insert tabs on the start of a line according to shiftwidth, not tabstop
 set tabstop=2       " Number of visual spaces per TAB
@@ -229,9 +251,6 @@ set copyindent      " copy the previous indentation on autoindenting
 set ttimeout ttimeoutlen=200
 
 set backspace=indent,eol,start " allow backspacing over everything in insert mode
-
-set history=1000 " Store lots of :cmdline history
-set undolevels=1000 " Use many muchos levels of undo
 
 set hidden " so that buffers with unsaved changes can be hidden
 set nobackup
@@ -280,11 +299,6 @@ set wildmode=list:longest,full " better
 set wildignore=*.o,*.obj,*~,*.swp,*.bak,*.pyc,*.class " Stuff to ignore when tab completing
 
 set wildcharm=<C-Z>
-
-set omnifunc=syntaxcomplete#Complete
-
-" See http://vim.wikia.com/wiki/VimTip1386
-:inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 let mapleader=" "       " Leader is space
 
@@ -397,16 +411,9 @@ nmap <C-N><C-N> <C-F2>
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 
-" Define menu for encoding
-noremenu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
-noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
-noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
-nnoremap <F10> :emenu Encoding.<C-Z>
-
-nnoremap <F5> <C-w>p
-inoremap <F5> <C-\><C-o><C-w>p
-nnoremap <C-F5> <C-w>P
-inoremap <C-F5> <C-\><C-o><C-w>P
+" Preview window
+nnoremap <F5> <C-w>P
+inoremap <F5> <C-\><C-o><C-w>P
 
 " Map <F7> and <S-F7> to jump between locations in a quickfix list, or
 " differences if in window in diff mode
@@ -416,8 +423,24 @@ nnoremap <expr> <silent> <S-F7> (&diff ? "[c" : ":cprev\<CR>")
 nnoremap <expr> <C-F7> (&diff ? ":llist!\<CR>:ll<Space>" : ":clist!\<CR>:cc<Space>")
 nnoremap <expr> <F8> (&diff ? ":ll<Space>" : ":cc<Space>")
 
-nnoremap <C-F8> :browse oldfiles<CR>
-inoremap <C-F8> <C-\><C-o>:browse oldfiles<CR>
+nnoremap <C-F9> :TagbarToggle<CR>
+imap <C-F9> <C-\><C-o><C-F9>
+
+nnoremap <F9> <C-w>p
+inoremap <F9> <C-\><C-o><C-w>p
+
+" Define menu for encoding
+noremenu Encoding.iso-latin1 :e ++enc=iso-8859-1<CR>
+noremenu Encoding.UTF-8 :e ++enc=utf-8<CR>
+noremenu Encoding.cp1251 :e ++enc=cp1251<CR>
+nnoremap <F10> :emenu Encoding.<C-Z>
+
+nnoremap <F11> :browse oldfiles<CR>
+inoremap <F11> <C-\><C-o>:browse oldfiles<CR>
+
+" Switch buffers (go to last used)
+nnoremap <F12> <C-^>
+imap <F12> <C-\><C-o><F12>
 
 " http://unix.stackexchange.com/questions/43526/is-it-possible-to-create-and-use-menus-in-terminal-based-vim
 if !empty(glob("$VIMRUNTIME/menu.vim"))
@@ -510,13 +533,6 @@ imap <silent> <Esc>[1;3D <C-\><C-o><S-F6>
 nnoremap <C-F4> :only<CR>
 inoremap <C-F4> <C-\><C-o>:only<CR>
 
-" Switch buffers (go to last used)
-nnoremap <F12> <C-^>
-imap <F12> <C-\><C-o><F12>
-
-nnoremap <C-F9> :TagbarToggle<CR>
-imap <C-F9> <C-\><C-o><C-F9>
-
 " List buffers and pick by number or name fragment
 nnoremap <S-F12> :ls!<CR>:buffer<Space>
 nnoremap <Leader>l :ls!<CR>:buffer<Space>
@@ -539,10 +555,6 @@ xnoremap <leader>p "_dP
 " Reload from disk, discarding changes
 nnoremap <Leader>R :edit!<CR>
 
-" Based on http://vim.wikia.com/wiki/Easy_edit_of_files_in_the_same_directory
-" Open menu to select files in the same dir
-nnoremap <Leader>ee :e <C-R>=expand('%:p:h') . '/'<CR><C-D>
-
 " Command line abbreviation: %% expands to file's directory.
 " Example: type :e %%/
 cabbr <expr> %% expand('%:p:h')
@@ -551,11 +563,15 @@ cabbr <expr> %% expand('%:p:h')
 " See http://vim.wikia.com/wiki/VimTip64
 nnoremap <Leader>cd :cd <C-R>=expand('%:p:h')<CR><CR>
 
+" Tree style for netrw
+let g:netrw_liststyle=3
+
 " Open menu to select file (from Current dir) to edit
 nnoremap <Leader>e :e <C-D>
 
-" Tree style for netrw
-let g:netrw_liststyle=3
+" Based on http://vim.wikia.com/wiki/Easy_edit_of_files_in_the_same_directory
+" Open menu to select files in the same dir
+nnoremap <Leader>ee :e <C-R>=expand('%:p:h') . '/'<CR><C-D>
 
 " Netrw directory listing at current dir
 nnoremap <Leader>E :E<CR>
@@ -623,7 +639,7 @@ endif
 " Setup some default ignores
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/](\.(git|hg|svn)|\_site)$',
-  \ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg)$',
+  \ 'file': '\v\.(exe|so|dll|class|png|jpg|jpeg|swp)$',
 \}
 " Use the nearest .git directory as the cwd
 " This makes a lot of sense if you are working on a project that is in version
