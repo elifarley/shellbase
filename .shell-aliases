@@ -9,10 +9,10 @@ alias bgg='\bg %'
 
 # Puts the newest file at the bottom, right above the prompt
 # l=long : h=human readable sizes : a=all : r=reverse sort : t=time sort : F=append indicator (one of */=>@|)
-alias lt='\ls --color=auto -lhFart'
+alias lt='\ls --color=auto -lhFArt'
 alias ll='\ls --color=auto -lhFa'
-alias ls='\ls --color=auto -ghFA'
-alias  l='\ls --color=auto -F'
+alias ls='\ls --color=auto -lhFAG'
+alias  l='\ls --color=auto -F --group-directories-first'
 alias dir='\dir --color=auto'
 alias vdir='\vdir --color=auto'
 
@@ -205,3 +205,6 @@ jqlog() {
   grep --line-buffered -E '^{' | while read -r LINE; do echo -E "$LINE" \
     | jq -r '.level + " " + .loggerName + "\t" + .message'; done
 }
+
+alias kopia='kopia --config-file=/home/ecc/.var/app/io.kopia.KopiaUI/config/kopia/repository.config'
+
