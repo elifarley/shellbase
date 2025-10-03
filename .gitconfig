@@ -7,47 +7,111 @@
 #   email = <email>
 
 [alias]
+  # ============================================================================
+  # INTROSPECTION
+  # ============================================================================
+
+  # Show all aliases (optionally search with: git alias <pattern>)
   alias = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
 
-# Status and Logging
+  # ============================================================================
+  # STATUS & LOGGING
+  # ============================================================================
+
+  # Enhanced status: shows latest commit hash + message, then status
   s = !echo "[$(git log -1 --format=%h)] $(git log -1 --pretty=%B)" && git status
+
+  # Log one-line with graph and decorations
   lol = log --oneline --graph --decorate
+
+  # Compact history with date, message, and author
   h = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
-  last = log -1 HEAD
+
+  # Show last commit details
+  last = log -1 HEAD # Comment
+
+  # List files changed in a commit (usage: git changed <commit-hash>)
   changed = diff-tree --no-commit-id --name-only -r
-  # Outgoing changes
+
+  # Outgoing changes: what will be pushed to upstream
   o = !git cherry -v @{upstream} && git status -sb && git diff --stat @{u}..HEAD
 
-# Staging Area (Index)
+  # ============================================================================
+  # STAGING AREA (INDEX)
+  # ============================================================================
+
+  # Show diff of staged files
   id = diff --cached
-  # Remove ALL files from staging area
+
+  # Remove ALL files from staging area (reset index)
   irma = reset HEAD
+
+  # Remove specific files from staging (new syntax)
   irm = restore --staged
+
+  # Untrack files but keep them locally (usage: git iforget <file>)
   iforget = rm --cached
 
-# Commits
-  back = !git reset --soft HEAD~${1:-1}
+  # ============================================================================
+  # COMMITS
+  # ============================================================================
+
+  # Undo commits safely: keeps changes staged (usage: git back [n])
+  back = "!f() { git reset --soft HEAD~${1:-1}; }; f"
+
+  # Undo commits completely: removes changes, protects local work (usage: git forget [n])
+  forget = "!f() { git reset --keep HEAD~${1:-1}; }; f"
+
+  # Add all and commit with message (usage: git ac "message")
   ac = !git add -A && git commit -m
-  # Commit Single:
+
+  # Commit tracked files with message
   ci = commit -am
+
+  # Commit staged files with message
   cis = commit -m
+
+  # Amend last commit with all tracked changes
   ca = commit -a --amend
+
+  # Amend last commit with staged changes only
   cas = commit --amend
 
-# Branching
+  # ============================================================================
+  # BRANCHING
+  # ============================================================================
+
+  # List local branches
   b = branch
+
+  # List all branches (local + remote)
   bls = branch -a
+
+  # Create and switch to new branch
   bc = switch -c
+
+  # Delete local branch (safe: only if merged)
   brm = branch -d
+
+  # Rename current branch
   bmv = branch -m
+
   # Create a new branch from a specific existing branch:
   #! br <new> <existing>
   #! switch <new>
-  # Push new branch after creating it:
-  pn = !git push -u origin ${1:?Missing new branch name to push}
 
-# Misc
+  # Push new branch to origin and set upstream tracking
+  # Usage: git pn <branch-name>
+  pn = "!git push -u origin ${1:?Missing new branch name to push}"
+
+  # ============================================================================
+  # UTILITIES
+  # ============================================================================
+
+  # Show object type (usage: git type <object>)
   type = cat-file -t
+
+  # Show object contents (usage: git dump <object>)
   dump = cat-file -p
 
 [pull]
