@@ -1,4 +1,9 @@
-# .bashrc
+# .bashrc: Interactive shell configuration
+# Aliases and functions: Need these in every shell
+# Prompt customization: Visual appearance
+# Shell options: set -o vi, shopt settings
+# Completion: Tab completion configuration
+# PATH modifications: Yes, this actually works fine here too!
 
 # Source global definitions
 test -r /etc/bashrc && . /etc/bashrc
@@ -232,16 +237,91 @@ shopt -s dotglob
 #When a glob expands to nothing, make it an empty string instead of the literal characters.
 shopt -s nullglob
 
+# Set MANPATH so it includes users' private man if it exists
+if [ -d "${HOME}/man" ]; then
+  MANPATH="${HOME}/man:${MANPATH}"
+fi
+
+# Set INFOPATH so it includes users' private info if it exists
+if [ -d "${HOME}/info" ]; then
+  INFOPATH="${HOME}/info:${INFOPATH}"
+fi
+
+# User specific environment and startup programs
+
+# See http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/
+
+# See http://serverfault.com/questions/226783/how-to-tell-gnu-screen-to-run-bash-profile-in-each-new-window
+# Use 'shell -$SHELL' in ~/.screenrc to make screen load ~/.bash_profile
+
+set_prompt () {
+  LastStatus=$? # Must come first!
+
+  ORANGE='\[\e[38;5;196m\]'
+  BRED='\[\e[1;31m\]'
+  RED='\[\e[0;31m\]'
+  Red='\[\e[01;31m\]'
+  BGREEN='\[\e[1;32m\]'
+  GREEN='\[\e[0;32m\]'
+  BBLUE='\[\e[1;34m\]'
+  BLUE='\[\e[0;34m\]'
+  Blue='\[\e[01;34m\]'
+  DarkBlue='\[\e[01;32m\]'
+  WHITE='\[\e[01;37m\]'
+  NORMAL='\[\e[00m\]'
+
+  FancyX='\342\234\227'
+  Checkmark='\342\234\223'
+
+  PS1="\n"
+
+  [[ $LastStatus == 0 ]] && \
+    PS1+="$GREEN$Checkmark" || \
+    PS1+="$RED$FancyX$LastStatus"
+
+  # Job count
+  PS1+=" ${Blue}\j"
+
+  # If root, just print the host in red. Otherwise, print the current user
+  # and host.
+  [[ $EUID == 0 ]] && \
+    PS1+=" ${RED}@\h" || \
+    PS1+=" ${BLUE}\u${DarkBlue}@${Blue}\h"
+
+  # HH:MM and history index
+  PS1+=" ${GREEN}\A #\!"
+
+  # [$PWD] with newline
+  PS1+=" ${Blue}[${DarkBlue}\w${Blue}]\n"
+
+  # Set GNU Screen's window title
+  #PS1+="\[\ek${HOSTNAME%%.*}\e\\\\\]"
+
+  PS1+="${Red}\$${NORMAL} "
+
+}; PROMPT_COMMAND='set_prompt'
+
 test -r ~/.shell-aliases && . ~/.shell-aliases
 test -r ~/.shell-env && . ~/.shell-env
 test -r ~/.env && . ~/.env # Secret keys
 test -f ~/.bash_private.gpg && \
   eval "$(gpg --decrypt ~/.bash_private.gpg 2>/dev/null)"
 
-test "$SSH_AUTH_SOCK" || {
-   eval $(ssh-agent)
-   ssh-add ~/.ssh/id_ed25519
-}
+# Set PATH so it includes user's private bin if it exists
+prepend_to_path "$HOME"/bin
+
+# Start ssh-agent if not running and SSH_AUTH_SOCK is not set
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    # Check if agent is already running
+    if [ -f ~/.ssh-agent-env ]; then
+        . ~/.ssh-agent-env > /dev/null
+    fi
+    # Verify agent is responsive
+    if ! ssh-add -l &>/dev/null; then
+        eval $(ssh-agent) > ~/.ssh-agent-env
+        ssh-add ~/.ssh/id_ed25519
+    fi
+fi
 
 # Activate Python in user's venv
 test -r ~/.venv/bin/activate && . ~/.venv/bin/activate

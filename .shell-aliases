@@ -16,6 +16,14 @@ alias  l='\ls --color=auto -F --group-directories-first'
 alias dir='\dir --color=auto'
 alias vdir='\vdir --color=auto'
 
+# Prepend dir to PATH if it exists and isn't already there
+prepend_to_path() {
+  local dir="$1"
+  if [ -d "$dir" ] && [[ ":$PATH:" != *":$dir:"* ]]; then
+    export PATH="$dir:$PATH"
+  fi
+}
+
 # Example: export lsofwrite; watch 'lsofwrite -c chromium -r5'
 lsofwrite()  {
   lsof "$@" | grep -E 'REG|DIR' | grep -Pv 'mem |^[^\s]+\s+\d+\s+[^\s]+\s+\d+r'
