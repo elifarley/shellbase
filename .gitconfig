@@ -19,22 +19,62 @@
   # ============================================================================
 
   # Enhanced status: shows latest commit hash + message, then status
-  s = !echo "[$(git log -1 --format=%h)] $(git log -1 --pretty=%B)" && git status
+  statusbase = "!f() { \
+    git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
+    git status \"$@\"; \
+    hash=$(git log -1 --format=%h 2>/dev/null || echo 'none'); \
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo 'detached'); \
+    msg=$(git log -1 --pretty=%B 2>/dev/null | head -1 || echo 'No commits yet'); \
+    tag=$(git describe --tags --exact-match 2>/dev/null); \
+    printf '\\n[\\033[1;32m%s\\033[0m:\\033[1;36m%s\\033[0m]' \"$branch\" \"$hash\"; \
+    [ -n \"$tag\" ] && printf ' (🏷 \\033[1;35m%s\\033[0m)' \"$tag\"; \
+    printf ' \\033[33m%s\\033[0m\\n' \"$msg\"; \
+  }; f"
+
+  # No untracked files shown
+  s = !git statusbase -uno \"$@\"
+  sa = !git statusbase \"$@\"
 
   # Log one-line with graph and decorations
-  l = log --oneline --graph --decorate
+  l = log --oneline --graph --decorate --color
 
   # Compact history with date, message, and author
-  h = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  ll = log --graph --pretty=format:'%C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset) %s' --date=short
+
+  # All branches
+  la = "!f() { git ll --all \"$@\"; }; f"
+
+  # Search commits by message
+  lf = "!f() { t=\"${1:?(Search commits by MESSAGE) Missing search term}\"; shift; git ll --grep=\"$t\" \"$@\"; }; f"
+
+  # Search commits by code changes (String added or removed)
+  # Ex: Search in specific file
+  # git lc "getUserById" -- src/users.js
+  # Search All Branches:
+  # git lc "term" --all
+  # Case-insensitive search: append `-i`
+  lc = "!f() { t=\"${1:?(Search commits by CODE CHANGES) Missing search term}\"; shift; git ll -S \"$t\" \"$@\"; }; f"
+
+  # Search commits by RegEx changes
+  lcr = "!f() { t=\"1:?(Search commits by RegEx CODE CHANGES) Missing search term}\"; shift; git ll -G \"$t\" \"$@\"; }; f"
+
+  # Commits by specific author
+  lau = "!f() { t=\"${1:?(Search commits by AUTHOR) Missing search term}\"; shift; git ll --author=\"$t\" \"$@\"; }; f"
+
+  # Commits in date range
+  ld = "!f() { git ll --since=\"$1\" --until=\"${2:-now}\"; }; f"
+
+  # File history with patches (-p)
+  lp = "!f() { git ll -p \"$@\"; }; f"
 
   # Show last commit with list of changed files
   last = log -1 --stat HEAD
 
   # Show last commit details
-  lasts = log -1 HEAD # Short. No files shown
+  lasts = log -1 --shortstat HEAD # Short. No files shown
 
-  # Show last commit with full diff
-  lastd = log -1 -p HEAD
+  # Show last commit with PATCH (-p)
+  lastp = log -1 -p HEAD
 
   # List files changed in a commit (usage: git changed <commit-hash>)
   changed = diff-tree --no-commit-id --name-only -r
@@ -90,11 +130,27 @@
   # COMMITS
   # ============================================================================
 
-  # Undo commits safely: keeps changes staged (usage: git back [n])
-  back = "!f() { git reset --soft HEAD~${1:-1}; }; f"
+  # Undo commits safely: keeps changes staged (usage: git back [n|COMMIT])
+  # git back        # Undo last commit, keep changes staged
+  # git back 5      # Undo last 5 commits
+  # git back HEAD^^ # Undo 2 commits (alternative syntax)
+  # git back a1b2c3 # Reset to specific commit
+  back = "!f() { case \"${1:-}\" in \
+      '') target='HEAD~1' ;; \
+      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
+      *) target=\"$1\" ;; \
+    esac; \
+    git reset --soft \"$target\"; \
+  }; f"
 
   # Undo commits completely: removes changes, protects local work (usage: git forget [n])
-  forget = "!f() { git reset --keep HEAD~${1:-1}; }; f"
+  forget = "!f() { case \"${1:-}\" in \
+      '') target='HEAD~1' ;; \
+      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
+      *) target=\"$1\" ;; \
+    esac; \
+    git reset --keep \"$target\"; \
+  }; f"
 
   # Add all and commit with message (usage: git ac "message")
   ac = !git add -A && git commit -m
@@ -115,14 +171,14 @@
   # STASH
   # ============================================================================
 
-  # Save with message and include untracked files (usage: git ssave "message")
-  ssave = "!f() { git stash push -u -m \"${1:?Usage: ssave '<message>'}\"; }; f"
-
   # Quick stash: tracked files only, auto-generated message
-  ss = stash push
+  ssave = stash push
+
+  # Save with message and include untracked files (usage: git ssave "message")
+  ssavea = "!f() { git stash push -u -m \"${1:?Usage: ssavea '<message>'}\"; }; f"
 
   # Stash everything including ignored files
-  ssa = stash push -a
+  ssavefull = stash push -a
 
   # List stashes with beautiful formatting
   sls = stash list --pretty=format:'%C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s'
