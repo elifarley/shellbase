@@ -47,18 +47,29 @@
   }; f"
 
   # Search commits by message
-  lf = "!f() { t=\"${1:?(Search commits by MESSAGE) Missing search term}\"; shift; git ll --grep=\"$t\" \"$@\"; }; f"
+  lf = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' && { \
+      printf '\nlf: Search commits by MESSAGE.\n-i: Ignore case.\n-p: Show patches.\n--all: Consider ALL branches.\nUsage: git lf <search-term> [-ip] [--all]' >&2; return 1; }; \
+    t=\"$1\"; shift; \
+    git ll --grep=\"$t\" \"$@\"; \
+  }; f"
 
-  # Search commits by code changes (String added or removed)
   # Ex: Search in specific file
   # git lc "getUserById" -- src/users.js
-  # Search All Branches:
-  # git lc "term" --all
-  # Case-insensitive search: append `-i`
-  lc = "!f() { t=\"${1:?(Search commits by CODE CHANGES) Missing search term}\"; shift; git ll -S \"$t\" \"$@\"; }; f"
+  lc = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' && { \
+      printf '\nlc: Search commits by CODE CHANGES in diff.\n-i: Ignore case.\n-p: Show patches.\n--all: Consider ALL branches.\n-- file: Restrict to a file.\nUsage: git lc <search-term> [-ip] [--all] [-- file]' >&2; return 1; }; \
+    t=\"$1\"; shift; \
+    git ll -S \"$t\" \"$@\"; \
+  }; f"
 
   # Search commits by RegEx changes
-  lcr = "!f() { t=\"1:?(Search commits by RegEx CODE CHANGES) Missing search term}\"; shift; git ll -G \"$t\" \"$@\"; }; f"
+  lcr = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' && { \
+      printf '\nlcr: Search commits by RegEx CODE CHANGES in diff.\n-i: Ignore case.\n-p: Show patches.\n--all: Consider ALL branches.\n-- file: Restrict to a file.\nUsage: git lcr <RegEx> [-ip] [--all] [-- file]' >&2; return 1; }; \
+    t=\"$1\"; shift; \
+    git ll -G \"$t\" \"$@\"; \
+  }; f"
 
   # Commits by specific author
   lau = "!f() { t=\"${1:?(Search commits by AUTHOR) Missing search term}\"; shift; git ll --author=\"$t\" \"$@\"; }; f"
