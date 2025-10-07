@@ -7,12 +7,10 @@
 #   email = <email>
 
 [pretty]
-    log1   = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset) %s
-    commit = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset)%n%C(yellow)%s%C(reset)%n%n%b
-    short = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | \
-            %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset)%n\
-            %C(yellow)%s%C(reset)%n%n%b
-    stash = %C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s
+    log1        = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
+    log1reldate = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
+    logbody       = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s%C(reset)%n%b
+    stash  = %C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s
 
 [alias]
   # ============================================================================
@@ -23,20 +21,8 @@
   alias = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
 
   # ============================================================================
-  # STATUS & LOGGING
+  # LOGGING
   # ============================================================================
-
-  # Enhanced status: shows latest commit hash + message, then status
-  statusbase = "!f() { \
-    git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
-    git status \"$@\"; \
-    git log -1 --oneline --shortstat; \
-  }; f"
-
-  # No untracked files shown
-  s = !git statusbase -uno \"$@\"
-  # Untracked files are also shown
-  sa = !git statusbase \"$@\"
 
   # Log one-line with graph and decorations
   l = log --oneline --graph --decorate --color
@@ -121,9 +107,6 @@
   # STAGING AREA (INDEX)
   # ============================================================================
 
-  # Show diff of staged files
-  id = diff --cached
-
   # Remove ALL files from staging area (reset index)
   irma = reset HEAD
 
@@ -134,28 +117,40 @@
   iforget = rm --cached
 
   # ============================================================================
-  # COMMITS
+  #  STATUS & COMMITS
   # ============================================================================
 
-  # -------- Commit-show ladder (replaces last/lasts/lastp) ----------
-  #   sh    : metadata only                     (least noise)
-  #   shs   : + changed files + shortstat
-  #   shsp  : + full patch                      (most detail)
-  sh    = show --no-patch      --pretty=short --date=short
-  shs   = show --name-status   --shortstat --pretty=short --date=short
-  shsp  = show -p              --pretty=short --date=short
+  # Enhanced status: shows latest commit hash + message, then status
+  statusbase = "!f() { \
+    git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
+    git status -sb \"$@\"; \
+  }; f"
 
-  # Show last commit with list of changed files
-  last = log -1 --stat HEAD
+  # No untracked files shown
+  s = !git statusbase -uno \"$@\"
+  # Untracked files are also shown
+  sa = !git statusbase --long \"$@\"
 
-  # Show last commit details
-  lasts = log -1 --shortstat HEAD # Short. No files shown
+  # Show status with patch of staged changes
+  ss = "!f() { \
+    git s \"$@\"; \
+    printf '─────────────────── Staged changes:\n'; \
+    git diff --cached; \
+    git diff --cached --stat; \
+  }; f"
 
-  # Show last commit with PATCH (-p)
-  lastp = log -1 -p HEAD
+  # Show specific commit (defaults to last) with list of changed files
+  sh = log -1 --stat --pretty=logbody --date=human-local
+  shp = show --pretty=logbody --date=human-local
+  # Show files changed in a commit (usage: git shc <commit-hash>)
+  shc  = diff-tree --no-commit-id --name-only -r
+  shf = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' && { \
+      printf '\nshf: Show file at a commit (with patch).\nUsage: git shf <file>' >&2; return 1; }; \
+    t=\"$1\"; shift; \
+    git shp \"$@\" -- \"$GIT_PREFIX$t\"; \
+  }; f"
 
-  # List files changed in a commit (usage: git changed <commit-hash>)
-  changed = diff-tree --no-commit-id --name-only -r
 
   # Undo commits safely: keeps changes staged (usage: git back [n|COMMIT])
   # git back        # Undo last commit, keep changes staged
@@ -163,6 +158,7 @@
   # git back HEAD^^ # Undo 2 commits (alternative syntax)
   # git back a1b2c3 # Reset to specific commit
   back = "!f() { case \"${1:-}\" in \
+      '-h'|'--help') printf '\nback: Branch goes back N commits (defaults to 1) or to a specific commit (changes are staged).\nUsage: git back [N|COMMIT]' >&2; return 1;; \
       '') target='HEAD~1' ;; \
       [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
       *) target=\"$1\" ;; \
@@ -172,6 +168,7 @@
 
   # Undo commits completely: removes changes, protects local work (usage: git forget [n])
   forget = "!f() { case \"${1:-}\" in \
+      '-h'|'--help') printf '\nforget: Branch goes back N commits (defaults to 1) or to a specific commit (changes are LOST, local changes preserved).\nUsage: git forget [N|COMMIT]' >&2; return 1;; \
       '') target='HEAD~1' ;; \
       [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
       *) target=\"$1\" ;; \
@@ -182,11 +179,11 @@
   # Add all and commit with message (usage: git ac "message")
   ac = !git add -A && git commit -m
 
-  # Commit tracked files with message
-  ci = commit -am
+  # Commit tracked files
+  ci = commit -a
 
-  # Commit staged files with message
-  cis = commit -m
+  # Commit staged files
+  cis = commit
 
   # Amend last commit with all tracked changes
   ca = commit -a --amend
