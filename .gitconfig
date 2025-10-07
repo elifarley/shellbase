@@ -133,17 +133,45 @@
 
   # Show status with patch of staged changes
   ss = "!f() { \
-    git s \"$@\"; \
-    printf '─────────────────── Staged changes:\n'; \
-    git diff --cached; \
-    git diff --cached --stat; \
+    test \"$1\" = '-h' && { \
+      printf '\nss: Show status with patch of staged changes.\nUsage: git ss [file]' >&2; return 1; }; \
+    git s; \
+    if test $# -eq 0; then \
+      printf '─────────────────── Staged changes:\n'; \
+      git diff --cached; \
+      git diff --cached --stat; \
+    else \
+      t=\"$1\"; shift; \
+      printf '─────────────────── Staged changes for FILE:\n'; \
+      git diff --cached \"$@\" -- \"${GIT_PREFIX}$t\"; \
+      git diff --cached --stat \"$@\"-- \"${GIT_PREFIX}$t\"; \
+    fi; \
+  }; f"
+
+  # Show status with patch of working tree changes
+  sw = "!f() { \
+    test \"$1\" = '-h' && { \
+      printf '\nsw: Show status with patch of working tree changes.\nUsage: git sw [file]' >&2; return 1; }; \
+    git s; \
+    if test $# -eq 0; then \
+      printf '─────────────────── Working tree changes:\n'; \
+      git diff; \
+      git diff --stat; \
+    else \
+      t=\"$1\"; shift; \
+      printf '─────────────────── Working tree changes for FILE:\n'; \
+      git diff \"$@\" -- \"${GIT_PREFIX}$t\"; \
+      git diff --stat \"$@\"-- \"${GIT_PREFIX}$t\"; \
+    fi; \
   }; f"
 
   # Show specific commit (defaults to last) with list of changed files
   sh = log -1 --stat --pretty=logbody --date=human-local
+  # Show specific commit (defaults to last) with patch
   shp = show --pretty=logbody --date=human-local
   # Show files changed in a commit (usage: git shc <commit-hash>)
   shc  = diff-tree --no-commit-id --name-only -r
+  # Show file diff in a commit
   shf = "!f() { \
     test $# -eq 0 -o \"$1\" = '-h' && { \
       printf '\nshf: Show file at a commit (with patch).\nUsage: git shf <file>' >&2; return 1; }; \
