@@ -191,6 +191,30 @@
   # Amend last commit with staged changes only
   cas = commit --amend
 
+  # ──────────────────────────────────────────────────────────────────
+  #  INTERACTIVE COMMITS
+  # ──────────────────────────────────────────────────────────────────
+
+  # Add patches interactively (no commit)
+  cap = add --patch
+
+  # Commit patches interactively (most common workflow)
+  # Stages hunks interactively, then commits
+  cii = "!f() { \
+    git add --patch && \
+    git status -sb && \
+    printf '\\n' && \
+    git diff --cached --stat && \
+    printf '\\nCommit message: ' && \
+    read -r msg && \
+    test -n \"$msg\" && git commit -m \"$msg\" || { \
+      printf 'Aborted (empty message)\\n' >&2; return 1; \
+    }; \
+  }; f"
+
+  # Full interactive staging menu (git add -i wrapper)
+  cim = "!git add --interactive && git status -sb && git commit"
+
   # Outgoing changes: what will be pushed to upstream
   o = !git cherry -v @{upstream} && git status -sb && git diff --stat @{u}..HEAD
 
