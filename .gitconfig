@@ -144,7 +144,7 @@
       t=\"$1\"; shift; \
       printf '─────────────────── Staged changes for FILE:\n'; \
       git diff --cached \"$@\" -- \"${GIT_PREFIX}$t\"; \
-      git diff --cached --stat \"$@\"-- \"${GIT_PREFIX}$t\"; \
+      git diff --cached --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
     fi; \
   }; f"
 
@@ -161,7 +161,7 @@
       t=\"$1\"; shift; \
       printf '─────────────────── Working tree changes for FILE:\n'; \
       git diff \"$@\" -- \"${GIT_PREFIX}$t\"; \
-      git diff --stat \"$@\"-- \"${GIT_PREFIX}$t\"; \
+      git diff --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
     fi; \
   }; f"
 
