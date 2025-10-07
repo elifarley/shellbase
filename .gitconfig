@@ -38,6 +38,14 @@
   # All branches
   la = "!f() { git ll --all \"$@\"; }; f"
 
+  # Log commits to a file
+  llf = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' && { \
+      printf 'llf: Log commits to a file.\n-p: show patches.\nUsage: git llf <file> [-p]' >&2; return 1; }; \
+    t=\"$1\"; shift; \
+    git ll \"$@\" --follow -- \"$GIT_PREFIX$t\"; \
+  }; f"
+
   # Search commits by message
   lf = "!f() { t=\"${1:?(Search commits by MESSAGE) Missing search term}\"; shift; git ll --grep=\"$t\" \"$@\"; }; f"
 
