@@ -6,6 +6,14 @@
 #   name = <name>
 #   email = <email>
 
+[pretty]
+    log1   = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset) %s
+    commit = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset)%n%C(yellow)%s%C(reset)%n%n%b
+    short = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | \
+            %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset)%n\
+            %C(yellow)%s%C(reset)%n%n%b
+    stash = %C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s
+
 [alias]
   # ============================================================================
   # INTROSPECTION
@@ -27,13 +35,14 @@
 
   # No untracked files shown
   s = !git statusbase -uno \"$@\"
+  # Untracked files are also shown
   sa = !git statusbase \"$@\"
 
   # Log one-line with graph and decorations
   l = log --oneline --graph --decorate --color
 
-  # Compact history with date, message, and author
-  ll = log --graph --pretty=format:'%C(yellow)%h%C(reset) %C(blue)%ad%C(reset) | %C(magenta)[%an]%C(reset) %C(auto)%d%C(reset) %s' --date=short
+  # Log one-line with date, author and message
+  ll = log --graph --pretty=log1 --date=short
 
   # All branches
   la = "!f() { git ll --all \"$@\"; }; f"
@@ -79,21 +88,6 @@
 
   # File history with patches (-p)
   lp = "!f() { git ll -p \"$@\"; }; f"
-
-  # Show last commit with list of changed files
-  last = log -1 --stat HEAD
-
-  # Show last commit details
-  lasts = log -1 --shortstat HEAD # Short. No files shown
-
-  # Show last commit with PATCH (-p)
-  lastp = log -1 -p HEAD
-
-  # List files changed in a commit (usage: git changed <commit-hash>)
-  changed = diff-tree --no-commit-id --name-only -r
-
-  # Outgoing changes: what will be pushed to upstream
-  o = !git cherry -v @{upstream} && git status -sb && git diff --stat @{u}..HEAD
 
   # ============================================================================
   # FILE INSPECTION
@@ -143,6 +137,26 @@
   # COMMITS
   # ============================================================================
 
+  # -------- Commit-show ladder (replaces last/lasts/lastp) ----------
+  #   sh    : metadata only                     (least noise)
+  #   shs   : + changed files + shortstat
+  #   shsp  : + full patch                      (most detail)
+  sh    = show --no-patch      --pretty=short --date=short
+  shs   = show --name-status   --shortstat --pretty=short --date=short
+  shsp  = show -p              --pretty=short --date=short
+
+  # Show last commit with list of changed files
+  last = log -1 --stat HEAD
+
+  # Show last commit details
+  lasts = log -1 --shortstat HEAD # Short. No files shown
+
+  # Show last commit with PATCH (-p)
+  lastp = log -1 -p HEAD
+
+  # List files changed in a commit (usage: git changed <commit-hash>)
+  changed = diff-tree --no-commit-id --name-only -r
+
   # Undo commits safely: keeps changes staged (usage: git back [n|COMMIT])
   # git back        # Undo last commit, keep changes staged
   # git back 5      # Undo last 5 commits
@@ -180,6 +194,9 @@
   # Amend last commit with staged changes only
   cas = commit --amend
 
+  # Outgoing changes: what will be pushed to upstream
+  o = !git cherry -v @{upstream} && git status -sb && git diff --stat @{u}..HEAD
+
   # ============================================================================
   # STASH
   # ============================================================================
@@ -194,7 +211,7 @@
   ssavefull = stash push -a
 
   # List stashes with beautiful formatting
-  sls = stash list --pretty=format:'%C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s'
+  sls = stash list --pretty=stash
 
   # Preview stash contents with full diff (usage: git speek [stash@{n}])
   speek = "!f() { git stash show -p ${1:-stash@{0}}; }; f"
