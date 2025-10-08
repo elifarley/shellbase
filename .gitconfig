@@ -109,18 +109,73 @@
   # Show when file was added (usage: git file-born <file>)
   fborn = log --follow --diff-filter=A --find-renames=40% --
 
-  # ============================================================================
-  # STAGING AREA (INDEX)
-  # ============================================================================
+  # ═══════════════════════════════════════════════════════════════════
+  #  UNSTAGING / Undo Staging (us*)
+  # ═══════════════════════════════════════════════════════════════════
 
-  # Remove ALL files from staging area (reset index)
-  irma = reset HEAD
+  # Unstage specific files (most common - shortest alias)
+  # Usage: git us <file> [<file2> ...]
+  us = restore --staged
 
-  # Remove specific files from staging (new syntax)
-  irm = restore --staged
+  # Unstage all files (nuclear option)
+  # Usage: git usa
+  usa = reset HEAD
 
-  # Untrack files but keep them locally (usage: git iforget <file>)
-  iforget = rm --cached
+  # Stop tracking files but keep them locally (dangerous!)
+  # Usage: git untrack <file>
+  # Common use: git untrack .env (after accidentally committing secrets)
+  untrack = rm --cached
+
+  # Uncommit. Undo commits safely: keeps changes staged (usage: git back [n|COMMIT])
+  # git back        # Undo last commit, keep changes staged
+  # git back 5      # Undo last 5 commits
+  # git back HEAD^^ # Undo 2 commits (alternative syntax)
+  # git back a1b2c3 # Reset to specific commit
+  back = "!f() { case \"${1:-}\" in \
+      '-h'|'--help') printf '\nback: Branch goes back N commits (defaults to 1) or to a specific commit (changes are staged).\nUsage: git back [N|COMMIT]' >&2; return 1;; \
+      '') target='HEAD~1' ;; \
+      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
+      *) target=\"$1\" ;; \
+    esac; \
+    git reset --soft \"$target\"; \
+  }; f"
+
+  # Undo last commit and unstage changes (but keep in working tree)
+  # Usage: git undo [<n>]  (defaults to 1 commit)
+  # Replaces: git reset HEAD~1 (or git reset --mixed)
+  undo = "!f() { \
+    n=\"${1:-1}\"; \
+    git reset HEAD~\"$n\"; \
+  }; f"
+
+  # Forget commits and their changes completely: removes the commit changes, but  protects local work (usage: git forget [n])
+  forget = "!f() { case \"${1:-}\" in \
+      '-h'|'--help') printf '\nforget: Branch goes back N commits (defaults to 1) or to a specific commit (changes are LOST, local changes preserved).\nUsage: git forget [N|COMMIT]' >&2; return 1;; \
+      '') target='HEAD~1' ;; \
+      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
+      *) target=\"$1\" ;; \
+    esac; \
+    git reset --keep \"$target\"; \
+  }; f"
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  DISCARD CHANGES (destructive, explicit names)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Discard changes to specific files
+  # Usage: git discard <file>...
+  # Replaces: git restore <file>
+  discard = restore
+
+  # Discard ALL uncommitted changes (working tree + staging area)
+  # Usage: git discard-all
+  # Replaces: git reset --hard
+  discard-all = reset --hard
+
+  # Rewind to a specific commit, discarding everything after it
+  # Usage: git rewind <commit>
+  # Replaces: git reset --hard <commit>
+  rewind = reset --hard
 
   # ============================================================================
   #  STATUS & COMMITS
@@ -183,30 +238,6 @@
       printf '\nshf: Show file at a commit (with patch).\nUsage: git shf <file>' >&2; return 1; }; \
     t=\"$1\"; shift; \
     git shp \"$@\" -- \"$GIT_PREFIX$t\"; \
-  }; f"
-
-  # Undo commits safely: keeps changes staged (usage: git back [n|COMMIT])
-  # git back        # Undo last commit, keep changes staged
-  # git back 5      # Undo last 5 commits
-  # git back HEAD^^ # Undo 2 commits (alternative syntax)
-  # git back a1b2c3 # Reset to specific commit
-  back = "!f() { case \"${1:-}\" in \
-      '-h'|'--help') printf '\nback: Branch goes back N commits (defaults to 1) or to a specific commit (changes are staged).\nUsage: git back [N|COMMIT]' >&2; return 1;; \
-      '') target='HEAD~1' ;; \
-      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
-      *) target=\"$1\" ;; \
-    esac; \
-    git reset --soft \"$target\"; \
-  }; f"
-
-  # Undo commits completely: removes changes, protects local work (usage: git forget [n])
-  forget = "!f() { case \"${1:-}\" in \
-      '-h'|'--help') printf '\nforget: Branch goes back N commits (defaults to 1) or to a specific commit (changes are LOST, local changes preserved).\nUsage: git forget [N|COMMIT]' >&2; return 1;; \
-      '') target='HEAD~1' ;; \
-      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
-      *) target=\"$1\" ;; \
-    esac; \
-    git reset --keep \"$target\"; \
   }; f"
 
   # Add all and commit with message (usage: git ac "message")
