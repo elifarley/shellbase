@@ -15,8 +15,8 @@
 [pretty]
     log1        = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
     log1reldate = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
-    logbody       = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset)%n%s%C(reset)%n%b
-    stash  = %C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s
+    logbody     = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset)%n%s%C(reset)%n%b
+    stash       = %C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s
 
 [alias]
   # ============================================================================
@@ -129,6 +129,12 @@
   # Usage: git aa
   aa = add -A
 
+  # Invoke interactive add menu
+  ai = add --interactive
+
+  # Add patches interactively (no commit)
+  ap = add --patch
+
   # ═══════════════════════════════════════════════════════════════════
   #  UNSTAGING / Undo Staging (us*)
   # ═══════════════════════════════════════════════════════════════════
@@ -162,7 +168,7 @@
   #  UNDO COMMITS (non-destructive: keeps your work)
   # ═══════════════════════════════════════════════════════════════════
 
-  # Undo commits safely: keeps changes staged
+  # Undo commits safely: HEAD goes back, keeps changes staged
   # Usage: git back [N|COMMIT]
   #   git back        → undo last commit, keep changes staged
   #   git back 3      → undo last 3 commits, keep changes staged
@@ -278,87 +284,21 @@
     git reset --hard \"$target\"; \
   }; f"
 
-  # ============================================================================
-  #  STATUS & COMMITS
-  # ============================================================================
-
-  # Enhanced status: shows latest commit hash + message, then status
-  statusbase = "!f() { \
-    git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
-    git status -sb \"$@\"; \
-  }; f"
-
-  # No untracked files shown
-  s = !git statusbase -uno \"$@\"
-  # Untracked files are also shown
-  sa = !git statusbase --long \"$@\"
-
-  # Show status with patch of staged changes
-  ss = "!f() { \
-    test \"$1\" = '-h' && { \
-      printf '\nss: Show status with patch of staged changes.\nUsage: git ss [file]' >&2; return 1; }; \
-    if test $# -eq 0; then \
-      printf '─────────────────── Staged changes:\n'; \
-      git diff --cached; \
-      git diff --cached --stat; \
-    else \
-      t=\"$1\"; shift; \
-      printf '─────────────────── Staged changes for FILE:\n'; \
-      git diff --cached \"$@\" -- \"${GIT_PREFIX}$t\"; \
-      git diff --cached --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
-    fi; \
-    git s; \
-  }; f"
-
-  # Show status with patch of working tree changes
-  sw = "!f() { \
-    test \"$1\" = '-h' && { \
-      printf '\nsw: Show status with patch of working tree changes.\nUsage: git sw [file]' >&2; return 1; }; \
-    if test $# -eq 0; then \
-      printf '─────────────────── Working tree changes:\n'; \
-      git diff; \
-      git diff --stat; \
-    else \
-      t=\"$1\"; shift; \
-      printf '─────────────────── Working tree changes for FILE:\n'; \
-      git diff \"$@\" -- \"${GIT_PREFIX}$t\"; \
-      git diff --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
-    fi; \
-    git s; \
-  }; f"
-
-  # Show specific commit (defaults to last) with list of changed files
-  sh = log -1 --stat --pretty=logbody --date=human-local
-  # Show specific commit (defaults to last) with patch
-  shp = show --pretty=logbody --date=human-local
-  # Show files changed in a commit (usage: git shc <commit-hash>)
-  shc  = diff-tree --no-commit-id --name-only -r
-  # Show file diff in a commit
-  shf = "!f() { \
-    test $# -eq 0 -o \"$1\" = '-h' && { \
-      printf '\nshf: Show file at a commit (with patch).\nUsage: git shf <file>' >&2; return 1; }; \
-    t=\"$1\"; shift; \
-    git shp \"$@\" -- \"$GIT_PREFIX$t\"; \
-  }; f"
+  # Commit staged files
+  c = commit
 
   # Commit tracked files
-  ci = commit -a
+  ca = commit -a
 
-  # Commit staged files
-  cis = commit
+  # Modify (amend) last commit with staged changes only
+  cm = commit --amend
 
-  # Amend last commit with all tracked changes
-  ca = commit -a --amend
-
-  # Amend last commit with staged changes only
-  cas = commit --amend
+  # Modify (amend) last commit with all tracked changes
+  cma = commit -a --amend
 
   # ──────────────────────────────────────────────────────────────────
   #  INTERACTIVE COMMITS
   # ──────────────────────────────────────────────────────────────────
-
-  # Add patches interactively (no commit)
-  cap = add --patch
 
   # Commit patches interactively (most common workflow)
   # Stages hunks interactively, then commits
@@ -425,6 +365,69 @@
 
   # Undo WIP: reset soft to remove WIP commit
   unwip = "!git log -1 --format='%s' | grep -q '^WIP$' && git reset --soft HEAD~1 || echo 'No WIP commit found'"
+
+  # ============================================================================
+  #  Status (s?) & SHow object info (sh*)
+  # ============================================================================
+
+  # Enhanced status: shows latest commit hash + message, then status
+  statusbase = "!f() { \
+    git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
+    git status -sb \"$@\"; \
+  }; f"
+
+  # No untracked files shown
+  s = !git statusbase -uno \"$@\"
+  # Untracked files are also shown
+  sa = !git statusbase --long \"$@\"
+
+  # Show status with patch of staged changes
+  ss = "!f() { \
+    test \"$1\" = '-h' && { \
+      printf '\nss: Show status with patch of staged changes.\nUsage: git ss [file]' >&2; return 1; }; \
+    if test $# -eq 0; then \
+      printf '─────────────────── Staged changes:\n'; \
+      git diff --cached; \
+      git diff --cached --stat; \
+    else \
+      t=\"$1\"; shift; \
+      printf '─────────────────── Staged changes for FILE:\n'; \
+      git diff --cached \"$@\" -- \"${GIT_PREFIX}$t\"; \
+      git diff --cached --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
+    fi; \
+    git s; \
+  }; f"
+
+  # Show status with patch of working tree changes
+  sw = "!f() { \
+    test \"$1\" = '-h' && { \
+      printf '\nsw: Show status with patch of working tree changes.\nUsage: git sw [file]' >&2; return 1; }; \
+    if test $# -eq 0; then \
+      printf '─────────────────── Working tree changes:\n'; \
+      git diff; \
+      git diff --stat; \
+    else \
+      t=\"$1\"; shift; \
+      printf '─────────────────── Working tree changes for FILE:\n'; \
+      git diff \"$@\" -- \"${GIT_PREFIX}$t\"; \
+      git diff --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
+    fi; \
+    git s; \
+  }; f"
+
+  # Show specific commit (defaults to last) with list of changed files
+  sh = log -1 --stat --pretty=logbody --date=human-local
+  # Show specific commit (defaults to last) with patch
+  shp = show --pretty=logbody --date=human-local
+  # Show files changed in a commit (usage: git shc <commit-hash>)
+  shc  = diff-tree --no-commit-id --name-only -r
+  # Show file diff in a commit
+  shf = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' && { \
+      printf '\nshf: Show file at a commit (with patch).\nUsage: git shf <file>' >&2; return 1; }; \
+    t=\"$1\"; shift; \
+    git shp \"$@\" -- \"$GIT_PREFIX$t\"; \
+  }; f"
 
   # ═══════════════════════════════════════════════════════════════════
   #  TAG MANAGEMENT (t*)
@@ -546,20 +549,65 @@
   # BRANCHING
   # ============================================================================
 
+  # ═══════════════════════════════════════════════════════════════════
+  #  BRANCH NAVIGATION (most common → shortest)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Switch to existing branch (MOST COMMON - deserves shortest alias)
+  # Usage: git b <branch>
+  b = switch
+
+  # Go back to previous branch (like 'cd -')
+  # Usage: git b-
+  b- = switch -
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  BRANCH LISTING
+  # ═══════════════════════════════════════════════════════════════════
+
   # List local branches
-  b = branch
+  bl = branch
 
   # List all branches (local + remote)
-  bls = branch -a
+  bla = branch -a
+
+  # List remote branches only
+  blr = branch -r
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  BRANCH CREATION / MODIFICATION
+  # ═══════════════════════════════════════════════════════════════════
 
   # Create and switch to new branch
+  # Usage: git bc <branch-name>
   bc = switch -c
 
-  # Delete local branch (safe: only if merged)
-  brm = branch -d
-
   # Rename current branch
-  bmv = branch -m
+  # Usage: git br <new-name>
+  br = branch -m
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  BRANCH DELETION
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Delete local branch (safe: only if merged)
+  # Usage: git bdel <branch>
+  bdel = branch -d
+
+  # Force delete local branch (dangerous: deletes even if unmerged)
+  # Usage: git bdelf <branch>
+  bdelf = branch -D
+
+  # Delete remote branch
+  # Usage: git bdelr <branch>
+  bdelr = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' && { \
+      printf 'bdelr: Delete remote branch\\n' >&2; \
+      printf 'Usage: git bdelr <branch>\\n' >&2; \
+      return 1; \
+    }; \
+    git push origin --delete \"$1\"; \
+  }; f"
 
   # Create a new branch from a specific existing branch:
   #! br <new> <existing>
@@ -602,9 +650,79 @@
     git branch --no-merged \"$commit\"; \
   }; f"
 
+  # ═══════════════════════════════════════════════════════════════════
+  #  REBASE OPERATIONS
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Rebase current branch onto another branch
+  # Usage: git rb <branch>
+  #   git rb main       → rebase current branch onto main
+  #   git rb origin/main → rebase onto remote main
+  rb = rebase
+
+  # Rebase interactive (clean up commits)
+  # Usage: git rbi [commit]
+  #   git rbi           → interactive rebase from root
+  #   git rbi HEAD~5    → interactive rebase last 5 commits
+  #   git rbi main      → interactive rebase since main
+  rbi = "!f() { \
+    if [ $# -eq 0 ]; then \
+      git rebase -i --root; \
+    else \
+      git rebase -i \"$1\"; \
+    fi; \
+  }; f"
+
+  # Continue rebase after resolving conflicts
+  rbc = rebase --continue
+
+  # Abort rebase (go back to before rebase)
+  rba = rebase --abort
+
+  # Skip current commit during rebase
+  rbs = rebase --skip
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  MERGE OPERATIONS
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Merge branch into current branch
+  # Usage: git m <branch>
+  m = merge
+
+  # Merge with fast-forward only (fails if not possible)
+  # Usage: git mff <branch>
+  mff = merge --ff-only
+
+  # Merge with no fast-forward (always create merge commit)
+  # Usage: git mnf <branch>
+  mnf = merge --no-ff
+
+  # Abort merge (go back to before merge)
+  ma = merge --abort
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  PUSH / PULL BRANCHES
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Push current branch and set upstream tracking
+  # Usage: git bpush
+  bpush = "!f() { \
+    branch=\"$(git branch --show-current)\"; \
+    git push -u origin \"$branch\"; \
+  }; f"
+
   # Push new branch to origin and set upstream tracking
   # Usage: git pn <branch-name>
   pn = "!git push -u origin ${1:?Missing new branch name to push}"
+
+  # Pull with rebase (cleaner than merge)
+  # Usage: git pullr
+  pullr = pull --rebase
+
+  # Pull and update all remote tracking branches
+  # Usage: git pullall
+  pullall = pull --all
 
   # ============================================================================
   # UTILITIES
