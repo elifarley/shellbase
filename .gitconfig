@@ -15,7 +15,7 @@
 [pretty]
     log1        = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
     log1reldate = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
-    logbody       = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s%C(reset)%n%b
+    logbody       = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset)%n%s%C(reset)%n%b
     stash  = %C(yellow)%gd%Creset %C(cyan)(%cr)%Creset %s
 
 [alias]
@@ -121,61 +121,138 @@
   # Usage: git usa
   usa = reset HEAD
 
-  # Stop tracking files but keep them locally (dangerous!)
-  # Usage: git untrack <file>
+  # Stop tracking files but keep them locally
+  # Usage: git untrack <file> [<file2> ...]
   # Common use: git untrack .env (after accidentally committing secrets)
-  untrack = rm --cached
+  untrack = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
+      printf 'untrack: Stop tracking files but keep them locally\\n' >&2; \
+      printf 'Usage: git untrack <file> [<file2> ...]\\n' >&2; \
+      printf 'Example: git untrack .env config.local.json\\n' >&2; \
+      return 1; \
+    }; \
+    git rm --cached \"$@\"; \
+  }; f"
 
-  # Uncommit. Undo commits safely: keeps changes staged (usage: git back [n|COMMIT])
-  # git back        # Undo last commit, keep changes staged
-  # git back 5      # Undo last 5 commits
-  # git back HEAD^^ # Undo 2 commits (alternative syntax)
-  # git back a1b2c3 # Reset to specific commit
-  back = "!f() { case \"${1:-}\" in \
-      '-h'|'--help') printf '\nback: Branch goes back N commits (defaults to 1) or to a specific commit (changes are staged).\nUsage: git back [N|COMMIT]' >&2; return 1;; \
+  # ═══════════════════════════════════════════════════════════════════
+  #  UNDO COMMITS (non-destructive: keeps your work)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Undo commits safely: keeps changes staged
+  # Usage: git back [N|COMMIT]
+  #   git back        → undo last commit, keep changes staged
+  #   git back 3      → undo last 3 commits, keep changes staged
+  #   git back a1b2c3 → reset to specific commit, keep changes staged
+  back = "!f() { \
+    case \"${1:-}\" in \
+      '-h'|'--help') \
+        printf 'back: Undo commits, keep changes staged (non-destructive)\\n' >&2; \
+        printf 'Usage: git back [N|COMMIT]\\n' >&2; \
+        printf '  git back        → undo last commit\\n' >&2; \
+        printf '  git back 3      → undo last 3 commits\\n' >&2; \
+        printf '  git back a1b2c3 → reset to specific commit\\n' >&2; \
+        return 1;; \
       '') target='HEAD~1' ;; \
-      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
+      [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
       *) target=\"$1\" ;; \
     esac; \
     git reset --soft \"$target\"; \
   }; f"
 
-  # Undo last commit and unstage changes (but keep in working tree)
-  # Usage: git undo [<n>]  (defaults to 1 commit)
-  # Replaces: git reset HEAD~1 (or git reset --mixed)
+  # Undo commits and unstage changes (but keep in working tree)
+  # Usage: git undo [N|COMMIT]
+  #   git undo        → undo last commit, unstage changes
+  #   git undo 3      → undo last 3 commits, unstage changes
+  #   git undo a1b2c3 → reset to specific commit, unstage changes
   undo = "!f() { \
-    n=\"${1:-1}\"; \
-    git reset HEAD~\"$n\"; \
+    case \"${1:-}\" in \
+      '-h'|'--help') \
+        printf 'undo: Undo commits, unstage changes (non-destructive)\\n' >&2; \
+        printf 'Usage: git undo [N|COMMIT]\\n' >&2; \
+        printf '  git undo        → undo last commit, unstage\\n' >&2; \
+        printf '  git undo 3      → undo last 3 commits, unstage\\n' >&2; \
+        printf '  git undo a1b2c3 → reset to specific commit, unstage\\n' >&2; \
+        return 1;; \
+      '') target='HEAD~1' ;; \
+      [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
+      *) target=\"$1\" ;; \
+    esac; \
+    git reset --mixed \"$target\"; \
   }; f"
 
-  # Forget commits and their changes completely: removes the commit changes, but  protects local work (usage: git forget [n])
-  forget = "!f() { case \"${1:-}\" in \
-      '-h'|'--help') printf '\nforget: Branch goes back N commits (defaults to 1) or to a specific commit (changes are LOST, local changes preserved).\nUsage: git forget [N|COMMIT]' >&2; return 1;; \
+  # Forget commits and their changes (local changes preserved)
+  # Usage: git forget [N|COMMIT]
+  #   git forget        → forget last commit and its changes
+  #   git forget 3      → forget last 3 commits and their changes
+  #   git forget a1b2c3 → forget commits back to specific commit
+  # Note: Aborts if local changes would be lost
+  forget = "!f() { \
+    case \"${1:-}\" in \
+      '-h'|'--help') \
+        printf 'forget: Discard commits and their changes (local work protected)\\n' >&2; \
+        printf 'Usage: git forget [N|COMMIT]\\n' >&2; \
+        printf '  git forget        → forget last commit\\n' >&2; \
+        printf '  git forget 3      → forget last 3 commits\\n' >&2; \
+        printf '  git forget a1b2c3 → forget back to specific commit\\n' >&2; \
+        printf 'Note: Aborts if local changes would be overwritten\\n' >&2; \
+        return 1;; \
       '') target='HEAD~1' ;; \
-      [1-9]|[1-9][0-9]) target=\"HEAD~$1\" ;; \
+      [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
       *) target=\"$1\" ;; \
     esac; \
     git reset --keep \"$target\"; \
   }; f"
 
   # ═══════════════════════════════════════════════════════════════════
-  #  DISCARD CHANGES (destructive, explicit names)
+  #  DISCARD CHANGES (destructive: requires explicit arguments)
   # ═══════════════════════════════════════════════════════════════════
 
-  # Discard changes to specific files
-  # Usage: git discard <file>...
-  # Replaces: git restore <file>
-  discard = restore
+  # Discard changes to specific files (DESTRUCTIVE: loses uncommitted work)
+  # Usage: git discard <file> [<file2> ...]
+  #   git discard server.js
+  #   git discard src/*.js
+  discard = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
+      printf 'discard: Discard uncommitted changes to files (DESTRUCTIVE)\\n' >&2; \
+      printf 'Usage: git discard <file> [<file2> ...]\\n' >&2; \
+      printf '  git discard server.js\\n' >&2; \
+      printf '  git discard src/*.js\\n' >&2; \
+      printf 'Warning: Changes are permanently lost!\\n' >&2; \
+      return 1; \
+    }; \
+    git restore \"$@\"; \
+  }; f"
 
-  # Discard ALL uncommitted changes (working tree + staging area)
+  # Discard ALL uncommitted changes (DESTRUCTIVE: nuclear option)
   # Usage: git discard-all
-  # Replaces: git reset --hard
-  discard-all = reset --hard
+  discard-all = "!f() { \
+    test \"$1\" = '-h' -o \"$1\" = '--help' && { \
+      printf 'discard-all: Discard ALL uncommitted changes (DESTRUCTIVE)\\n' >&2; \
+      printf 'Usage: git discard-all\\n' >&2; \
+      printf 'Warning: All changes in working tree and staging area are lost!\\n' >&2; \
+      return 1; \
+    }; \
+    printf 'Discarding ALL uncommitted changes...\\n' >&2; \
+    git reset --hard; \
+  }; f"
 
-  # Rewind to a specific commit, discarding everything after it
+  # Rewind to a specific commit (DESTRUCTIVE: discards history + changes)
   # Usage: git rewind <commit>
-  # Replaces: git reset --hard <commit>
-  rewind = reset --hard
+  #   git rewind HEAD~5  → go back 5 commits
+  #   git rewind a1b2c3  → rewind to specific commit
+  rewind = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
+      printf 'rewind: Rewind to a commit, discarding everything after (DESTRUCTIVE)\\n' >&2; \
+      printf 'Usage: git rewind <commit>\\n' >&2; \
+      printf '  git rewind HEAD~5  → go back 5 commits\\n' >&2; \
+      printf '  git rewind a1b2c3  → rewind to specific commit\\n' >&2; \
+      printf 'Warning: Discards commits and all uncommitted changes!\\n' >&2; \
+      return 1; \
+    }; \
+    target=\"$1\"; \
+    printf 'Rewinding to %s...\\n' \"$target\" >&2; \
+    git reset --hard \"$target\"; \
+  }; f"
 
   # ============================================================================
   #  STATUS & COMMITS
