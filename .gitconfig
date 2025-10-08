@@ -6,6 +6,12 @@
 #   name = <name>
 #   email = <email>
 
+[include]
+    path = ~/IdeaProjects/shellbase/.delta.gitconfig
+
+[commit]
+    verbose = true
+
 [pretty]
     log1        = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
     log1reldate = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
@@ -135,7 +141,6 @@
   ss = "!f() { \
     test \"$1\" = '-h' && { \
       printf '\nss: Show status with patch of staged changes.\nUsage: git ss [file]' >&2; return 1; }; \
-    git s; \
     if test $# -eq 0; then \
       printf '─────────────────── Staged changes:\n'; \
       git diff --cached; \
@@ -146,13 +151,13 @@
       git diff --cached \"$@\" -- \"${GIT_PREFIX}$t\"; \
       git diff --cached --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
     fi; \
+    git s; \
   }; f"
 
   # Show status with patch of working tree changes
   sw = "!f() { \
     test \"$1\" = '-h' && { \
       printf '\nsw: Show status with patch of working tree changes.\nUsage: git sw [file]' >&2; return 1; }; \
-    git s; \
     if test $# -eq 0; then \
       printf '─────────────────── Working tree changes:\n'; \
       git diff; \
@@ -163,6 +168,7 @@
       git diff \"$@\" -- \"${GIT_PREFIX}$t\"; \
       git diff --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
     fi; \
+    git s; \
   }; f"
 
   # Show specific commit (defaults to last) with list of changed files
@@ -178,7 +184,6 @@
     t=\"$1\"; shift; \
     git shp \"$@\" -- \"$GIT_PREFIX$t\"; \
   }; f"
-
 
   # Undo commits safely: keeps changes staged (usage: git back [n|COMMIT])
   # git back        # Undo last commit, keep changes staged
@@ -292,6 +297,122 @@
   # Undo WIP: reset soft to remove WIP commit
   unwip = "!git log -1 --format='%s' | grep -q '^WIP$' && git reset --soft HEAD~1 || echo 'No WIP commit found'"
 
+  # ═══════════════════════════════════════════════════════════════════
+  #  TAG MANAGEMENT (t*)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # List tags matching pattern (usage: git t "v1.*")
+  t = "!f() { git tag -l \"${1:-*}\"; }; f"
+
+  # Create lightweight tag (default)
+  # Usage: git tc v1.0 [<commit>]
+  tc = "!f() { \
+    test $# -eq 0 && { printf 'Usage: git tc <tag> [<commit>]\\n' >&2; return 1; }; \
+    git tag \"$@\"; \
+  }; f"
+
+  # Create annotated tag
+  # Usage: git ta v1.0 "Release version 1.0"
+  ta = "!f() { \
+    test $# -eq 0 && { printf 'Usage: git ta <tag> [<message>]\\n' >&2; return 1; }; \
+    tag=\"$1\"; shift; \
+    msg=\"${*:-Annotated tag $tag}\"; \
+    git tag -a \"$tag\" -m \"$msg\"; \
+  }; f"
+
+  # Show tag details (usage: git ts v1.0)
+  ts = "!f() { \
+    test $# -eq 0 && { printf 'Usage: git ts <tag>\\n' >&2; return 1; }; \
+    git show \"$1\"; \
+  }; f"
+
+  # Rename tag (changes name, keeps same commit)
+  # Usage: git tr v1.0 v1.0.1
+  tr = "!f() { \
+    test $# -lt 2 && { printf 'Usage: git tr <old-tag> <new-tag>\\n' >&2; return 1; }; \
+    old=\"$1\"; new=\"$2\"; \
+    git rev-parse \"$old\" >/dev/null 2>&1 || { \
+      printf 'Error: tag \"%s\" does not exist\\n' \"$old\" >&2; return 1; \
+    }; \
+    commit=\"$(git rev-list -n 1 \"$old\")\"; \
+    git tag \"$new\" \"$commit\" && git tag -d \"$old\" && \
+    printf 'Tag \"%s\" renamed to \"%s\"\\n' \"$old\" \"$new\"; \
+  }; f"
+
+  # Move tag (changes target commit, keeps same name)
+  # Usage: git tm v1.0 [<new-commit>]
+  #   git tm v1.0           → move to HEAD
+  #   git tm v1.0 a1b2c3d   → move to specific commit
+  tm = "!f() { \
+    test $# -eq 0 && { printf 'Usage: git tm <tag> [<new-commit>]\\n' >&2; return 1; }; \
+    tag=\"$1\"; \
+    new_commit=\"${2:-HEAD}\"; \
+    git rev-parse \"$tag\" >/dev/null 2>&1 || { \
+      printf 'Error: tag \"%s\" does not exist\\n' \"$tag\" >&2; return 1; \
+    }; \
+    old_commit=\"$(git rev-list -n 1 \"$tag\")\"; \
+    git tag -f \"$tag\" \"$new_commit\" && \
+    printf 'Tag \"%s\" moved:\\n  %s → %s\\n' \"$tag\" \"${old_commit:0:7}\" \"$(git rev-parse --short \"$new_commit\")\"; \
+  }; f"
+
+  # Move and re-annotate
+  # Usage: git tma v1.0 "New message" [<new-commit>]
+  tma = "!f() { \
+    test $# -lt 2 && { printf 'Usage: git tma <tag> <message> [<new-commit>]\\n' >&2; return 1; }; \
+    tag=\"$1\"; msg=\"$2\"; new_commit=\"${3:-HEAD}\"; \
+    git rev-parse \"$tag\" >/dev/null 2>&1 || { \
+      printf 'Error: tag \"%s\" does not exist\\n' \"$tag\" >&2; return 1; \
+    }; \
+    old_commit=\"$(git rev-list -n 1 \"$tag\")\"; \
+    git tag -f -a \"$tag\" -m \"$msg\" \"$new_commit\" && \
+    printf 'Tag \"%s\" moved and re-annotated:\\n  %s → %s\\n' \"$tag\" \"${old_commit:0:7}\" \"$(git rev-parse --short \"$new_commit\")\"; \
+  }; f"
+
+  # Push tags to remote
+  tp = "!f() { \
+    if [ $# -eq 0 ]; then \
+      git push --tags; \
+    else \
+      git push origin \"$@\"; \
+    fi; \
+  }; f"
+
+  # Delete local tag
+  td = "!f() { \
+    test $# -eq 0 && { printf 'Usage: git td <tag>\\n' >&2; return 1; }; \
+    git tag -d \"$1\"; \
+  }; f"
+
+  # Delete remote tag
+  tdr = "!f() { \
+    test $# -eq 0 && { printf 'Usage: git tdr <tag>\\n' >&2; return 1; }; \
+    git push origin --delete \"$1\"; \
+  }; f"
+
+  # Checkout tag
+  tco = "!f() { \
+    test $# -eq 0 && { printf 'Usage: git tco <tag>\\n' >&2; return 1; }; \
+    git checkout \"$1\"; \
+  }; f"
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  TAG QUERIES (tw*)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Show 'Tags Which Contain' a commit (commit is in tag's history)
+  # Usage: git twc [<commit>]  (defaults to HEAD)
+  twc = "!f() { \
+    commit=\"${1:-HEAD}\"; \
+    git tag --contains \"$commit\"; \
+  }; f"
+
+  # Show 'Tags Which Point' directly at an object (exact match)
+  # Usage: git twp [<object>]  (defaults to HEAD)
+  twp = "!f() { \
+    object=\"${1:-HEAD}\"; \
+    git tag --points-at \"$object\"; \
+  }; f"
+
   # ============================================================================
   # BRANCHING
   # ============================================================================
@@ -314,6 +435,43 @@
   # Create a new branch from a specific existing branch:
   #! br <new> <existing>
   #! switch <new>
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  BRANCH QUERIES (bw*)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Show 'Branches Which Contain' a commit (commit is in branch's history)
+  # Usage: git bwc [<commit>]  (defaults to HEAD)
+  bwc = "!f() { \
+    commit=\"${1:-HEAD}\"; \
+    git branch --contains \"$commit\"; \
+  }; f"
+
+  # Show 'Branches Which Point' directly at an object (exact match)
+  # Usage: git bwp [<object>]  (defaults to HEAD)
+  bwp = "!f() { \
+    object=\"${1:-HEAD}\"; \
+    git branch --points-at \"$object\"; \
+  }; f"
+
+  # Which branches DON'T contain this commit?
+  # Usage: git bwnc [<commit>]  (defaults to HEAD)
+  bwnc = "!f() { \
+    commit=\"${1:-HEAD}\"; \
+    git branch --no-contains \"$commit\"; \
+  }; f"
+
+  # Which branches are merged into HEAD?
+  bwm = "!f() { \
+    commit=\"${1:-HEAD}\"; \
+    git branch --merged \"$commit\"; \
+  }; f"
+
+  # Which branches are NOT merged into HEAD?
+  bwnm = "!f() { \
+    commit=\"${1:-HEAD}\"; \
+    git branch --no-merged \"$commit\"; \
+  }; f"
 
   # Push new branch to origin and set upstream tracking
   # Usage: git pn <branch-name>
