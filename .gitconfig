@@ -41,7 +41,7 @@
 
   # Log commits to a file
   llf = "!f() { \
-    test $# -eq 0 -o \"$1\" = '-h' && { \
+    test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
       printf 'llf: Log commits to a file.\n-p: show patches.\nUsage: git llf <file> [-p]' >&2; return 1; }; \
     t=\"$1\"; shift; \
     git ll \"$@\" --follow -- \"$GIT_PREFIX$t\"; \
@@ -110,12 +110,36 @@
   fborn = log --follow --diff-filter=A --find-renames=40% --
 
   # ═══════════════════════════════════════════════════════════════════
+  #  STAGING (a*)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Stage tracked files, or specific files if provided
+  # Usage:
+  #   git a           → stage all tracked files (updates only)
+  #   git a <file>... → stage specific files
+  a = "!f() { \
+    if [ $# -eq 0 ]; then \
+      git add -u; \
+    else \
+      git add \"$@\"; \
+    fi; \
+  }; f"
+
+  # Stage everything (tracked + untracked + deletions)
+  # Usage: git aa
+  aa = add -A
+
+  # ═══════════════════════════════════════════════════════════════════
   #  UNSTAGING / Undo Staging (us*)
   # ═══════════════════════════════════════════════════════════════════
 
   # Unstage specific files (most common - shortest alias)
   # Usage: git us <file> [<file2> ...]
-  us = restore --staged
+  us = "!f() { \
+    test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
+      printf 'us: Unstage specific files.\nUsage: git us <file1> [<file2> ...]' >&2; return 1; }; \
+    git restore --staged \"$@\"; \
+  }; f"
 
   # Unstage all files (nuclear option)
   # Usage: git usa
@@ -316,9 +340,6 @@
     t=\"$1\"; shift; \
     git shp \"$@\" -- \"$GIT_PREFIX$t\"; \
   }; f"
-
-  # Add all and commit with message (usage: git ac "message")
-  ac = !git add -A && git commit -m
 
   # Commit tracked files
   ci = commit -a
@@ -597,3 +618,4 @@
 
 [pull]
 	rebase = true
+
