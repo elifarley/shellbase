@@ -12,6 +12,9 @@
 [commit]
     verbose = true
 
+[pull]
+  rebase = true
+
 [pretty]
     log1        = %C(yellow)%h%C(reset) %C(blue)%ad%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
     log1reldate = %C(yellow)%h%C(reset) %C(blue)%ad (%cr)%C(reset) %C(magenta)[%an]%C(reset)%C(auto)%d%C(reset) %s
@@ -25,6 +28,22 @@
 
   # Show all aliases (optionally search with: git alias <pattern>)
   alias = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
+
+  # Smart help that suggests related commands
+  hughelp = "!f() { \
+    test $# -gt 0 && { \
+      git config --list | grep "^alias\\.$1" | cut -c 7- | sort; \
+      return; \
+    }; \
+    echo "Available command groups:"; \
+    echo '  b*  - Branch operations'; \
+    echo '  t*  - Tag operations'; \
+    echo '  s*  - Stash operations'; \
+    echo '  l*  - Log/history operations'; \
+    echo '  f*  - File operations'; \
+    echo ''; \
+    echo "Use 'g hughelp <prefix>' to see commands in that group"; \
+  }; f"
 
   # ============================================================================
   # LOGGING
@@ -115,8 +134,9 @@
 
   # Stage tracked files, or specific files if provided
   # Usage:
-  #   git a           → stage all tracked files (updates only)
-  #   git a <file>... → stage specific files
+  #   hug a           → stage all tracked files (updates only)
+  #   hug a .         → stage current directory
+  #   hug a <file>... → stage specific files
   a = "!f() { \
     if [ $# -eq 0 ]; then \
       git add -u; \
@@ -284,8 +304,14 @@
     git reset --hard \"$target\"; \
   }; f"
 
-  # Commit staged files
-  c = commit
+  # Commit staged files.
+  # Suggest alternate command if no staged files found.
+  c = "!f() { \
+    test -z \"$(git diff --cached --name-only)\" && {\
+      echo \"No staged changes. Use 'g ca' to commit all tracked changes\"; return 1; \
+    }; \
+    git commit \"$@\"; \
+  }; f"
 
   # Commit tracked files
   ca = commit -a
@@ -510,13 +536,13 @@
   }; f"
 
   # Delete local tag
-  td = "!f() { \
+  tdel = "!f() { \
     test $# -eq 0 && { printf 'Usage: git td <tag>\\n' >&2; return 1; }; \
     git tag -d \"$1\"; \
   }; f"
 
   # Delete remote tag
-  tdr = "!f() { \
+  tdelr = "!f() { \
     test $# -eq 0 && { printf 'Usage: git tdr <tag>\\n' >&2; return 1; }; \
     git push origin --delete \"$1\"; \
   }; f"
@@ -733,7 +759,3 @@
 
   # Show object contents (usage: git dump <object>)
   dump = cat-file -p
-
-[pull]
-	rebase = true
-

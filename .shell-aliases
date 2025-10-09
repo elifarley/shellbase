@@ -109,6 +109,7 @@ gradle.dep() (
 # git
 alias g=git
 alias h=git
+# See convo about the Hug tool at https://poe.com/chat/vwu52ea0bup1zllwyg
 alias hug=h
 alias git.verbose='GIT_TRACE=1 GIT_SSH_COMMAND="ssh -v" git'
 # ssh-add -l
