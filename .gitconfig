@@ -558,8 +558,8 @@
   b = switch
 
   # Go back to previous branch (like 'cd -')
-  # Usage: git b-
-  b- = switch -
+  # Usage: git bs
+  bs = switch -
 
   # ═══════════════════════════════════════════════════════════════════
   #  BRANCH LISTING
@@ -686,9 +686,9 @@
   #  MERGE OPERATIONS
   # ═══════════════════════════════════════════════════════════════════
 
-  # Merge branch into current branch
-  # Usage: git m <branch>
-  m = merge
+  # Squash-merge branch into current branch (doesn't commit)
+  # Usage: git m <branch>; g c
+  m = merge --squash
 
   # Merge with fast-forward only (fails if not possible)
   # Usage: git mff <branch>
@@ -696,7 +696,7 @@
 
   # Merge with no fast-forward (always create merge commit)
   # Usage: git mnf <branch>
-  mnf = merge --no-ff
+  mkeep = merge --no-ff
 
   # Abort merge (go back to before merge)
   ma = merge --abort
