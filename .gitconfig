@@ -23,23 +23,28 @@
 
 [alias]
   # ============================================================================
-  # INTROSPECTION
+  # Discoverability
   # ============================================================================
 
-  # Show all aliases (optionally search with: git alias <pattern>)
+  # Show all aliases (optionally search with: hug alias <pattern>)
   alias = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
 
   # Smart help that suggests related commands
+  # Usage: hug help [prefix]
   hughelp = "!f() { \
     test $# -eq 0 && { \
       echo "Available command groups:"; \
+      echo '  a*  - Add to staging area'; \
       echo '  b*  - Branch operations'; \
+      echo '  c*  - Commit operations'; \
       echo '  t*  - Tag operations'; \
-      echo '  s*  - Stash operations'; \
+      echo '  s*  - Status operations'; \
+      echo ' sh*  - Show operations'; \
       echo '  l*  - Log/history operations'; \
       echo '  f*  - File operations'; \
+      echo '  p*  - Push / pull operations'; \
       echo ''; \
-      echo "Use 'g hughelp <prefix>' to see commands in that group"; \
+      echo "Use 'hug help [prefix]' to see commands with that prefix"; \
       return; \
     }; \
     prefix=\"$1\"; \
