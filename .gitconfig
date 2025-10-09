@@ -375,10 +375,10 @@
   }; f"
 
   # Full interactive staging menu (git add -i wrapper)
-  cim = "!git add --interactive && git status -sb && git commit"
+  cim = "!git add --interactive && git s && git c"
 
   # Outgoing changes: what will be pushed to upstream
-  o = !git cherry -v @{upstream} && git status -sb && git diff --stat @{u}..HEAD
+  o = !git cherry -v @{upstream} && git s && git diff --stat @{u}..HEAD
 
   # ============================================================================
   # STASH
@@ -421,7 +421,7 @@
   sclear = stash clear
 
   # WIP workflow: commit everything as work-in-progress
-  wip = "!git add -A && git commit -m 'WIP'"
+  wip = "!git aa && git commit -m 'WIP'"
 
   # Undo WIP: reset soft to remove WIP commit
   unwip = "!git log -1 --format='%s' | grep -q '^WIP$' && git reset --soft HEAD~1 || echo 'No WIP commit found'"
