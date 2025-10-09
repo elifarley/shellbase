@@ -1,6 +1,6 @@
 alias pss='ps -o uname,pid,ppid,c,%cpu,cputime=CPU-time,%mem,rss,start,wchan,args --cols 2000 -C'
 alias p='ps -fe |grep -i'
-alias h='history|grep -i'
+alias hs='history|grep -i'
 alias f="find . -type d \(-name '.git' -o -name '.hg' \) -prune -o -print |grep -i"
 alias sc='screen -DR'
 alias j='\jobs -l'
@@ -108,6 +108,8 @@ gradle.dep() (
 
 # git
 alias g=git
+alias h=git
+alias hug=h
 alias git.verbose='GIT_TRACE=1 GIT_SSH_COMMAND="ssh -v" git'
 # ssh-add -l
 # GIT_SSH_COMMAND="ssh -i ~/.ssh/your_private_key -o IdentitiesOnly=yes" git push
