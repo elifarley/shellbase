@@ -195,9 +195,9 @@
   # Common use: hug untrack .env (after accidentally committing secrets)
   untrack = "!f() { \
     test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
-      printf 'untrack: Stop tracking files but keep them locally\\n' >&2; \
-      printf 'Usage: hug untrack <file> [<file2> ...]\\n' >&2; \
-      printf 'Example: hug untrack .env config.local.json\\n' >&2; \
+      printf 'untrack: Stop tracking files but keep them locally\n' >&2; \
+      printf 'Usage: hug untrack <file> [<file2> ...]\n' >&2; \
+      printf 'Example: hug untrack .env config.local.json\n' >&2; \
       return 1; \
     }; \
     git rm --cached \"$@\"; \
@@ -215,13 +215,13 @@
       rollback)      shift; git h-rollback \"$@\" ;; \
       rewind)        shift; git h-rewind \"$@\" ;; \
       discard-staged) shift; git h-discard-staged \"$@\" ;; \
-      *)             printf 'Usage: hug h <command> [args]\\n' >&2; \
-                     printf 'Commands:\\n' >&2; \
-                     printf '  back          Move HEAD back, keep staged\\n' >&2; \
-                     printf '  undo          Move HEAD back, unstage changes\\n' >&2; \
-                     printf '  rollback      Rollback commit, preserve local work\\n' >&2; \
-                     printf '  rewind        Rewind to clean state (destructive)\\n' >&2; \
-                     printf '  discard-staged Discard staged changes\\n' >&2; ;; \
+      *)             printf 'Usage: hug h <command> [args]\n' >&2; \
+                     printf 'Commands:\n' >&2; \
+                     printf '  back          Move HEAD back, keep staged\n' >&2; \
+                     printf '  undo          Move HEAD back, unstage changes\n' >&2; \
+                     printf '  rollback      Rollback commit, preserve local work\n' >&2; \
+                     printf '  rewind        Rewind to clean state (destructive)\n' >&2; \
+                     printf '  discard-staged Discard staged changes\n' >&2; ;; \
     esac; \
   }; f"
 
@@ -233,11 +233,11 @@
   h-back = "!f() { \
     case \"${1:-}\" in \
       '-h'|'--help') \
-        printf 'back: Move HEAD back, keep changes staged (non-destructive)\\n' >&2; \
-        printf 'Usage: hug h back [N|COMMIT]\\n' >&2; \
-        printf '  hug h back        → undo last commit\\n' >&2; \
-        printf '  hug h back 3      → undo last 3 commits\\n' >&2; \
-        printf '  hug h back a1b2c3 → reset to specific commit\\n' >&2; \
+        printf 'back: Move HEAD back, keep changes staged (non-destructive)\n' >&2; \
+        printf 'Usage: hug h back [N|COMMIT]\n' >&2; \
+        printf '  hug h back        → undo last commit\n' >&2; \
+        printf '  hug h back 3      → undo last 3 commits\n' >&2; \
+        printf '  hug h back a1b2c3 → reset to specific commit\n' >&2; \
         return 1;; \
       '') target='HEAD~1' ;; \
       [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
@@ -254,11 +254,11 @@
   h-undo = "!f() { \
     case \"${1:-}\" in \
       '-h'|'--help') \
-        printf 'h-undo: Move HEAD back, unstage changes (non-destructive)\\n' >&2; \
-        printf 'Usage: hug undo [N|COMMIT]\\n' >&2; \
-        printf '  hug h undo        → undo last commit, unstage\\n' >&2; \
-        printf '  hug h undo 3      → undo last 3 commits, unstage\\n' >&2; \
-        printf '  hug h undo a1b2c3 → reset to specific commit, unstage\\n' >&2; \
+        printf 'h-undo: Move HEAD back, unstage changes (non-destructive)\n' >&2; \
+        printf 'Usage: hug undo [N|COMMIT]\n' >&2; \
+        printf '  hug h undo        → undo last commit, unstage\n' >&2; \
+        printf '  hug h undo 3      → undo last 3 commits, unstage\n' >&2; \
+        printf '  hug h undo a1b2c3 → reset to specific commit, unstage\n' >&2; \
         return 1;; \
       '') target='HEAD~1' ;; \
       [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
@@ -276,12 +276,12 @@
   h-rollback = "!f() { \
     case \"${1:-}\" in \
       '-h'|'--help') \
-        printf 'forget: Discard commits and their changes (local work protected)\\n' >&2; \
-        printf 'Usage: hug forget [N|COMMIT]\\n' >&2; \
-        printf '  hug h rollback        → forget last commit\\n' >&2; \
-        printf '  hug h rollback 3      → forget last 3 commits\\n' >&2; \
-        printf '  hug h rollback a1b2c3 → forget back to specific commit\\n' >&2; \
-        printf 'Note: Aborts if local changes would be overwritten\\n' >&2; \
+        printf 'forget: Discard commits and their changes (local work protected)\n' >&2; \
+        printf 'Usage: hug forget [N|COMMIT]\n' >&2; \
+        printf '  hug h rollback        → forget last commit\n' >&2; \
+        printf '  hug h rollback 3      → forget last 3 commits\n' >&2; \
+        printf '  hug h rollback a1b2c3 → forget back to specific commit\n' >&2; \
+        printf 'Note: Aborts if local changes would be overwritten\n' >&2; \
         return 1;; \
       '') target='HEAD~1' ;; \
       [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
@@ -296,15 +296,15 @@
   #   hug h-rewind a1b2c3  → rewind to specific commit
   h-rewind = "!f() { \
     test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
-      printf 'h-rewind: Rewind to a commit, discarding everything after (DESTRUCTIVE)\\n' >&2; \
-      printf 'Usage: hug h rewind <commit>\\n' >&2; \
-      printf '  hug h rewind HEAD~5  → go back 5 commits\\n' >&2; \
-      printf '  hug h rewind a1b2c3  → rewind to specific commit\\n' >&2; \
-      printf 'Warning: Discards commits and all uncommitted changes!\\n' >&2; \
+      printf 'h-rewind: Rewind to a commit, discarding everything after (DESTRUCTIVE)\n' >&2; \
+      printf 'Usage: hug h rewind <commit>\n' >&2; \
+      printf '  hug h rewind HEAD~5  → go back 5 commits\n' >&2; \
+      printf '  hug h rewind a1b2c3  → rewind to specific commit\n' >&2; \
+      printf 'Warning: Discards commits and all uncommitted changes!\n' >&2; \
       return 1; \
     }; \
     target=\"$1\"; \
-    printf 'Rewinding to %s...\\n' \"$target\" >&2; \
+    printf 'Rewinding to %s...\n' \"$target\" >&2; \
     git reset --hard \"$target\"; \
   }; f"
 
@@ -323,7 +323,7 @@
       changes)      shift; git w-changes \"$@\" ;; \
       --dry-run)    shift; git w-dry-run \"$@\" ;; \
       *)             printf 'Usage: hug w <command> [args]\n' >&2; \
-                     printf 'Commands:\\n' >&2; \
+                     printf 'Commands:\n' >&2; \
                      printf '  diff         Show status with working changes\n' >&2; \
                      printf '  discard      Discard unstaged changes\n' >&2; \
                      printf '  discard-all  Discard ALL unstaged changes\n' >&2; \
@@ -337,92 +337,87 @@
   # Quick changes summary (new lightweight command)
   w-changes = "!f() { \
     test \"$1\" = '-h' -o \"$1\" = '--help' && { \
-      printf 'w changes: Quick summary of working changes\\n' >&2; \
-      printf 'Usage: hug w changes\\n' >&2; \
+      printf 'w changes: Quick summary of working changes\n' >&2; \
+      printf 'Usage: hug w changes\n' >&2; \
       return 1; \
     }; \
     \
     if git diff --quiet; then \
-      printf '✅ No unstaged changes\\n' >&2; \
+      printf '✅ No unstaged changes\n' >&2; \
     else \
       local files=$(git diff --name-only | wc -l); \
       local insertions=$(git diff --numstat | awk '{sum += $1} END {print sum}'); \
       local deletions=$(git diff --numstat | awk '{sum += $2} END {print sum}'); \
-      printf '📝 Working changes: %d files, +%d/-%d lines\\n' \"$files\" \"$insertions\" \"$deletions\" >&2; \
+      printf '📝 Working changes: %d files, +%d/-%d lines\n' \"$files\" \"$insertions\" \"$deletions\" >&2; \
     fi; \
   }; f"
 
     # Discard unstaged changes to specific files (DESTRUCTIVE)
     w-discard = "!f() { \
       test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
-        printf 'w discard: Discard unstaged changes to files (DESTRUCTIVE)\\n' >&2; \
-        printf 'Usage: hug w discard <file> [<file2> ...]\\n' >&2; \
-        printf 'Examples:\\n' >&2; \
-        printf '  hug w discard server.js\\n' >&2; \
-        printf '  hug w discard src/*.js\\n' >&2; \
-        printf 'Warning: Changes are permanently lost!\\n' >&2; \
+        printf 'w discard: Discard unstaged changes to files (DESTRUCTIVE)\n' >&2; \
+        printf 'Usage: hug w discard <file> [<file2> ...]\n' >&2; \
+        printf 'Examples:\n' >&2; \
+        printf '  hug w discard server.js\n' >&2; \
+        printf '  hug w discard src/*.js\n' >&2; \
+        printf 'Warning: Changes are permanently lost!\n' >&2; \
         return 1; \
       }; \
       \
-      ${IFS# Check if files exist and have unstaged changes} \
       local has_changes=false; \
       for file in \"$@\"; do \
         if [ ! -f \"$file\" ]; then \
-          printf 'Warning: File \"%s\" does not exist\\n' \"$file\" >&2; \
+          printf 'Warning: File \"%s\" does not exist\n' \"$file\" >&2; \
           continue; \
         fi; \
         if git diff --quiet \"$file\" 2>/dev/null; then \
-          printf 'Info: No unstaged changes in \"%s\"\\n' \"$file\" >&2; \
+          printf 'Info: No unstaged changes in \"%s\"\n' \"$file\" >&2; \
         else \
           has_changes=true; \
-          printf 'Will discard changes in: %s\\n' \"$file\" >&2; \
+          printf 'Will discard changes in: %s\n' \"$file\" >&2; \
         fi; \
       done; \
       \
       if [ \"$has_changes\" = false ]; then \
-        printf 'No changes to discard\\n' >&2; \
+        printf 'No changes to discard\n' >&2; \
         return 0; \
       fi; \
       \
-      ${IFS# Safety confirmation} \
       read -p 'Discard these changes? (y/N) ' confirm; \
       case \"$confirm\" in \
         [yY]|[yY][eE][sS]) ;; \
-        *) printf 'Cancelled\\n' >&2; return 1 ;; \
+        *) printf 'Cancelled\n' >&2; return 1 ;; \
       esac; \
       \
       git restore \"$@\"; \
-      printf 'Changes discarded\\n' >&2; \
+      printf 'Changes discarded\n' >&2; \
     }; f"
 
     # Discard ALL unstaged changes (DESTRUCTIVE)
     w-discard-all = "!f() { \
       test \"$1\" = '-h' -o \"$1\" = '--help' && { \
-        printf 'w discard-all: Discard ALL unstaged changes (DESTRUCTIVE)\\n' >&2; \
-        printf 'Usage: hug w discard-all\\n' >&2; \
-        printf 'Warning: All unstaged changes will be lost!\\n' >&2; \
-        printf 'Note: Staged changes are preserved\\n' >&2; \
+        printf 'w discard-all: Discard ALL unstaged changes (DESTRUCTIVE)\n' >&2; \
+        printf 'Usage: hug w discard-all\n' >&2; \
+        printf 'Warning: All unstaged changes will be lost!\n' >&2; \
+        printf 'Note: Staged changes are preserved\n' >&2; \
         return 1; \
       }; \
       \
-      ${IFS# Check if there are unstaged changes} \
       if git diff --quiet; then \
-        printf 'No unstaged changes to discard\\n' >&2; \
+        printf 'No unstaged changes to discard\n' >&2; \
         return 0; \
       fi; \
       \
-      ${IFS# Show what will be discarded} \
-      printf ' unstaged changes:\\n' >&2; \
+      printf ' unstaged changes:\n' >&2; \
       git diff --name-only | sed 's/^/  /' >&2; \
-      printf '\\n' >&2; \
+      printf '\n' >&2; \
       \
-      ${IFS# Safety confirmation} \
-      printf '⚠️  This will discard ALL unstaged changes!\\n' >&2; \
+      printf '⚠️  This will discard ALL unstaged changes!\n' >&2; \
       read -p 'Type \"discard\" to confirm: ' confirm; \
-      [ \"$confirm\" = \"discard\" ] || { printf 'Cancelled\\n' >&2; return 1; }; \
+      [ \"$confirm\" = \"discard\" ] || { printf 'Cancelled\n' >&2; return 1; }; \
       \
       git restore .; \
-      printf 'All unstaged changes discarded\\n' >&2; \
+      printf 'All unstaged changes discarded\n' >&2; \
     }; f"
 
     # Remove untracked files (DESTRUCTIVE)
@@ -430,77 +425,71 @@
       local dry_run=false; \
       local force=false; \
       \
-      ${IFS# Parse arguments} \
       while [ $# -gt 0 ]; do \
         case \"$1\" in \
           --dry-run) dry_run=true; shift ;; \
           -f|--force) force=true; shift ;; \
           -h|--help) \
-            printf 'w clean: Remove untracked files and directories\\n' >&2; \
-            printf 'Usage: hug w clean [--dry-run] [-f|--force]\\n' >&2; \
-            printf '  --dry-run  Show what would be removed\\n' >&2; \
-            printf '  -f, --force Remove without confirmation\\n' >&2; \
+            printf 'w clean: Remove untracked files and directories\n' >&2; \
+            printf 'Usage: hug w clean [--dry-run] [-f|--force]\n' >&2; \
+            printf '  --dry-run  Show what would be removed\n' >&2; \
+            printf '  -f, --force Remove without confirmation\n' >&2; \
             return 1 ;; \
-          *) printf 'Unknown option: %s\\n' \"$1\" >&2; return 1 ;; \
+          *) printf 'Unknown option: %s\n' \"$1\" >&2; return 1 ;; \
         esac; \
       done; \
       \
-      ${IFS# Check for untracked files} \
-      local untracked=$(git ls-files --others --exclude-standard); \
+      local untracked; untracked=$(git ls-files --others --exclude-standard); \
       if [ -z \"$untracked\" ]; then \
-        printf 'No untracked files to clean\\n' >&2; \
+        printf 'No untracked files to clean\n' >&2; \
         return 0; \
       fi; \
       \
-      ${IFS# Show what will be removed} \
-      printf 'Untracked files:\\n' >&2; \
+      printf 'Untracked files:\n' >&2; \
       echo \"$untracked\" | sed 's/^/  /' >&2; \
       \
       if [ \"$dry_run\" = true ]; then \
-        printf '\\nDry run: %d files would be removed\\n' \"$(echo \"$untracked\" | wc -l)\" >&2; \
+        printf '\nDry run: %d files would be removed\n' \"$(echo \"$untracked\" | wc -l)\" >&2; \
         return 0; \
       fi; \
       \
-      ${IFS# Safety confirmation} \
       if [ \"$force\" = false ]; then \
-        printf '\\n⚠️  This will permanently remove these files!\\n' >&2; \
+        printf '\n⚠️  This will permanently remove these files!\n' >&2; \
         read -p 'Remove these files? (y/N) ' confirm; \
         case \"$confirm\" in \
           [yY]|[yY][eE][sS]) ;; \
-          *) printf 'Cancelled\\n' >&2; return 1 ;; \
+          *) printf 'Cancelled\n' >&2; return 1 ;; \
         esac; \
       fi; \
       \
       git clean -fd; \
-      printf 'Untracked files removed\\n' >&2; \
+      printf 'Untracked files removed\n' >&2; \
     }; f"
 
     # Safe backup of changes
     w-backup = "!f() { \
       local message=\"WIP: Auto-backup before destructive operation\"; \
       \
-      ${IFS# Parse arguments} \
       while [ $# -gt 0 ]; do \
         case \"$1\" in \
           -m|--message) message=\"$2\"; shift 2 ;; \
           -h|--help) \
-            printf 'w backup: Stash changes safely\\n' >&2; \
-            printf 'Usage: hug w backup [-m \"message\"]\\n' >&2; \
-            printf '  -m, --message  Custom stash message\\n' >&2; \
+            printf 'w backup: Stash changes safely\n' >&2; \
+            printf 'Usage: hug w backup [-m \"message\"]\n' >&2; \
+            printf '  -m, --message  Custom stash message\n' >&2; \
             return 1 ;; \
-          *) printf 'Unknown option: %s\\n' \"$1\" >&2; return 1 ;; \
+          *) printf 'Unknown option: %s\n' \"$1\" >&2; return 1 ;; \
         esac; \
       done; \
       \
-      ${IFS# Check if there are changes to stash} \
       if git diff --quiet && git diff --cached --quiet; then \
-        printf 'No changes to backup\\n' >&2; \
+        printf 'No changes to backup\n' >&2; \
         return 0; \
       fi; \
       \
       git stash push -m \"$message\"; \
-      printf 'Changes backed up safely\\n' >&2; \
-      printf 'Use \"hug s pop\" to restore when needed\\n' >&2; \
+      printf 'Changes backed up safely\n' >&2; \
+      printf 'Use \"hug s pop\" to restore when needed\n' >&2; \
     }; f"
 
     # Dry-run capability
@@ -571,12 +560,12 @@
   cii = "!f() { \
     git add --patch && \
     git status -sb && \
-    printf '\\n' && \
+    printf '\n' && \
     git diff --cached --stat && \
-    printf '\\nCommit message: ' && \
+    printf '\nCommit message: ' && \
     read -r msg && \
     test -n \"$msg\" && git commit -m \"$msg\" || { \
-      printf 'Aborted (empty message)\\n' >&2; return 1; \
+      printf 'Aborted (empty message)\n' >&2; return 1; \
     }; \
   }; f"
 
@@ -706,14 +695,14 @@
   # Create lightweight tag (default)
   # Usage: hug tc v1.0 [<commit>]
   tc = "!f() { \
-    test $# -eq 0 && { printf 'Usage: hug tc <tag> [<commit>]\\n' >&2; return 1; }; \
+    test $# -eq 0 && { printf 'Usage: hug tc <tag> [<commit>]\n' >&2; return 1; }; \
     git tag \"$@\"; \
   }; f"
 
   # Create annotated tag
   # Usage: hug ta v1.0 "Release version 1.0"
   ta = "!f() { \
-    test $# -eq 0 && { printf 'Usage: hug ta <tag> [<message>]\\n' >&2; return 1; }; \
+    test $# -eq 0 && { printf 'Usage: hug ta <tag> [<message>]\n' >&2; return 1; }; \
     tag=\"$1\"; shift; \
     msg=\"${*:-Annotated tag $tag}\"; \
     git tag -a \"$tag\" -m \"$msg\"; \
@@ -721,21 +710,21 @@
 
   # Show tag details (usage: hug ts v1.0)
   ts = "!f() { \
-    test $# -eq 0 && { printf 'Usage: hug ts <tag>\\n' >&2; return 1; }; \
+    test $# -eq 0 && { printf 'Usage: hug ts <tag>\n' >&2; return 1; }; \
     git show \"$1\"; \
   }; f"
 
   # Rename tag (changes name, keeps same commit)
   # Usage: hug tr v1.0 v1.0.1
   tr = "!f() { \
-    test $# -lt 2 && { printf 'Usage: hug tr <old-tag> <new-tag>\\n' >&2; return 1; }; \
+    test $# -lt 2 && { printf 'Usage: hug tr <old-tag> <new-tag>\n' >&2; return 1; }; \
     old=\"$1\"; new=\"$2\"; \
     git rev-parse \"$old\" >/dev/null 2>&1 || { \
-      printf 'Error: tag \"%s\" does not exist\\n' \"$old\" >&2; return 1; \
+      printf 'Error: tag \"%s\" does not exist\n' \"$old\" >&2; return 1; \
     }; \
     commit=\"$(git rev-list -n 1 \"$old\")\"; \
     git tag \"$new\" \"$commit\" && git tag -d \"$old\" && \
-    printf 'Tag \"%s\" renamed to \"%s\"\\n' \"$old\" \"$new\"; \
+    printf 'Tag \"%s\" renamed to \"%s\"\n' \"$old\" \"$new\"; \
   }; f"
 
   # Move tag (changes target commit, keeps same name)
@@ -743,28 +732,28 @@
   #   hug tm v1.0           → move to HEAD
   #   hug tm v1.0 a1b2c3d   → move to specific commit
   tm = "!f() { \
-    test $# -eq 0 && { printf 'Usage: git tm <tag> [<new-commit>]\\n' >&2; return 1; }; \
+    test $# -eq 0 && { printf 'Usage: git tm <tag> [<new-commit>]\n' >&2; return 1; }; \
     tag=\"$1\"; \
     new_commit=\"${2:-HEAD}\"; \
     git rev-parse \"$tag\" >/dev/null 2>&1 || { \
-      printf 'Error: tag \"%s\" does not exist\\n' \"$tag\" >&2; return 1; \
+      printf 'Error: tag \"%s\" does not exist\n' \"$tag\" >&2; return 1; \
     }; \
     old_commit=\"$(git rev-list -n 1 \"$tag\")\"; \
     git tag -f \"$tag\" \"$new_commit\" && \
-    printf 'Tag \"%s\" moved:\\n  %s → %s\\n' \"$tag\" \"${old_commit:0:7}\" \"$(git rev-parse --short \"$new_commit\")\"; \
+    printf 'Tag \"%s\" moved:\n  %s → %s\n' \"$tag\" \"${old_commit:0:7}\" \"$(git rev-parse --short \"$new_commit\")\"; \
   }; f"
 
   # Move and re-annotate
   # Usage: hug tma v1.0 "New message" [<new-commit>]
   tma = "!f() { \
-    test $# -lt 2 && { printf 'Usage: git tma <tag> <message> [<new-commit>]\\n' >&2; return 1; }; \
+    test $# -lt 2 && { printf 'Usage: git tma <tag> <message> [<new-commit>]\n' >&2; return 1; }; \
     tag=\"$1\"; msg=\"$2\"; new_commit=\"${3:-HEAD}\"; \
     git rev-parse \"$tag\" >/dev/null 2>&1 || { \
-      printf 'Error: tag \"%s\" does not exist\\n' \"$tag\" >&2; return 1; \
+      printf 'Error: tag \"%s\" does not exist\n' \"$tag\" >&2; return 1; \
     }; \
     old_commit=\"$(git rev-list -n 1 \"$tag\")\"; \
     git tag -f -a \"$tag\" -m \"$msg\" \"$new_commit\" && \
-    printf 'Tag \"%s\" moved and re-annotated:\\n  %s → %s\\n' \"$tag\" \"${old_commit:0:7}\" \"$(git rev-parse --short \"$new_commit\")\"; \
+    printf 'Tag \"%s\" moved and re-annotated:\n  %s → %s\n' \"$tag\" \"${old_commit:0:7}\" \"$(git rev-parse --short \"$new_commit\")\"; \
   }; f"
 
   # Push tags to remote
@@ -778,19 +767,19 @@
 
   # Delete local tag
   tdel = "!f() { \
-    test $# -eq 0 && { printf 'Usage: hug td <tag>\\n' >&2; return 1; }; \
+    test $# -eq 0 && { printf 'Usage: hug td <tag>\n' >&2; return 1; }; \
     git tag -d \"$1\"; \
   }; f"
 
   # Delete remote tag
   tdelr = "!f() { \
-    test $# -eq 0 && { printf 'Usage: hug tdr <tag>\\n' >&2; return 1; }; \
+    test $# -eq 0 && { printf 'Usage: hug tdr <tag>\n' >&2; return 1; }; \
     git push origin --delete \"$1\"; \
   }; f"
 
   # Checkout tag
   tco = "!f() { \
-    test $# -eq 0 && { printf 'Usage: hug tco <tag>\\n' >&2; return 1; }; \
+    test $# -eq 0 && { printf 'Usage: hug tco <tag>\n' >&2; return 1; }; \
     git checkout \"$1\"; \
   }; f"
 
@@ -869,8 +858,8 @@
   # Usage: hug bdelr <branch>
   bdelr = "!f() { \
     test $# -eq 0 -o \"$1\" = '-h' && { \
-      printf 'bdelr: Delete remote branch\\n' >&2; \
-      printf 'Usage: hug bdelr <branch>\\n' >&2; \
+      printf 'bdelr: Delete remote branch\n' >&2; \
+      printf 'Usage: hug bdelr <branch>\n' >&2; \
       return 1; \
     }; \
     git push origin --delete \"$1\"; \
