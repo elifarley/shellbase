@@ -214,14 +214,12 @@
       undo)          shift; git h-undo \"$@\" ;; \
       rollback)      shift; git h-rollback \"$@\" ;; \
       rewind)        shift; git h-rewind \"$@\" ;; \
-      discard-staged) shift; git h-discard-staged \"$@\" ;; \
       *)             printf 'Usage: hug h <command> [args]\n' >&2; \
                      printf 'Commands:\n' >&2; \
                      printf '  back          Move HEAD back, keep staged\n' >&2; \
                      printf '  undo          Move HEAD back, unstage changes\n' >&2; \
                      printf '  rollback      Rollback commit, preserve local work\n' >&2; \
                      printf '  rewind        Rewind to clean state (destructive)\n' >&2; \
-                     printf '  discard-staged Discard staged changes\n' >&2; ;; \
     esac; \
   }; f"
 
@@ -303,9 +301,28 @@
       printf 'Warning: Discards commits and all uncommitted changes!\n' >&2; \
       return 1; \
     }; \
+    \
     target=\"$1\"; \
+    \
+    if ! git diff --quiet || ! git diff --cached --quiet; then \
+      printf '❌ You have uncommitted changes!\n' >&2; \
+      printf '   Use \"hug w backup\" to save them first\n' >&2; \
+      printf '   Use \"hug w discard-all\" to discard them\n' >&2; \
+      return 1; \
+    fi; \
+    \
+    printf 'Will rewind to %s and discard all commits after it\n' \"$target\" >&2; \
+    printf 'Commits to be discarded:\n' >&2; \
+    git log --oneline \"$target\"..HEAD | sed 's/^/  /' >&2; \
+    printf '\n' >&2; \
+    \
+    printf '⚠️  This is PERMANENT and cannot be undone!\n' >&2; \
+    read -p 'Type \"rewind\" to confirm: ' confirm; \
+    [ \"$confirm\" = \"rewind\" ] || { printf 'Cancelled\n' >&2; return 1; }; \
+    \
     printf 'Rewinding to %s...\n' \"$target\" >&2; \
     git reset --hard \"$target\"; \
+    printf 'Rewind complete. Repository is now at %s\n' \"$(git rev-parse --short \"$target\")\" >&2; \
   }; f"
 
   # ═══════════════════════════════════════════════════════════════════
