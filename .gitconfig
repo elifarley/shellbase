@@ -5,7 +5,6 @@
 # [user]
 #   name = <name>
 #   email = <email>
-# XXX Staged
 
 [include]
     path = ~/IdeaProjects/shellbase/.delta.gitconfig
@@ -349,7 +348,7 @@
       local files=$(git diff --name-only | wc -l); \
       local insertions=$(git diff --numstat | awk '{sum += $1} END {print sum}'); \
       local deletions=$(git diff --numstat | awk '{sum += $2} END {print sum}'); \
-      printf '📝 Working changes: %d files, +%d/-%d lines\n' \"$files\" \"$insertions\" \"$deletions\" >&2; \
+      printf '📝 Working dir changes: %d files, +%d/-%d lines\n' \"$files\" \"$insertions\" \"$deletions\" >&2; \
     fi; \
   }; f"
 
@@ -631,7 +630,7 @@
   statusbase = "!f() { \
     git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
     printf '📍 HEAD: %s 🌿 ' $(git rev-parse --short HEAD); \
-    git status -sb \"$@\"; \
+    git -c color.ui=always status -sb \"$@\"; \
     git w changes; \
   }; f"
 
