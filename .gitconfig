@@ -37,12 +37,14 @@
       echo '  a*  - Add to staging area'; \
       echo '  b*  - Branch operations'; \
       echo '  c*  - Commit operations'; \
-      echo '  t*  - Tag operations'; \
-      echo '  s*  - Status operations'; \
-      echo ' sh*  - Show operations'; \
-      echo '  l*  - Log/history operations'; \
       echo '  f*  - File operations'; \
+      echo '  h*  - HEAD operations'; \
+      echo '  l*  - Log/history operations'; \
       echo '  p*  - Push / pull operations'; \
+      echo '  s*  - Status operations'; \
+      echo ' sh*  - SHow operations'; \
+      echo '  t*  - Tag operations'; \
+      echo '  w*  - Working dir operations'; \
       echo ''; \
       echo "Use 'hug help [prefix]' to see commands with that prefix"; \
       return; \
@@ -208,11 +210,11 @@
   # Main command group
   h = "!f() { \
     case \"${1:-}\" in \
-      back)          hug h-back \"${@:2}\" ;; \
-      undo)          hug h-undo \"${@:2}\" ;; \
-      rollback)      hug h-rollback \"${@:2}\" ;; \
-      rewind)        hug h-rewind \"${@:2}\" ;; \
-      discard-staged) hug h-discard-staged \"${@:2}\" ;; \
+      back)          shift; git h-back \"$@\" ;; \
+      undo)          shift; git h-undo \"$@\" ;; \
+      rollback)      shift; git h-rollback \"$@\" ;; \
+      rewind)        shift; git h-rewind \"$@\" ;; \
+      discard-staged) shift; git h-discard-staged \"$@\" ;; \
       *)             printf 'Usage: hug h <command> [args]\\n' >&2; \
                      printf 'Commands:\\n' >&2; \
                      printf '  back          Move HEAD back, keep staged\\n' >&2; \
@@ -244,7 +246,7 @@
     git reset --soft \"$target\"; \
   }; f"
 
-  # Undo commits and unstage their changes (but keep in working tree)
+  # Undo commits and unstage their changes (but keep in working dir)
   # Usage: git h-undo [N|COMMIT]
   #   git h-undo        → undo last commit, unstage changes
   #   git h-undo 3      → undo last 3 commits, unstage changes
@@ -288,39 +290,6 @@
     git reset --keep \"$target\"; \
   }; f"
 
-  # ═══════════════════════════════════════════════════════════════════
-  #  DISCARD CHANGES (destructive: requires explicit arguments)
-  # ═══════════════════════════════════════════════════════════════════
-
-  # Discard changes to specific files (DESTRUCTIVE: loses uncommitted work)
-  # Usage: hug discard <file> [<file2> ...]
-  #   hug discard server.js
-  #   hug discard src/*.js
-  discard = "!f() { \
-    test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
-      printf 'discard: Discard uncommitted changes to files (DESTRUCTIVE)\\n' >&2; \
-      printf 'Usage: hug discard <file> [<file2> ...]\\n' >&2; \
-      printf '  hug discard server.js\\n' >&2; \
-      printf '  hug discard src/*.js\\n' >&2; \
-      printf 'Warning: Changes are permanently lost!\\n' >&2; \
-      return 1; \
-    }; \
-    git restore \"$@\"; \
-  }; f"
-
-  # Discard ALL uncommitted changes (DESTRUCTIVE: nuclear option)
-  # Usage: hug discard-all
-  discard-all = "!f() { \
-    test \"$1\" = '-h' -o \"$1\" = '--help' && { \
-      printf 'discard-all: Discard ALL uncommitted changes (DESTRUCTIVE)\\n' >&2; \
-      printf 'Usage: hug discard-all\\n' >&2; \
-      printf 'Warning: All changes in working tree and staging area are lost!\\n' >&2; \
-      return 1; \
-    }; \
-    printf 'Discarding ALL uncommitted changes...\\n' >&2; \
-    git reset --hard; \
-  }; f"
-
   # Rewind to a specific commit (DESTRUCTIVE: discards history + changes)
   # Usage: hug h-rewind <commit>
   #   hug h-rewind HEAD~5  → go back 5 commits
@@ -338,6 +307,221 @@
     printf 'Rewinding to %s...\\n' \"$target\" >&2; \
     git reset --hard \"$target\"; \
   }; f"
+
+  # ═══════════════════════════════════════════════════════════════════
+  #  Working directory (w-*)
+  # ═══════════════════════════════════════════════════════════════════
+
+  # Main command group
+  w = "!f() { \
+    case \"${1:-}\" in \
+      diff)         shift; git sw \"$@\" ;; \
+      discard)      shift; git w-discard \"$@\" ;; \
+      discard-all)  shift; git w-discard-all \"$@\" ;; \
+      clean)        shift; git w-clean \"$@\" ;; \
+      backup)       shift; git w-backup \"$@\" ;; \
+      changes)      shift; git w-changes \"$@\" ;; \
+      --dry-run)    shift; git w-dry-run \"$@\" ;; \
+      *)             printf 'Usage: hug w <command> [args]\n' >&2; \
+                     printf 'Commands:\\n' >&2; \
+                     printf '  diff         Show status with working changes\n' >&2; \
+                     printf '  discard      Discard unstaged changes\n' >&2; \
+                     printf '  discard-all  Discard ALL unstaged changes\n' >&2; \
+                     printf '  clean        Remove untracked files\n' >&2; \
+                     printf '  backup       Stash changes safely\n' >&2; \
+                     printf '  changes      Quick working changes summary\n' >&2; \
+                     printf '  --dry-run    Show what would happen\n' >&2 ;; \
+    esac; \
+  }; f"
+
+  # Quick changes summary (new lightweight command)
+  w-changes = "!f() { \
+    test \"$1\" = '-h' -o \"$1\" = '--help' && { \
+      printf 'w changes: Quick summary of working changes\\n' >&2; \
+      printf 'Usage: hug w changes\\n' >&2; \
+      return 1; \
+    }; \
+    \
+    if git diff --quiet; then \
+      printf '✅ No unstaged changes\\n' >&2; \
+    else \
+      local files=$(git diff --name-only | wc -l); \
+      local insertions=$(git diff --numstat | awk '{sum += $1} END {print sum}'); \
+      local deletions=$(git diff --numstat | awk '{sum += $2} END {print sum}'); \
+      printf '📝 Working changes: %d files, +%d/-%d lines\\n' \"$files\" \"$insertions\" \"$deletions\" >&2; \
+    fi; \
+  }; f"
+
+    # Discard unstaged changes to specific files (DESTRUCTIVE)
+    w-discard = "!f() { \
+      test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
+        printf 'w discard: Discard unstaged changes to files (DESTRUCTIVE)\\n' >&2; \
+        printf 'Usage: hug w discard <file> [<file2> ...]\\n' >&2; \
+        printf 'Examples:\\n' >&2; \
+        printf '  hug w discard server.js\\n' >&2; \
+        printf '  hug w discard src/*.js\\n' >&2; \
+        printf 'Warning: Changes are permanently lost!\\n' >&2; \
+        return 1; \
+      }; \
+      \
+      ${IFS# Check if files exist and have unstaged changes} \
+      local has_changes=false; \
+      for file in \"$@\"; do \
+        if [ ! -f \"$file\" ]; then \
+          printf 'Warning: File \"%s\" does not exist\\n' \"$file\" >&2; \
+          continue; \
+        fi; \
+        if git diff --quiet \"$file\" 2>/dev/null; then \
+          printf 'Info: No unstaged changes in \"%s\"\\n' \"$file\" >&2; \
+        else \
+          has_changes=true; \
+          printf 'Will discard changes in: %s\\n' \"$file\" >&2; \
+        fi; \
+      done; \
+      \
+      if [ \"$has_changes\" = false ]; then \
+        printf 'No changes to discard\\n' >&2; \
+        return 0; \
+      fi; \
+      \
+      ${IFS# Safety confirmation} \
+      read -p 'Discard these changes? (y/N) ' confirm; \
+      case \"$confirm\" in \
+        [yY]|[yY][eE][sS]) ;; \
+        *) printf 'Cancelled\\n' >&2; return 1 ;; \
+      esac; \
+      \
+      git restore \"$@\"; \
+      printf 'Changes discarded\\n' >&2; \
+    }; f"
+
+    # Discard ALL unstaged changes (DESTRUCTIVE)
+    w-discard-all = "!f() { \
+      test \"$1\" = '-h' -o \"$1\" = '--help' && { \
+        printf 'w discard-all: Discard ALL unstaged changes (DESTRUCTIVE)\\n' >&2; \
+        printf 'Usage: hug w discard-all\\n' >&2; \
+        printf 'Warning: All unstaged changes will be lost!\\n' >&2; \
+        printf 'Note: Staged changes are preserved\\n' >&2; \
+        return 1; \
+      }; \
+      \
+      ${IFS# Check if there are unstaged changes} \
+      if git diff --quiet; then \
+        printf 'No unstaged changes to discard\\n' >&2; \
+        return 0; \
+      fi; \
+      \
+      ${IFS# Show what will be discarded} \
+      printf ' unstaged changes:\\n' >&2; \
+      git diff --name-only | sed 's/^/  /' >&2; \
+      printf '\\n' >&2; \
+      \
+      ${IFS# Safety confirmation} \
+      printf '⚠️  This will discard ALL unstaged changes!\\n' >&2; \
+      read -p 'Type \"discard\" to confirm: ' confirm; \
+      [ \"$confirm\" = \"discard\" ] || { printf 'Cancelled\\n' >&2; return 1; }; \
+      \
+      git restore .; \
+      printf 'All unstaged changes discarded\\n' >&2; \
+    }; f"
+
+    # Remove untracked files (DESTRUCTIVE)
+    w-clean = "!f() { \
+      local dry_run=false; \
+      local force=false; \
+      \
+      ${IFS# Parse arguments} \
+      while [ $# -gt 0 ]; do \
+        case \"$1\" in \
+          --dry-run) dry_run=true; shift ;; \
+          -f|--force) force=true; shift ;; \
+          -h|--help) \
+            printf 'w clean: Remove untracked files and directories\\n' >&2; \
+            printf 'Usage: hug w clean [--dry-run] [-f|--force]\\n' >&2; \
+            printf '  --dry-run  Show what would be removed\\n' >&2; \
+            printf '  -f, --force Remove without confirmation\\n' >&2; \
+            return 1 ;; \
+          *) printf 'Unknown option: %s\\n' \"$1\" >&2; return 1 ;; \
+        esac; \
+      done; \
+      \
+      ${IFS# Check for untracked files} \
+      local untracked=$(git ls-files --others --exclude-standard); \
+      if [ -z \"$untracked\" ]; then \
+        printf 'No untracked files to clean\\n' >&2; \
+        return 0; \
+      fi; \
+      \
+      ${IFS# Show what will be removed} \
+      printf 'Untracked files:\\n' >&2; \
+      echo \"$untracked\" | sed 's/^/  /' >&2; \
+      \
+      if [ \"$dry_run\" = true ]; then \
+        printf '\\nDry run: %d files would be removed\\n' \"$(echo \"$untracked\" | wc -l)\" >&2; \
+        return 0; \
+      fi; \
+      \
+      ${IFS# Safety confirmation} \
+      if [ \"$force\" = false ]; then \
+        printf '\\n⚠️  This will permanently remove these files!\\n' >&2; \
+        read -p 'Remove these files? (y/N) ' confirm; \
+        case \"$confirm\" in \
+          [yY]|[yY][eE][sS]) ;; \
+          *) printf 'Cancelled\\n' >&2; return 1 ;; \
+        esac; \
+      fi; \
+      \
+      git clean -fd; \
+      printf 'Untracked files removed\\n' >&2; \
+    }; f"
+
+    # Safe backup of changes
+    w-backup = "!f() { \
+      local message=\"WIP: Auto-backup before destructive operation\"; \
+      \
+      ${IFS# Parse arguments} \
+      while [ $# -gt 0 ]; do \
+        case \"$1\" in \
+          -m|--message) message=\"$2\"; shift 2 ;; \
+          -h|--help) \
+            printf 'w backup: Stash changes safely\\n' >&2; \
+            printf 'Usage: hug w backup [-m \"message\"]\\n' >&2; \
+            printf '  -m, --message  Custom stash message\\n' >&2; \
+            return 1 ;; \
+          *) printf 'Unknown option: %s\\n' \"$1\" >&2; return 1 ;; \
+        esac; \
+      done; \
+      \
+      ${IFS# Check if there are changes to stash} \
+      if git diff --quiet && git diff --cached --quiet; then \
+        printf 'No changes to backup\\n' >&2; \
+        return 0; \
+      fi; \
+      \
+      git stash push -m \"$message\"; \
+      printf 'Changes backed up safely\\n' >&2; \
+      printf 'Use \"hug s pop\" to restore when needed\\n' >&2; \
+    }; f"
+
+    # Dry-run capability
+    w-dry-run = "!f() { \
+      case \"${1:-}\" in \
+        discard) \
+          if [ $# -eq 1 ]; then \
+            echo 'Would show files with unstaged changes' >&2; \
+          else \
+            shift; \
+            echo \"Would discard unstaged changes to: $*\" >&2; \
+          fi ;; \
+        discard-all) \
+          echo 'Would discard ALL unstaged changes:' >&2; \
+          git diff --name-only | sed 's/^/  /' >&2 ;; \
+        clean) \
+          echo 'Would remove untracked files:' >&2; \
+          git ls-files --others --exclude-standard | sed 's/^/  /' >&2 ;; \
+        *) echo 'Unknown command for dry-run' >&2 ;; \
+      esac; \
+    }; f"
 
   # ──────────────────────────────────────────────────────────────────
   #  COMMITS (c*)
@@ -455,6 +639,7 @@
   # Enhanced status: shows latest commit hash + message, then status
   statusbase = "!f() { \
     git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
+    printf '📍 HEAD: %s 🌿 ' $(git rev-parse --short HEAD); \
     git status -sb \"$@\"; \
   }; f"
 
@@ -480,17 +665,17 @@
     git s; \
   }; f"
 
-  # Show status with patch of working tree changes
+  # Show status with patch of working dir changes
   sw = "!f() { \
     test \"$1\" = '-h' && { \
-      printf '\nsw: Show status with patch of working tree changes.\nUsage: hug sw [file]' >&2; return 1; }; \
+      printf '\nsw: Show status with patch of working dir changes.\nUsage: hug sw [file]' >&2; return 1; }; \
     if test $# -eq 0; then \
-      printf '─────────────────── Working tree changes:\n'; \
+      printf '─────────────────── Working dir changes:\n'; \
       git diff; \
       git diff --stat; \
     else \
       t=\"$1\"; shift; \
-      printf '─────────────────── Working tree changes for FILE:\n'; \
+      printf '─────────────────── Working dir changes for FILE:\n'; \
       git diff \"$@\" -- \"${GIT_PREFIX}$t\"; \
       git diff --stat \"$@\" -- \"${GIT_PREFIX}$t\"; \
     fi; \
