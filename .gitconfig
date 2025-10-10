@@ -202,22 +202,40 @@
   }; f"
 
   # ═══════════════════════════════════════════════════════════════════
-  #  UNDO COMMITS (non-destructive: keeps your work)
+  #  Head (h*)
   # ═══════════════════════════════════════════════════════════════════
 
-  # Undo commits safely: HEAD goes back, keeps changes staged
-  # Usage: hug back [N|COMMIT]
-  #   hug back        → undo last commit, keep changes staged
-  #   hug back 3      → undo last 3 commits, keep changes staged
-  #   hug back a1b2c3 → reset to specific commit, keep changes staged
-  back = "!f() { \
+  # Main command group
+  h = "!f() { \
+    case \"${1:-}\" in \
+      back)          hug h-back \"${@:2}\" ;; \
+      undo)          hug h-undo \"${@:2}\" ;; \
+      rollback)      hug h-rollback \"${@:2}\" ;; \
+      rewind)        hug h-rewind \"${@:2}\" ;; \
+      discard-staged) hug h-discard-staged \"${@:2}\" ;; \
+      *)             printf 'Usage: hug h <command> [args]\\n' >&2; \
+                     printf 'Commands:\\n' >&2; \
+                     printf '  back          Move HEAD back, keep staged\\n' >&2; \
+                     printf '  undo          Move HEAD back, unstage changes\\n' >&2; \
+                     printf '  rollback      Rollback commit, preserve local work\\n' >&2; \
+                     printf '  rewind        Rewind to clean state (destructive)\\n' >&2; \
+                     printf '  discard-staged Discard staged changes\\n' >&2; ;; \
+    esac; \
+  }; f"
+
+  # Take back commits but keep everything ready: HEAD goes back, keeps changes staged
+  # Usage: hug h-back [N|COMMIT]
+  #   hug h-back        → undo last commit, keep changes staged
+  #   hug h-back 3      → undo last 3 commits, keep changes staged
+  #   hug h-back a1b2c3 → reset to specific commit, keep changes staged
+  h-back = "!f() { \
     case \"${1:-}\" in \
       '-h'|'--help') \
-        printf 'back: Undo commits, keep changes staged (non-destructive)\\n' >&2; \
-        printf 'Usage: hug back [N|COMMIT]\\n' >&2; \
-        printf '  hug back        → undo last commit\\n' >&2; \
-        printf '  hug back 3      → undo last 3 commits\\n' >&2; \
-        printf '  hug back a1b2c3 → reset to specific commit\\n' >&2; \
+        printf 'back: Move HEAD back, keep changes staged (non-destructive)\\n' >&2; \
+        printf 'Usage: hug h back [N|COMMIT]\\n' >&2; \
+        printf '  hug h back        → undo last commit\\n' >&2; \
+        printf '  hug h back 3      → undo last 3 commits\\n' >&2; \
+        printf '  hug h back a1b2c3 → reset to specific commit\\n' >&2; \
         return 1;; \
       '') target='HEAD~1' ;; \
       [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
@@ -226,19 +244,19 @@
     git reset --soft \"$target\"; \
   }; f"
 
-  # Undo commits and unstage changes (but keep in working tree)
-  # Usage: git undo [N|COMMIT]
-  #   git undo        → undo last commit, unstage changes
-  #   git undo 3      → undo last 3 commits, unstage changes
-  #   git undo a1b2c3 → reset to specific commit, unstage changes
-  undo = "!f() { \
+  # Undo commits and unstage their changes (but keep in working tree)
+  # Usage: git h-undo [N|COMMIT]
+  #   git h-undo        → undo last commit, unstage changes
+  #   git h-undo 3      → undo last 3 commits, unstage changes
+  #   git h-undo a1b2c3 → reset to specific commit, unstage changes
+  h-undo = "!f() { \
     case \"${1:-}\" in \
       '-h'|'--help') \
-        printf 'undo: Undo commits, unstage changes (non-destructive)\\n' >&2; \
+        printf 'h-undo: Move HEAD back, unstage changes (non-destructive)\\n' >&2; \
         printf 'Usage: hug undo [N|COMMIT]\\n' >&2; \
-        printf '  hug undo        → undo last commit, unstage\\n' >&2; \
-        printf '  hug undo 3      → undo last 3 commits, unstage\\n' >&2; \
-        printf '  hug undo a1b2c3 → reset to specific commit, unstage\\n' >&2; \
+        printf '  hug h undo        → undo last commit, unstage\\n' >&2; \
+        printf '  hug h undo 3      → undo last 3 commits, unstage\\n' >&2; \
+        printf '  hug h undo a1b2c3 → reset to specific commit, unstage\\n' >&2; \
         return 1;; \
       '') target='HEAD~1' ;; \
       [1-9]|[1-9][0-9]|[1-9][0-9][0-9]) target=\"HEAD~$1\" ;; \
@@ -248,19 +266,19 @@
   }; f"
 
   # Forget commits and their changes (local changes preserved)
-  # Usage: hug forget [N|COMMIT]
-  #   hug forget        → forget last commit and its changes
-  #   hug forget 3      → forget last 3 commits and their changes
-  #   hug forget a1b2c3 → forget commits back to specific commit
+  # Usage: hug h-rollback [N|COMMIT]
+  #   hug h rollback        → forget last commit and its changes
+  #   hug h rollback 3      → forget last 3 commits and their changes
+  #   hug h rollback a1b2c3 → forget commits back to specific commit
   # Note: Aborts if local changes would be lost
-  forget = "!f() { \
+  h-rollback = "!f() { \
     case \"${1:-}\" in \
       '-h'|'--help') \
         printf 'forget: Discard commits and their changes (local work protected)\\n' >&2; \
         printf 'Usage: hug forget [N|COMMIT]\\n' >&2; \
-        printf '  hug forget        → forget last commit\\n' >&2; \
-        printf '  hug forget 3      → forget last 3 commits\\n' >&2; \
-        printf '  hug forget a1b2c3 → forget back to specific commit\\n' >&2; \
+        printf '  hug h rollback        → forget last commit\\n' >&2; \
+        printf '  hug h rollback 3      → forget last 3 commits\\n' >&2; \
+        printf '  hug h rollback a1b2c3 → forget back to specific commit\\n' >&2; \
         printf 'Note: Aborts if local changes would be overwritten\\n' >&2; \
         return 1;; \
       '') target='HEAD~1' ;; \
@@ -291,7 +309,7 @@
   }; f"
 
   # Discard ALL uncommitted changes (DESTRUCTIVE: nuclear option)
-  # Usage: git discard-all
+  # Usage: hug discard-all
   discard-all = "!f() { \
     test \"$1\" = '-h' -o \"$1\" = '--help' && { \
       printf 'discard-all: Discard ALL uncommitted changes (DESTRUCTIVE)\\n' >&2; \
@@ -304,15 +322,15 @@
   }; f"
 
   # Rewind to a specific commit (DESTRUCTIVE: discards history + changes)
-  # Usage: git rewind <commit>
-  #   git rewind HEAD~5  → go back 5 commits
-  #   git rewind a1b2c3  → rewind to specific commit
-  rewind = "!f() { \
+  # Usage: hug h-rewind <commit>
+  #   hug h-rewind HEAD~5  → go back 5 commits
+  #   hug h-rewind a1b2c3  → rewind to specific commit
+  h-rewind = "!f() { \
     test $# -eq 0 -o \"$1\" = '-h' -o \"$1\" = '--help' && { \
-      printf 'rewind: Rewind to a commit, discarding everything after (DESTRUCTIVE)\\n' >&2; \
-      printf 'Usage: hug rewind <commit>\\n' >&2; \
-      printf '  hug rewind HEAD~5  → go back 5 commits\\n' >&2; \
-      printf '  hug rewind a1b2c3  → rewind to specific commit\\n' >&2; \
+      printf 'h-rewind: Rewind to a commit, discarding everything after (DESTRUCTIVE)\\n' >&2; \
+      printf 'Usage: hug h rewind <commit>\\n' >&2; \
+      printf '  hug h rewind HEAD~5  → go back 5 commits\\n' >&2; \
+      printf '  hug h rewind a1b2c3  → rewind to specific commit\\n' >&2; \
       printf 'Warning: Discards commits and all uncommitted changes!\\n' >&2; \
       return 1; \
     }; \
@@ -320,6 +338,10 @@
     printf 'Rewinding to %s...\\n' \"$target\" >&2; \
     git reset --hard \"$target\"; \
   }; f"
+
+  # ──────────────────────────────────────────────────────────────────
+  #  COMMITS (c*)
+  # ──────────────────────────────────────────────────────────────────
 
   # Commit staged files.
   # Suggest alternate command if no staged files found.
