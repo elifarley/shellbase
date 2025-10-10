@@ -5,6 +5,7 @@
 # [user]
 #   name = <name>
 #   email = <email>
+# XXX Staged
 
 [include]
     path = ~/IdeaProjects/shellbase/.delta.gitconfig
@@ -398,8 +399,8 @@
       test \"$1\" = '-h' -o \"$1\" = '--help' && { \
         printf 'w discard-all: Discard ALL unstaged changes (DESTRUCTIVE)\n' >&2; \
         printf 'Usage: hug w discard-all\n' >&2; \
-        printf 'Warning: All unstaged changes will be lost!\n' >&2; \
-        printf 'Note: Staged changes are preserved\n' >&2; \
+        printf 'Warning: All *UN*staged changes will be lost!\n' >&2; \
+        printf 'Note: *Staged* changes are preserved.\n' >&2; \
         return 1; \
       }; \
       \
@@ -410,6 +411,7 @@
       \
       printf ' unstaged changes:\n' >&2; \
       git diff --name-only | sed 's/^/  /' >&2; \
+      git w-changes; \
       printf '\n' >&2; \
       \
       printf '⚠️  This will discard ALL unstaged changes!\n' >&2; \
@@ -630,6 +632,7 @@
     git rev-parse --git-dir > /dev/null 2>&1 || { echo 'Not a git repository' >&2; return 1; }; \
     printf '📍 HEAD: %s 🌿 ' $(git rev-parse --short HEAD); \
     git status -sb \"$@\"; \
+    git w changes; \
   }; f"
 
   # No untracked files shown
