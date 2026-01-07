@@ -308,7 +308,9 @@ test -f ~/.bash_private.gpg && \
   eval "$(gpg --decrypt ~/.bash_private.gpg 2>/dev/null)"
 
 # Set PATH so it includes user's private bin if it exists
-prepend_to_path "$HOME"/bin
+path_prepend "$HOME"/bin
+# Claude Code
+path_prepend $HOME/.local/bin
 
 # Start ssh-agent if not running and SSH_AUTH_SOCK is not set
 if [ -z "$SSH_AUTH_SOCK" ]; then
@@ -323,8 +325,10 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
     fi
 fi
 
-# Activate Python in user's venv
-test -r ~/.venv/bin/activate && . ~/.venv/bin/activate
+# Activate Python in user's venv if no python found
+command -v python || {
+  test -r ~/.venv/bin/activate && . ~/.venv/bin/activate
+}
 
 # Local-only config
 test -r ~/.shell-local-conf && . ~/.shell-local-conf
@@ -334,4 +338,4 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 echo >&2 "hug help # Show help for Humane Git"
-
+. ~/IdeaProjects/hug-scm/bin/activate

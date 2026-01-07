@@ -337,6 +337,7 @@
       discard-all)  shift; git w-discard-all \"$@\" ;; \
       clean)        shift; git w-clean \"$@\" ;; \
       backup)       shift; git w-backup \"$@\" ;; \
+      get)          shift; git w-get \"$@\" ;; \
       changes)      shift; git w-changes \"$@\" ;; \
       --dry-run)    shift; git w-dry-run \"$@\" ;; \
       *)             printf 'Usage: hug w <command> [args]\n' >&2; \
@@ -346,6 +347,7 @@
                      printf '  discard-all  Discard ALL unstaged changes\n' >&2; \
                      printf '  clean        Remove untracked files\n' >&2; \
                      printf '  backup       Stash changes safely\n' >&2; \
+                     printf '  get          Get files from specific commit\n' >&2; \
                      printf '  changes      Quick working changes summary\n' >&2; \
                      printf '  --dry-run    Show what would happen\n' >&2 ;; \
     esac; \

@@ -16,12 +16,15 @@ alias  l='\ls --color=auto -F --group-directories-first'
 alias dir='\dir --color=auto'
 alias vdir='\vdir --color=auto'
 
-# Prepend dir to PATH if it exists and isn't already there
-prepend_to_path() {
+
+# Prepend a path to PATH env var only if it's not already there
+# Usage: path_prepend /some/new/path
+path_prepend() {
   local dir="$1"
-  if [ -d "$dir" ] && [[ ":$PATH:" != *":$dir:"* ]]; then
-    export PATH="$dir:$PATH"
-  fi
+  case ":$PATH:" in
+    *":$dir:"*) ;;  # already present
+    *) test -d "$dir" && export PATH="$dir${PATH:+:$PATH}" ;;
+  esac
 }
 
 # Example: export lsofwrite; watch 'lsofwrite -c chromium -r5'
@@ -107,12 +110,11 @@ gradle.dep() (
 )
 
 # git
-alias g=git
-hug() {
-  test "$1" = help && { shift; git hughelp "$@"; return; }
-  git "$@"
-}; export -f hug
-h() { hug "$@"; }
+alias g=hug
+# See https://github.com/marketplace/actions/opencommit-improve-commits-with-ai
+alias oco='hug ss && oco'
+alias ocoa='hug a && oco'
+alias ocob='hug back && oco'
 # See convo about the Hug tool at https://poe.com/chat/vwu52ea0bup1zllwyg
 alias git.verbose='GIT_TRACE=1 GIT_SSH_COMMAND="ssh -v" git'
 # ssh-add -l
@@ -120,17 +122,8 @@ alias git.verbose='GIT_TRACE=1 GIT_SSH_COMMAND="ssh -v" git'
 # git branch -a --contains 8beeff00d
 # git show 8beeff00d
 
-git.squash() (
-  test $# -eq 0 && cat <<EOF && return 1
-  USAGE:
-  git.squash <N>
-  (The last N commits will be squashed)
-  After squashing, you need to (possibly force-) push.
-EOF
-  
-  git reset --soft HEAD~$1 && git commit
-  # git commit --edit -m"$(git log --format=%B --reverse HEAD..HEAD@{1})"
-)
+# git.squash
+# git commit --edit -m"$(git log --format=%B --reverse HEAD..HEAD@{1})"
 
 git.rename() (
   currentBranch="$(git rev-parse --abbrev-ref HEAD)"
@@ -144,19 +137,6 @@ EOF
   git branch -m "$newBranch" && \
   git push origin :"$currentBranch" "$newBranch"
 )
-
-git.remote2ssh() {
-    local remote=${1:-origin}
-    local url=$(git remote get-url "$remote")
-    if [[ "$url" =~ ^https://github\.com/ ]]; then
-        local ssh_url="git@github.com:${url#https://github.com/}"
-        git remote set-url "$remote" "$ssh_url"
-        echo "Updated $remote remote to use SSH:"
-        git remote -v
-    else
-        echo "Remote $remote is not using HTTPS GitHub URL"
-    fi
-}
 
 git.grep() {
   local search_string="$1"; shift
@@ -222,3 +202,6 @@ jqlog() {
 
 alias kopia='kopia --config-file=/home/ecc/.var/app/io.kopia.KopiaUI/config/kopia/repository.config'
 
+alias claude.glm='claude --dangerously-skip-permissions --settings ~/.claude/settings-glm.json'
+alias claude.ccp-snitch='claude --dangerously-skip-permissions --settings ~/.claude/settings-ccproxy-snitch.json'
+alias claude.avdm='claude --dangerously-skip-permissions --settings ~/.claude/settings-vandamme.json'
