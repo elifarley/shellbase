@@ -1,3 +1,10 @@
+# 18-k8s.sh: Kubernetes aliases and functions
+# k: kubectl wrapper with namespace support
+# k.ns, k.ctx: Namespace and context management
+# k.get-secrets: Decode deployment secrets
+# k.list-pods-in-deployment: List pods for a deployment
+# Sources: kubectl completion and per-cluster kube aliases
+
 # https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 # https://opensource.com/article/20/2/kubectl-helm-commands
 
@@ -11,6 +18,7 @@ complete -F __start_kubectl k
 # permanently save the namespace for all subsequent kubectl commands in that context.
 alias k.ns=k_ns
 alias k.ctx=k_ctx
+
 k_ns() {
   test $# -gt 0 || {
     kubectl get ns
@@ -18,6 +26,7 @@ k_ns() {
   }
   kubectl config set-context --current --namespace "$@"
 }
+
 k_ctx() {
   test $# -gt 0 || {
     kubectl config get-contexts
@@ -32,7 +41,7 @@ k_getSecrets() {
     return 1
   }
   local deployment="$1"; shift
-  kubectl get secrets "$deployment" -o jsonpath="{.data['$(echo "secrets.properties" | sed -E 's/\./\\./g')']}" \
+  kubectl get secrets "$deployment" -o jsonpath="{.data['$(echo "secrets.properties" | sed -E 's/\./\\./g')']]" \
   | base64 --decode
 }
 alias k.get-secrets='k_getSecrets'
@@ -59,7 +68,7 @@ k_list_pods_in_deployment() {
 }
 alias k.list-pods-in-deployment=k_list_pods_in_deployment
 
-
+# Source per-cluster kube aliases if they exist
 for kube_aliases in ~/.kube/aliases-*; do
   . "$kube_aliases"
 done

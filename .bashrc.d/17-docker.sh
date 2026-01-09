@@ -1,3 +1,9 @@
+# 17-docker.sh: Docker aliases and functions
+# Cleanup aliases for containers, images, volumes
+# drun: Run container with interactive shell
+# dimg, dstatus: Inspection helpers
+# docker_ls: Docker registry listing
+
 # Remove unused containers
 alias docker-rm-unused='docker rm $(docker ps -q -f status=exited)'
 # Remove unused images
