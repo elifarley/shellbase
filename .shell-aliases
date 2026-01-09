@@ -83,7 +83,7 @@ alias smartctl='smartctl -s on -i -A -f brief -f hex,id -l devstat'
 # Maven
 
 # Shows 'null object or invalid expression' for some cases
-mvnprop() {
+mvnprop_old() {
   local prop="$1"; shift
   mvn 2>/dev/null help:evaluate -q -DforceStdout -Dexpression="$prop" "$@" \
   && echo
@@ -201,6 +201,7 @@ jqlog() {
 }
 
 alias kopia='kopia --config-file=/home/ecc/.var/app/io.kopia.KopiaUI/config/kopia/repository.config'
+alias ssh='kitty +kitten ssh'
 
 alias claude.glm='claude --dangerously-skip-permissions --settings ~/.claude/settings-glm.json'
 alias claude.ccp-snitch='claude --dangerously-skip-permissions --settings ~/.claude/settings-ccproxy-snitch.json'
