@@ -1,0 +1,18 @@
+// APT hook to restore Kopia capabilities after package updates
+//
+// This hook ensures that CAP_DAC_READ_SEARCH is restored to /usr/bin/kopia
+// after any apt operation (install, upgrade, remove) that might replace the binary.
+//
+// PREREQUISITE:
+//   The restore script must be symlinked to /usr/local/bin:
+//     sudo ln -s ~/IdeaProjects/shell-lib/bin/restore-kopia-cap /usr/local/bin/restore-kopia-cap
+//
+// INSTALLATION:
+//   Symlink this file to the system apt configuration directory:
+//     sudo ln -s ~/IdeaProjects/shellbase/etc/apt/apt.conf.d/50kopia /etc/apt/apt.conf.d/50kopia
+//
+// The numeric prefix (50) controls load order relative to other apt hooks.
+
+DPkg::Post-Invoke {
+  "if [ -x /usr/local/bin/restore-kopia-cap ]; then /usr/local/bin/restore-kopia-cap || true; fi";
+};

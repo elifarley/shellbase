@@ -16,9 +16,19 @@ path_prepend() {
   esac
 }
 
-# Example: export lsofwrite; watch 'lsofwrite -c chromium -r5'
-lsofwrite()  {
+# Example: export lsof.write; watch 'lsof.write -c chromium -r5'
+lsof.write()  {
   lsof "$@" | grep -E 'REG|DIR' | grep -Pv 'mem |^[^\s]+\s+\d+\s+[^\s]+\s+\d+r'
+}
+
+lsof.port() {
+  local port="$1"; shift
+  lsof -ti :"$port" "$@" | xargs -r ps -o pid,ppid,user=UID,cmd -p
+}
+
+lsof.portdetails() {
+  local port="$1"; shift
+  lsof -ti :"$port" "$@" | xargs -r ps -o pid,ppid,user=UID,stime,c,time,stat,cmd -p
 }
 
 memstat() {

@@ -108,6 +108,11 @@ shopt -s histappend
 # Combine multiline commands into one in history
 shopt -s cmdhist
 # Ignore duplicates, ls without options, builtin commands and lines with leading spaces
+# Note: ignoreboth = ignoredups + ignorespace. The ignorespace setting causes kitty terminal
+# to show "showing running command will not be robust" warnings. This is harmless - it just
+# means kitty's shell integration can't display the currently running command as reliably.
+# To eliminate the warning, replace 'ignoreboth' with 'ignoredups' (but then commands with
+# leading spaces WILL be saved to history).
 HISTCONTROL=ignoreboth
 
 export HISTIGNORE="&:ls:[bf]g:exit"
@@ -141,7 +146,7 @@ set_prompt () {
   BRED='\[\e[1;31m\]'
   RED='\[\e[0;31m\]'
   Red='\[\e[01;31m\]'
-  BGREEN='\[\e[1;32m\]'
+  BGREEN='\[\e[01;32m\]'
   GREEN='\[\e[0;32m\]'
   BBLUE='\[\e[1;34m\]'
   BLUE='\[\e[0;34m\]'
@@ -149,6 +154,7 @@ set_prompt () {
   DarkBlue='\[\e[01;32m\]'
   WHITE='\[\e[01;37m\]'
   NORMAL='\[\e[00m\]'
+  BBLACK='\[\e[0;90m\]'
 
   FancyX='\342\234\227'
   Checkmark='\342\234\223'
@@ -160,19 +166,19 @@ set_prompt () {
     PS1+="$RED$FancyX$LastStatus"
 
   # Job count
-  PS1+=" ${Blue}\j"
+  PS1+=" ${GREEN}\j"
 
   # If root, just print the host in red. Otherwise, print the current user
   # and host.
   [[ $EUID == 0 ]] && \
     PS1+=" ${RED}@\h" || \
-    PS1+=" ${BLUE}\u${DarkBlue}@${Blue}\h"
+    PS1+=" ${BLUE}\u${BBLACK}@${Blue}\h"
 
   # HH:MM and history index
-  PS1+=" ${GREEN}\A #\!"
+  PS1+=" ${GREEN}\A ${BLUE}#\!"
 
   # [$PWD] with newline
-  PS1+=" ${Blue}[${DarkBlue}\w${Blue}]\n"
+  PS1+=" ${Blue}[${BGREEN}\w${Blue}]\n"
 
   # Set GNU Screen's window title
   #PS1+="\[\ek${HOSTNAME%%.*}\e\\\\\]"
