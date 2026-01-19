@@ -14,4 +14,5 @@ __pycache__
 .git
 .idea
 *.swp
-
+.claude/agent-responses/
+/.claude/settings.local.json
