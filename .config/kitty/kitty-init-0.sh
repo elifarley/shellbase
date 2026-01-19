@@ -1,45 +1,59 @@
-cat <<EOF
+echo "### Kitty session: $PWD"
+
+cat <<'EOF'
 # Kitty cheatsheet (kitty_mod = <CTRL> + <SHIFT>)
 
 1) WINDOWS (splits inside a tab)
-- <ENTER>   : New
-- `Q`       : Close
-- `[` | `]` : Navigation
-- `F` | `B` : Move window Forward | Backward
-- `1`...`0` : Focus window (Clockwise from TOP-LEFT)
--     `     : Move window to TOP
-- `L`       : Layout
-- `N`       : New OS Window
-- `R`       : Resize
+- <ENTER> : New
+- N       : New OS Window
+- W       : Close
+- F12     : Close OTHER windows in tab
+- L       : Layout
+- R       : Resize
+
+
+- [ | ] : Navigation
+- 1...0 : Focus window (Clockwise from TOP-LEFT)
+- P     : Focus last used
+
+- F | B : Move window Forward | Backward
+- `     : Move window to TOP
+- < only CTRL> + \ : Detach window to OS Window (Ask)
 
 2) TABS
-- `T`  : New
-- `Q`  : Close
+- T  : New
+- q  : Quit tab (close)
+- <ALT> + T : Title change for TAB
+
 - <LEFT> | <RIGHT>: Navigation
-- `<` | `>` : Move tab
-- <ALT> + `T` : Title change for TAB
+- <SHIFT + CTRL + TAB> | <CTRL + TAB>: Navigation
+
+- < | >      : Move tab
+- \ : Detach tab to OS Window (Ask)
+
 
 3) SCROLLBACK / NAVIGATION (main screen)
-- <UP> | <DOWN>             : Scroll by LINE
-- <PAGE UP> | <PAGE DOWN>   : Scroll by PAGE
-- <HOME> | <END>            : Scroll to TOP | BOTTOM
-- `Z` | `X`                 : Previous / Next shell prompt (requires shell integration)
-- `H`                       : Browse scrollback in pager (less)
-- `G`                       : Browse last command output in pager (requires shell integration)
-- `/`                       : Search scrollback within pager
+- Z | X                   : Previous / Next shell prompt (requires shell integration)
+- <UP> | <DOWN>           : Scroll by LINE
+- <PAGE UP> | <PAGE DOWN> : Scroll by PAGE
+- <HOME> | <END>          : Scroll to TOP | BOTTOM
+- H                       : Browse scrollback in pager (less)
+- G                       : Browse last command output in pager (requires shell integration)
+- /                       : Search scrollback within pager
 
 4) CLIPBOARD / TEXT
-- `C`         : Copy to clipboard
-- `V`         : Paste from clipboard
-- `S`         : Paste from selection
-- `O`         : Pass selection to program
-- `U`         : Unicode input
+- C         : Copy to clipboard
+- V         : Paste from clipboard
+- S         : Paste from selection
+- O         : Pass selection to program
+- U         : Unicode input
 
 5) UI / CONFIG / MISC
-- `=` / `-`   : Increase / Decrease font size
+- - / =       : Increase / Decrease font size
 - <BACKSPACE> : Restore font size
+
 - <ESC>       : Open kitty shell
-- `E`         : Open URL / hints (pick a URL/text on screen, then open)
+- E           : Open URL / hints (pick a URL/text on screen, then open)
 - <DEL>       : Reset the terminal
 - F1          : Show kitty help/docs
 - F2          : Edit kitty.conf
