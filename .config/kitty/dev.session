@@ -1,0 +1,25 @@
+# Tab 1: The Default Tab
+cd ~/src
+title Projects
+launch bash
+#--init-file ~/.config/kitty/kitty-init-0.sh
+
+# Tab 2
+new_tab devbase
+cd ~/src/devbase
+launch bash
+
+# Tab 3
+new_tab LLM-prompting
+cd ~/src/llm-prompting
+launch bash
+
+# Tab 4
+new_tab Vandamme
+cd ~/src/vandamme-proxy
+launch bash
+
+# Tab 5
+new_tab AssiFix
+cd ~/src/assifix-subscription-tracker
+launch bash
