@@ -1,5 +1,67 @@
 %YAML 1.3
 ---
+- Rule:
+  - Process: kitty
+  - And:
+    - Key: [Smart Shift, pressed]
+    - Modifiers: Shift
+  - KeyPress: [Control_L, Shift_L, \]
+- Rule:
+  - Process: kitty
+  - Key: [Smart Shift, pressed]
+  - KeyPress: [Control_L, \]
+- Rule:
+  - Process: idea
+  - MouseGesture: []
+  - KeyPress: [Control_L, Tab]
+- Rule:
+  - Process: idea
+  - MouseGesture: Mouse Up
+  - KeyPress: [Control_L, e]
+- Rule:
+  - Process: thorium
+  - MouseGesture: []
+  - KeyPress: [Alt_L, z]
+- Rule:
+  - Process: thorium
+  - MouseGesture: Mouse Up
+  - KeyPress: [Alt_L, a]
+- Rule:
+  - Process: thorium
+  - MouseGesture: Mouse Right
+  - KeyPress: Return
+- Rule:
+  - MouseGesture: Mouse Left
+  - KeyPress: Escape
+- Rule:
+  - MouseGesture: Mouse Down
+  - KeyPress: [Super_L, m]
+- Rule:
+  - MouseGesture: []
+  - KeyPress: [Alt_L, Tab]
+...
+---
+- Rule:
+  - Process: thorium
+  - Key: [Smart Shift, pressed]
+  - KeyPress: [Control_L, w]
+- Rule:
+  - Process: idea
+  - Key: [Smart Shift, pressed]
+  - KeyPress: F4
+- Rule:
+  - Process: ksnip
+  - Key: [Smart Shift, pressed]
+  - KeyPress: [Control_L, w]
+- Rule:
+  - Key: [Smart Shift, pressed]
+  - KeyPress: [Alt_L, F4]
+...
+---
+- Key: [Metro Settings, pressed]
+- KeyPress: Insert
+...
+---
 - Modifiers: Shift
 - Key: [Metro Settings, pressed]
 - KeyPress: [Shift_R, Insert]
@@ -16,12 +78,12 @@
 ...
 ---
 - Modifiers: Shift
-- Key: ['unknown:0120', pressed]
+- Key: ['0', pressed]
 - KeyPress: [Shift_R, Insert]
 ...
 ---
 - Modifiers: Control
-- Key: ['unknown:0120', pressed]
+- Key: ['0', pressed]
 - KeyPress: [Control_L, Insert]
 ...
 ---

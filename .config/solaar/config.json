@@ -1,10 +1,108 @@
 {
+  "404D:E2316004": {
+    "_modelId": "404D00000000",
+    "_name": "Wireless Touch Keyboard K400 Plus",
+    "_sensitive": {
+      "disable-keyboard-keys": false,
+      "divert-keys": true,
+      "gesture2-gestures": true
+    },
+    "_serial": "E2316004",
+    "_unitId": "69EF1CAD",
+    "disable-keyboard-keys": {
+      "1": false,
+      "16": false,
+      "4": false,
+      "8": false
+    },
+    "divert-keys": {
+      "1": 0,
+      "110": 0,
+      "145": 0,
+      "149": 0,
+      "183": 0,
+      "184": 0,
+      "2": 0,
+      "3": 0,
+      "34": 0,
+      "4": 0,
+      "40": 0,
+      "5": 0,
+      "6": 0,
+      "62": 0,
+      "64": 0,
+      "79": 0,
+      "8": 0,
+      "84": 0
+    },
+    "fn-swap": true,
+    "gesture2-gestures": {
+      "1": true,
+      "10": true,
+      "2": true,
+      "30": true,
+      "34": false,
+      "42": true,
+      "43": true,
+      "45": true,
+      "64": false,
+      "65": false,
+      "67": false,
+      "84": true
+    },
+    "gesture2-params": {
+      "4": {
+        "scale": 256
+      }
+    }
+  },
+  "B034:DCE537C6": {
+    "_dpi-sliding": 51,
+    "_modelId": "B03400000000",
+    "_name": "MX Master 3S",
+    "_sensitive": {
+      "change-host": false,
+      "divert-keys": false,
+      "dpi": true,
+      "dpi-sliding": false,
+      "hires-smooth-resolution": false,
+      "mouse-gestures": false,
+      "reprogrammable-keys": false,
+      "smart-shift": false
+    },
+    "_serial": "DCE537C6",
+    "_unitId": "DCE537C6",
+    "divert-keys": {
+      "195": 1,
+      "196": 1,
+      "82": 0,
+      "83": 0,
+      "86": 0
+    },
+    "dpi": "1500",
+    "dpi-sliding": "0",
+    "hires-smooth-invert": false,
+    "hires-smooth-resolution": false,
+    "mouse-gestures": "195",
+    "reprogrammable-keys": {
+      "195": 195,
+      "196": 196,
+      "80": 80,
+      "81": 81,
+      "82": 82,
+      "83": 83,
+      "86": 86
+    },
+    "smart-shift": 0,
+    "thumb-scroll-invert": false,
+    "thumb-scroll-mode": false
+  },
   "B36F:61092303": {
     "_modelId": "B36F00000000",
     "_name": "Logi K650",
     "_sensitive": {
       "disable-keyboard-keys": false,
-      "divert-keys": true,
+      "divert-keys": false,
       "multiplatform": false
     },
     "_serial": "61092303",
