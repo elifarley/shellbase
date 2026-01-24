@@ -13,12 +13,12 @@ cat <<'EOF'
 
 
 - [ | ] : Navigation
-- 1...0 : Focus window (Clockwise from TOP-LEFT)
-- P     : Focus last used
+- 1...0 : Go to window (Clockwise from TOP-LEFT)
+- \     : Go to last used window (nth_window -1)
 
-- F | B : Move window Forward | Backward
-- `     : Move window to TOP
-- < only CTRL> + \ : Detach window to OS Window (Ask)
+- F | B  : Move window Forward | Backward
+- P      : Move window to TOP
+- <only CTRL> + `   : Detach window to tab (Ask)
 
 2) TABS
 - T  : New
@@ -28,8 +28,9 @@ cat <<'EOF'
 - <LEFT> | <RIGHT>: Navigation
 - <SHIFT + CTRL + TAB> | <CTRL + TAB>: Navigation
 
-- < | >      : Move tab
-- \ : Detach tab to OS Window (Ask)
+- < | >           : Move tab
+- <only CTRL> + \      : Go to last used tab (goto_tab -1)
+- ` : Detach tab to OS Window (Ask)
 
 
 3) SCROLLBACK / NAVIGATION (main screen)
