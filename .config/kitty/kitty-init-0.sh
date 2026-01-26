@@ -12,9 +12,10 @@ cat <<'EOF'
 - R       : Resize
 
 
-- [ | ] : Navigation
-- 1...0 : Go to window (Clockwise from TOP-LEFT)
-- \     : Go to last used window (nth_window -1)
+- [ | ]   : Navigation
+- <LEFT> | <RIGHT> : Navigation
+- 1...0   : Go to window (Clockwise from TOP-LEFT)
+- \       : Go to last used window (nth_window -1)
 
 - F | B  : Move window Forward | Backward
 - P      : Move window to TOP
@@ -25,8 +26,8 @@ cat <<'EOF'
 - q  : Quit tab (close)
 - <ALT> + T : Title change for TAB
 
-- <LEFT> | <RIGHT>: Navigation
-- <SHIFT + CTRL + TAB> | <CTRL + TAB>: Navigation
+- <CTRL + ALT + LEFT> | <CTRL + ALT + RIGHT> : Navigation
+- <SHIFT + CTRL + TAB> | <CTRL + TAB>       : Navigation
 - 1...9 : Go to N-th tab
 
 - < | >           : Move tab
