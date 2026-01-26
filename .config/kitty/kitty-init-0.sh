@@ -3,7 +3,7 @@ echo "### Kitty session: $PWD"
 cat <<'EOF'
 # Kitty cheatsheet (kitty_mod = <CTRL> + <SHIFT>)
 
-1) WINDOWS (splits inside a tab)
+## WINDOWS (splits inside a tab)
 - <ENTER> : New
 - N       : New OS Window
 - W       : Close
@@ -12,16 +12,15 @@ cat <<'EOF'
 - R       : Resize
 
 
-- [ | ]   : Navigation
-- <LEFT> | <RIGHT> : Navigation
+- <LEFT> | <RIGHT> : Navigation (cycle through windows)
 - 1...0   : Go to window (Clockwise from TOP-LEFT)
 - \       : Go to last used window (nth_window -1)
 
-- F | B  : Move window Forward | Backward
+- [ | ]  : Move window backward | forward
 - P      : Move window to TOP
 - <only CTRL> + `   : Detach window to tab (Ask)
 
-2) TABS
+## TABS
 - T  : New
 - q  : Quit tab (close)
 - <ALT> + T : Title change for TAB
@@ -30,12 +29,13 @@ cat <<'EOF'
 - <SHIFT + CTRL + TAB> | <CTRL + TAB>       : Navigation
 - 1...9 : Go to N-th tab
 
-- < | >           : Move tab
+- < | >                     : Move tab
+- <CTRL + ALT> + [ | ]      : Move tab backward | forward
 - <only CTRL> + \      : Go to last used tab (goto_tab -1)
 - ` : Detach tab to OS Window (Ask)
 
 
-3) SCROLLBACK / NAVIGATION (main screen)
+## SCROLLBACK / NAVIGATION (main screen)
 - Z | X                   : Previous / Next shell prompt (requires shell integration)
 - <UP> | <DOWN>           : Scroll by LINE
 - <PAGE UP> | <PAGE DOWN> : Scroll by PAGE
@@ -44,14 +44,14 @@ cat <<'EOF'
 - G                       : Browse last command output in pager (requires shell integration)
 - /                       : Search scrollback within pager
 
-4) CLIPBOARD / TEXT
+## CLIPBOARD / TEXT
 - C         : Copy to clipboard
 - V         : Paste from clipboard
 - S         : Paste from selection
 - O         : Pass selection to program
 - U         : Unicode input
 
-5) UI / CONFIG / MISC
+## UI / CONFIG / MISC
 - - / =       : Increase / Decrease font size
 - <BACKSPACE> : Restore font size
 
@@ -65,7 +65,7 @@ cat <<'EOF'
 - F11         : Toggle fullscreen
 - F10         : Toggle maximized
 
-6) BACKGROUND OPACITY (multi-key chords)
+## BACKGROUND OPACITY (multi-key chords)
 - A > M       : Increase opacity
 - A > L       : Decrease opacity
 - A > 1       : Fully opaque
