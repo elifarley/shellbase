@@ -18,7 +18,7 @@ cat <<'EOF'
 
 - [ | ]  : Move window
 - P      : Move window to TOP
-- <only CTRL> + `   : Detach window to tab (Ask)
+- ;      : Detach window to tab (Ask)
 
 ## TABS
 - T  : New
@@ -31,7 +31,7 @@ cat <<'EOF'
 
 - <CTRL + ALT> + [ | ]      : Move tab
 - <only CTRL> + \      : Go to last used tab (goto_tab -1)
-- ` : Detach tab to OS Window (Ask)
+- <CTRL + ALT> + ; : Detach tab to OS Window (Ask)
 
 
 ## SCROLLBACK / NAVIGATION (main screen)
