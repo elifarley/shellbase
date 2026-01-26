@@ -27,6 +27,7 @@ cat <<'EOF'
 
 - <LEFT> | <RIGHT>: Navigation
 - <SHIFT + CTRL + TAB> | <CTRL + TAB>: Navigation
+- 1...9 : Go to N-th tab
 
 - < | >           : Move tab
 - <only CTRL> + \      : Go to last used tab (goto_tab -1)
