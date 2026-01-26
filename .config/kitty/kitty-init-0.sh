@@ -16,7 +16,7 @@ cat <<'EOF'
 - 1...0   : Go to window (Clockwise from TOP-LEFT)
 - \       : Go to last used window (nth_window -1)
 
-- [ | ]  : Move window backward | forward
+- [ | ]  : Move window
 - P      : Move window to TOP
 - <only CTRL> + `   : Detach window to tab (Ask)
 
@@ -29,8 +29,7 @@ cat <<'EOF'
 - <SHIFT + CTRL + TAB> | <CTRL + TAB>       : Navigation
 - 1...9 : Go to N-th tab
 
-- < | >                     : Move tab
-- <CTRL + ALT> + [ | ]      : Move tab backward | forward
+- <CTRL + ALT> + [ | ]      : Move tab
 - <only CTRL> + \      : Go to last used tab (goto_tab -1)
 - ` : Detach tab to OS Window (Ask)
 
