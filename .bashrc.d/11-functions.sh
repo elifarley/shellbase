@@ -21,12 +21,12 @@ lsof.write()  {
   lsof "$@" | grep -E 'REG|DIR' | grep -Pv 'mem |^[^\s]+\s+\d+\s+[^\s]+\s+\d+r'
 }
 
-lsof.port() {
+lsof.portshort() {
   local port="$1"; shift
   lsof -ti :"$port" "$@" | xargs -r ps -o pid,ppid,user=UID,cmd -p
 }
 
-lsof.portdetails() {
+lsof.port() {
   local port="$1"; shift
   lsof -ti :"$port" "$@" | xargs -r ps -o pid,ppid,user=UID,stime,c,time,stat,cmd -p
 }
