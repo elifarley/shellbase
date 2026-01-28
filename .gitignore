@@ -14,5 +14,7 @@ __pycache__
 .git
 .idea
 *.swp
+*.bak
 .claude/agent-responses/
 /.claude/settings.local.json
+/.config/kitty/current-theme.conf

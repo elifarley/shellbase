@@ -1,3 +1,5 @@
+#!/bin/env bash
+
 echo "### Kitty session: $PWD"
 
 cat <<'EOF'

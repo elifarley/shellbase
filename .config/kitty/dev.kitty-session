@@ -3,11 +3,12 @@
 # Tab 1: The Default Tab
 cd ~/src
 title Projects
-launch bash
-#--init-file ~/.config/kitty/kitty-init-0.sh
+enabled_layouts tall,stack
+layout tall
+launch --title "Shortcuts" --hold --cwd=$HOME .config/kitty/kitty-init-0.sh
 
 new_tab DevBase
-layout tall
+layout splits
 cd ~/src/shellbase
 launch --title "ShellBase" bash
 cd ~/src/devbase
@@ -23,7 +24,9 @@ launch bash
 
 new_tab SLS
 cd ~/src/storyloom-studio
-launch bash
+launch --title "SLS" bash
+cd ~/sls-projects/
+launch --title "SLS Projects" bash
 
 new_tab AssiFix
 cd ~/src/assifix-subscription-tracker
