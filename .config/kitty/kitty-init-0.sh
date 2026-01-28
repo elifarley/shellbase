@@ -1,6 +1,10 @@
 echo "### Kitty session: $PWD"
 
 cat <<'EOF'
+# set colors dynamically:
+# kitty_mod + <ESC>  : go to kitty shell
+# set-colors -a -c .config/kitty/custom.conf
+
 # Kitty cheatsheet (kitty_mod = <CTRL> + <SHIFT>)
 
 ## WINDOWS (splits inside a tab)
