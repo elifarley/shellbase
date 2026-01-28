@@ -1,3 +1,5 @@
+# See https://sw.kovidgoyal.net/kitty/sessions/
+
 # Tab 1: The Default Tab
 cd ~/src
 title Projects
@@ -5,8 +7,11 @@ launch bash
 #--init-file ~/.config/kitty/kitty-init-0.sh
 
 new_tab DevBase
+layout tall
+cd ~/src/shellbase
+launch --title "ShellBase" bash
 cd ~/src/devbase
-launch bash
+launch --title "DevBase" bash
 
 new_tab LLM-prompting
 cd ~/src/llm-prompting

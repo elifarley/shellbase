@@ -34,10 +34,13 @@ cat <<'EOF'
 - 1...9 : Go to N-th tab
 - <only ALT> + \  : Select tab (`select_tab`)
 
-- <CTRL + ALT> + [ | ]      : Move tab
+- <only CTRL + ALT> + [ | ]      : Move tab
 - <only CTRL> + \      : Go to last used tab (goto_tab -1)
-- <CTRL + ALT> + ; : Detach tab to OS Window (Ask)
+- <only CTRL + ALT> + ; : Detach tab to OS Window (Ask)
 
+## Sessions
+- <only F12>         : Go to last used session
+- <only ALT + F12> : Select session from ~/.config/kitty/*.kitty-session
 
 ## SCROLLBACK / NAVIGATION (main screen)
 - Z | X                   : Previous / Next shell prompt (requires shell integration)
