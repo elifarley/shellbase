@@ -1,41 +1,54 @@
 # See https://sw.kovidgoyal.net/kitty/sessions/
 
 # Tab 1: The Default Tab
-cd ~/src
 title Projects
-enabled_layouts tall,stack
-layout tall
+layout fat
+enabled_layouts fat,tall,stack
+cd ~/src
 launch --title "Shortcuts" --hold --cwd=$HOME .config/kitty/kitty-init-0.sh
 
 new_tab DevBase
-layout splits
+layout fat
+enabled_layouts fat,tall,stack
 cd ~/src/shellbase
 launch --title "ShellBase" bash
 cd ~/src/devbase
 launch --title "DevBase" bash
 
 new_tab LLM-prompting
+layout fat
+enabled_layouts fat,tall,stack
 cd ~/src/llm-prompting
 launch bash
 
 new_tab Vandamme
+layout fat
+enabled_layouts fat,tall,stack
 cd ~/src/vandamme-proxy
 launch bash
 
 new_tab SLS
+layout fat
+enabled_layouts fat,tall,stack
 cd ~/src/storyloom-studio
 launch --title "SLS" bash
 cd ~/sls-projects/
 launch --title "SLS Projects" bash
 
 new_tab AssiFix
+layout fat
+enabled_layouts fat,tall,stack
 cd ~/src/assifix-subscription-tracker
 launch bash
 
 new_tab Book-1
+layout fat
+enabled_layouts fat,tall,stack
 cd ~/storyloom-studio-projects/book-1
 launch bash
 
 new_tab Hug
+layout fat
+enabled_layouts fat,tall,stack
 cd ~/src/hug-scm
 launch bash
