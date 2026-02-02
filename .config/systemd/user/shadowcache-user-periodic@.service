@@ -1,0 +1,16 @@
+[Unit]
+Description=Shadowcache periodic save for user %i
+Documentation=file://%%h/.local/share/doc/shellbase/systemd/README.md
+
+[Service]
+Type=oneshot
+# No RemainAfterExit - service becomes inactive after completion,
+# allowing OnUnitActiveSec timer to work correctly
+Environment=SHELLBASE_USER=%i
+Environment=SHELLBASE_CACHE_DIR=%h/.cache
+Environment=SHELLBASE_SCOPE=user
+ExecStart=%h/bin/shadowcache.sh user-save
+TimeoutStopSec=300
+
+[Install]
+WantedBy=default.target

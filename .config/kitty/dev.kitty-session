@@ -7,19 +7,21 @@ enabled_layouts fat,tall,stack
 cd ~/src
 launch --title "Shortcuts" --hold --cwd=$HOME .config/kitty/kitty-init-0.sh
 
-new_tab DevBase
+new_tab System
 layout fat
 enabled_layouts fat,tall,stack
 cd ~/src/shellbase
 launch --title "ShellBase" bash
-cd ~/src/devbase
-launch --title "DevBase" bash
+cd ~/src/system-priv
+launch --title "System Priv" bash
 
 new_tab LLM-prompting
 layout fat
 enabled_layouts fat,tall,stack
 cd ~/src/llm-prompting
-launch bash
+launch --title "LLM Prompting" bash
+cd ~/src/devbase
+launch --title "DevBase" bash
 
 new_tab Vandamme
 layout fat

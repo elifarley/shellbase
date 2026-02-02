@@ -1,0 +1,19 @@
+[Unit]
+Description=Shadowcache system service (/var/cache, /var/tmp)
+Documentation=file://%%h/.local/share/doc/shellbase/systemd/README.md
+Requires=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Run as root for system directories
+User=root
+Environment=SHELLBASE_SCOPE=system
+Environment=SHADOWCACHE_PERSISTENT=/volumes/APM-cache
+ExecStart=/usr/local/sbin/shadowcache-system system-load
+ExecStop=/usr/local/sbin/shadowcache-system system-save
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target

@@ -29,4 +29,11 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-. ~/IdeaProjects/hug-scm/bin/activate
+# Activate Hug SCM if available (uses SHELLBASE_PROJECT_ROOT from 04-system-env.sh)
+if [ -n "$SHELLBASE_PROJECT_ROOT" ]; then
+  hug_activate="$SHELLBASE_PROJECT_ROOT/hug-scm/bin/activate"
+  [ -r "$hug_activate" ] && . "$hug_activate"
+else
+  # Fallback to hardcoded path for backward compatibility
+  test -r ~/IdeaProjects/hug-scm/bin/activate && . ~/IdeaProjects/hug-scm/bin/activate
+fi

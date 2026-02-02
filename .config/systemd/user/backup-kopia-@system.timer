@@ -1,0 +1,12 @@
+[Unit]
+Description=[%N] Periodic Kopia snapshot
+
+[Timer]
+OnCalendar=*-*-* 8..23:10:00
+Persistent=true
+# WakeSystem=true
+# RandomizedDelaySec=1200
+# Unit=backup-kopia-@ecc.service
+
+[Install]
+WantedBy=timers.target

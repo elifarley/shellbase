@@ -1,0 +1,27 @@
+[Unit]
+Description=Kopia snapshot %I service
+# https://kopia.discourse.group/t/how-to-properly-schedule/2070/3
+# https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#Specifiers
+
+Wants=network-online.target
+After=network-online.target
+#ConditionACPower=true
+
+[Service]
+#Environment="HOME=/home/ecc"
+Type=oneshot
+Restart=no
+LogRateLimitIntervalSec=0
+StandardOutput=journal+console
+StandardError=journal+console
+ExecStart=%h/bin/kopia-snapshot.sh %I
+
+
+Nice=19
+#CPUSchedulingPolicy=batch
+#IOSchedulingClass=best-effort
+#IOSchedulingPriority=7
+#CPUWeight=60
+#CPUQuota=90%
+#IOWeight=60
+#MemorySwapMax=0

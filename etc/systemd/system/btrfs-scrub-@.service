@@ -1,0 +1,19 @@
+[Unit]
+Description=BTRFS Scrub %i service
+# https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#Specifiers
+
+After=fstrim.service btrfs-trim.service
+ConditionACPower=true
+
+[Service]
+# Optional: Load system environment variables from user override
+# EnvironmentFile=-%h/.shellbase-system.env
+Type=simple
+Restart=no
+LogRateLimitIntervalSec=0
+StandardOutput=journal+console
+StandardError=journal+console
+Nice=19
+CPUSchedulingPolicy=idle
+IOSchedulingClass=idle
+ExecStart=${SHELLBASE_BIN_DIR:-/home/%U/bin}/btrfs-scrub.sh %i

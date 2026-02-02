@@ -1,0 +1,338 @@
+# =============================================================================
+# KOPIA IGNORE FILE - Snapshot Exclusion Rules
+# =============================================================================
+#
+# Maintenance: Delete old snapshots with:
+#   kopia maintenance run --full --safety=none
+#
+# Documentation: https://kopia.io/docs/reference/logging/
+# Ignore patterns: https://kopia.io/docs/reference/ignoring-files/
+#
+# =============================================================================
+
+# =============================================================================
+# LESSONS LEARNED - KOPIA PATTERN BEHAVIOR
+# =============================================================================
+#
+# CRITICAL: Kopia's pattern matching has non-obvious behavior that differs
+# from .gitignore in important ways. Understanding these nuances prevents
+# frustrating debugging sessions where files you thought were excluded are
+# actually being backed up.
+#
+# LESSON 1: Multi-segment patterns are NOT applied recursively
+# -------------------------------------------------------------------------
+# CRITICAL DISTINCTION: Single-segment vs multi-segment pattern behavior
+#
+# Single-segment patterns (one path component):
+#   - node_modules/  → matches node_modules/ at ANY depth automatically
+#   - .npm/          → matches .npm/ at ANY depth automatically
+#   - *.log          → matches file.log at ANY depth automatically
+#
+# Multi-segment patterns (two+ path components):
+#   - .npm/_cacache/ → ONLY matches at root, NOT recursively
+#   - a/b/           → ONLY matches at root, NOT recursively
+#
+# Root cause: Kopia applies single-segment patterns at each directory level
+#             during traversal, but multi-segment patterns are only matched
+#             against paths from the snapshot root.
+#
+# DOESN'T WORK (multi-segment):         WORKS:
+#   .npm/_cacache/                       **/.npm/_cacache/
+#   .npm/_logs/                          **/.npm/_logs/
+#   .npm/_npx/                           **/.npm/_npx/ or **/_npx/
+#   project/vendor/                      **/project/vendor/
+#
+# When to use **/ prefix:
+#   - ANY pattern with 2+ path segments that needs to match at any depth
+#   - Examples: **/.npm/_cacache/, **/project/build/, vendor/bundle/**
+# LESSON 2: Top-level patterns work without leading /
+# -------------------------------------------------------------------------
+# Patterns at the root level (like node_modules/) work fine without **/
+# because Kopia applies patterns relative to each directory it processes.
+#
+# LESSON 3: Verify your exclusions with --show-files flag
+# -------------------------------------------------------------------------
+# Always test after editing this file:
+#   kopia snapshot estimate --show-files $TARGET_PATH
+#
+# Look for two sections:
+#   1. "Snapshot excludes X file(s)" - lists ignored files by name
+#   2. "Snapshot excludes X directories" - shows ignored directories
+#
+# LESSON 4: Directory vs file matching
+# -------------------------------------------------------------------------
+# - Pattern with trailing slash (node_modules/) matches only directories
+# - Pattern without trailing slash (node_modules) matches both files AND dirs
+# - Use trailing slash when you only want to exclude directories
+#
+# LESSON 5: **/ is different from * in Kopia
+# -------------------------------------------------------------------------
+# - * matches only within a single directory segment
+# - ** matches across directory boundaries (like .gitignore's globstar)
+#
+# Pattern Selection Guide:
+#
+#   Pattern              | What it matches                          | When to use
+#   ---------------------|-----------------------------------------|------------------
+#   *.log                | file.log at ANY depth                    | Simple filenames
+#   node_modules/        | node_modules/ at ANY depth               | Single-segment dirs
+#   .npm/_npx/           | Only .npm/_npx/ at root (BUGGY!)         | DON'T USE for nested
+#   **/.npm/_npx/        | .npm/_npx/ at any depth                  | Multi-segment paths
+#   **/.npm/_cacache/    | .npm/_cacache/ at any depth              | Multi-segment paths
+#   **/_npx/             | ANY _npx/ dir at any depth               | Last segment wildcard
+#   **/tmp               | tmp as file or dir at any depth          | Name with wildcard parent
+#   **/tmp/              | tmp directory only, at any depth         | Directory with wildcard parent
+#
+# RULE OF THUMB: Add **/ prefix to ANY pattern with 2+ path segments.
+#                Single-segment patterns (*.log, node_modules/) don't need it.
+#
+# The **/ prefix is only needed for multi-segment paths (like .npm/_npx/)
+# where you want to match regardless of parent directory structure.
+#
+# LESSON 6: Systematic testing methodology
+# -------------------------------------------------------------------------
+# When debugging ignore patterns, create a minimal test structure:
+#
+#   mkdir -p /tmp/kopia-test/a/b/c
+#   touch /tmp/kopia-test/file.log
+#   touch /tmp/kopia-test/a/file.log
+#   touch /tmp/kopia-test/a/b/file.log
+#   cd /tmp/kopia-test
+#   cat > .kopiaignore << 'EOF'
+#   YOUR_PATTERN_HERE
+#   EOF
+#   kopia snapshot estimate --show-files . 2>&1
+#
+# Key indicators to check:
+#   - "Snapshot includes X file(s)" - what IS being backed up
+#   - "Snapshot excludes X file(s)" - what is being ignored (lists by name)
+#   - "Snapshot excludes X directories" - what directories are ignored
+#
+# Compare outputs with different patterns to understand behavior.
+# This method revealed the multi-segment pattern bug described in LESSON 1.
+#
+# LESSON 7: Leading slash behavior in .kopiaignore
+# -------------------------------------------------------------------------
+# - /.local/ pattern matches only at root (anchored)
+# - .local/ pattern matches at any level (relative)
+# Use leading / ONLY for paths that should only match at repository root
+#
+# =============================================================================
+
+# =============================================================================
+# TESTING YOUR CHANGES
+# =============================================================================
+# After editing this file, ALWAYS verify exclusions work:
+#
+#   kopia snapshot estimate $HOME
+#   kopia snapshot estimate $HOME 2>&1 | grep -A 20 "Snapshot excludes"
+#
+# To compare before/after (diff what changed):
+#   kopia snapshot estimate --show-files $HOME > /tmp/before.txt
+#   # Make your changes
+#   kopia snapshot estimate --show-files $HOME > /tmp/after.txt
+#   diff /tmp/before.txt /tmp/after.txt
+#
+# =============================================================================
+
+# =============================================================================
+# CACHE AND TEMPORARY DIRECTORIES
+# =============================================================================
+# Wildcard patterns for common cache/tmp locations across any depth
+*[Cc][Aa][Cc][Hh][Ee]*  # Matches any path containing "cache" (e.g., node_modules/.cache)
+[Tt][Mm][Pp]*/          # Matches directories starting with "tmp" (e.g., tmp-files/)
+*[Tt][Mm][Pp]           # Matches files/directories ending with "tmp" (e.g., foo.tmp)
+*.tmp.*
+*.backup.*
+
+# -----------------------------------------------------------------------------
+# npm caches and npx temp directories
+# -----------------------------------------------------------------------------
+# IMPORTANT: Multi-segment patterns require **/ prefix to match at any depth.
+# Single-segment patterns (like node_modules/) work recursively automatically.
+#
+# The patterns below work as follows:
+#   - **/.npm/_cacache/     matches .npm/_cacache/ at any depth
+#   - **/_npx/              matches ANY directory named _npx at any depth
+#                           This includes: ~/.npm/_npx/, project/a/.npm/_npx/, etc.
+#   - **/.npm/_logs/        matches .npm/_logs/ at any depth
+#   - **/.npm/_update-notifier-last-checked (file pattern, matches at any depth)
+#
+# Directories excluded:
+#   - .npm/_cacache/      (npm's content-addressable cache)
+#   - _npx/               (npx package cache - matches ANY _npx directory)
+#   - .npm/_logs/         (npm debug logs)
+#   - .npm/_update-notifier-last-checked (npm update tracker file)
+#
+**/.npm/_cacache
+_npx
+**/.npm/_logs
+**/.npm/_update-notifier-last-checked
+
+.nvm/.cache
+
+.bun/install/cache
+.local/share/pnpm
+
+# -----------------------------------------------------------------------------
+# Node.js dependencies (restore via npm install/pnpm install)
+# -----------------------------------------------------------------------------
+# These can be excluded because they're reproducible from package.json:
+#   - node_modules/       (npm/yarn/pnpm dependencies)
+#   - __pypackages__/     (Python native dependencies)
+#
+node_modules/
+__pypackages__/
+
+# -----------------------------------------------------------------------------
+# Python bytecode and caches (auto-regenerated on import)
+# -----------------------------------------------------------------------------
+# Python creates these automatically when running .py files:
+#   - __pycache__/        # Python 3+ bytecode cache (directory version)
+#   - *.pyc               # Python bytecode files (Python 2 style)
+#   - *.pyo               # Python optimized bytecode files
+#   - .pytest_cache/      # Pytest cache directory
+#   - .mypy_cache/        # MyPy type checking cache
+#   - *.egg-info/         # Python package metadata
+#   - .venv/              # Virtual environment directories
+#
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+.venv/
+
+# =============================================================================
+# BACKUP AND TEMPORARY FILES
+# =============================================================================
+# Editor and system backup files (safe to exclude, recreatable)
+*~               # Emacs/vim backup files
+*.bak            # Generic backup files
+*.bkp            # Alternative backup extension
+*.old            # Old versions of files
+*.tmp*           # Temporary files
+*.temp           # Alternative temp extension
+*.cache          # Cache files
+*.backup*        # Backup archives
+
+# =============================================================================
+# APPLICATION-SPECIFIC EXCLUSIONS
+# -----------------------------------------------------------------------------
+
+# Browser profiles (large, can be redownloaded)
+.config/opera*
+
+# IPC and socket files (runtime state, not backup-worthy)
+socket
+ipc-socket
+*.pipe
+
+# CrashPlan backup configuration (contains large metadata)
+crashplan-config/service.model
+
+# SSH and GPG runtime state (can be regenerated)
+**.ssh/control*    # SSH control sockets
+**.gnupg/S.keyboxd # GnuPG keybox daemon state
+
+# Trilium notes app backups and logs (internal backups)
+/.local/share/recently-used.xbel    # Recent files tracker
+/.local/share/trilium-data/backup   # Trilium backups
+/.local/share/trilium-data/log      # Trilium logs
+
+# =============================================================================
+# Browser and Electron App Caches (MEDIUM IMPACT)
+# =============================================================================
+#
+.config/thorium/*/GPUCache
+.config/thorium/*/Code Cache
+.config/thorium/*/Service Worker
+.config/thorium/*/IndexedDB
+.config/thorium/*/Application Cache
+.config/thorium/*/Shared Dictionary
+.config/thorium/component_crx_cache
+.config/thorium/extensions_crx_cache
+
+.config/chromium*/**/GPUCache
+.config/chromium*/**/Code Cache
+.config/chromium*/**/Service Worker
+.config/chromium*/**/IndexedDB
+
+.chromium-browser-snapshots # Puppeteer/Playwright test binaries
+
+.config/discord/Cache
+.config/discord/GPUCache
+.config/discord/Code Cache
+
+# ============================================
+# Application-specific caches
+# ============================================
+.config/VirtualBox/VBoxGuestAdditions_*.iso
+.config/Ethereum Wallet/binaries
+.local/share/cantata/online/*.sql
+.local/share/Hardcoded Software
+
+# =============================================================================
+# DEVELOPMENT TOOL CACHES
+# -----------------------------------------------------------------------------
+# These can be redownloaded or regenerated:
+#   - .m2/      (Maven local repository)
+#   - .rustup/  (Rust toolchain manager)
+#   - .cargo/   (Rust package registry)
+#
+/.m2/
+/.rustup/
+/.cargo/
+
+# =============================================================================
+# AI Agents
+# -----------------------------------------------------------------------------
+#
+# Claude Code ephemeral data (~6 GB)
+# - projects/: All conversation history, session transcripts, and agent logs
+# - debug/: Per-session debug logs (recreated each session)
+# - telemetry/: Analytics and failed events
+# - file-history/: File version history (ephemeral)
+# - todos/, tasks/: Temporary task tracking state
+# - shell-snapshots/: Temporary shell state
+# - history.jsonl: Global conversation history
+#
+.claude/projects/
+.claude/debug/
+.claude/telemetry/
+.claude/file-history/
+.claude/todos/
+.claude/tasks/
+.claude/shell-snapshots/
+.claude/history.jsonl
+
+**/.claude/agent-responses/
+
+# Cursor AI
+.cursor/extensions/
+
+# ============================================
+# Old Claude versions (optional)
+# ============================================
+.local/share/claude/versions/*
+
+# =============================================================================
+# Heap and core dumps
+# -----------------------------------------------------------------------------
+#
+/*.hprof
+
+# =============================================================================
+# SYSTEM-LEVEL EXCLUSIONS (anchored to root with leading /)
+# -----------------------------------------------------------------------------
+# Using leading / ensures these only match at filesystem root, not in subdirs
+# This prevents accidentally excluding similarly-named directories in projects
+#
+/bind-mounts   # Mounted filesystems (don't backup mounts)
+/linux32       # 32-bit Linux compatibility layer
+/Downloads/    # Download directory (typically large/temporary)
+/Music/        # Media files (large, manage separately)
+/Pictures/     # Media files (large, manage separately)
+/Videos/       # Media files (large, manage separately)
+/Games/        # Game installs (large, manage separately)

@@ -1,0 +1,11 @@
+[Unit]
+Description=BTRFS scrub %N
+
+[Timer]
+OnCalendar=monthly
+AccuracySec=1h
+RandomizedDelaySec=1200
+Persistent=true
+
+[Install]
+WantedBy=timers.target

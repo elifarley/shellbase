@@ -455,6 +455,8 @@ EOF
 # Add kitty installed via official installer to PATH
 path_prepend "$HOME/.local/kitty.app/bin"
 
+alias ssh='kitty +kitten ssh'
+
 # kitty: Display effective configuration from running kitty process
 kitty.effective-config() {
   local KITTY_PID=${1:-$(pgrep -x kitty | head -1)}
@@ -559,8 +561,14 @@ kitty.clear-cache() {
   return 0
 }
 
-alias kopia='kopia --config-file=/home/ecc/.var/app/io.kopia.KopiaUI/config/kopia/repository.config'
-alias ssh='kitty +kitten ssh'
+# Kopia alias - use system environment variable if set, otherwise try common locations
+kopia_config() {
+  local config="${SHELLBASE_CONFIG_DIR:-$HOME/.config}/kopia/repository.config"
+  local alt_config="${SHELLBASE_USER_HOME:-$HOME}/.var/app/io.kopia.KopiaUI/config/kopia/repository.config"
+  [ -r "$alt_config" ] && config="$alt_config"
+  [ -r "$config" ] && echo "$config"
+}
+alias kopia='KOPIA_PASSWORD=$(~/.ssh/kopia-active.pw) kopia --config-file=$(kopia_config)'
 
 # Claude Code aliases for different configurations
 alias claude.glm='claude --verbose --dangerously-skip-permissions --settings ~/.claude/settings-glm.json'

@@ -1,0 +1,78 @@
+# Logrotate configuration for shadowcache metrics CSV
+# ============================================================
+#
+# CONTEXT: shadowcache.sh syncs tmpfs↔SSD and tracks SSD writes
+# with 85% confidence intervals for BTRFS compression estimates.
+#
+# CSV FORMAT: timestamp,cache_name,operation,total_bytes,literal_bytes,
+#             matched_bytes,file_count,duration_ms
+#
+# INSTALLATION: sudo cp etc/logrotate.d/shadowcache-metrics /etc/logrotate.d/
+# VERIFY:       logrotate -d /etc/logrotate.d/shadowcache-metrics
+#
+# LESSONS LEARNED
+# ---------------
+# 1. No `create` directive:
+#    - Logrotate's default behavior creates a new empty file after rotation
+#    - But shadowcache.sh needs to write the CSV header when recreating
+#    - Solution: Omit `create`; let shadowcache handle file creation (line 716-720)
+#    - Pattern: If your app manages file initialization, don't let logrotate create it
+#
+# 2. Wildcard paths for user scope:
+#    - User metrics live in $PERSISTENT/${CACHE_USER}-cache/.shadowcache-metrics.csv
+#    - Using *-cache wildcard supports multiple users without hardcoding usernames
+#    - Example: /volumes/APM-cache/ecc-cache/.shadowcache-metrics.csv
+#    - Example: /volumes/APM-cache/alice-cache/.shadowcache-metrics.csv
+#
+# 3. delaycompress vs compress:
+#    - compress: Rotate and immediately gzip (saves space, harder to debug)
+#    - delaycompress: Rotate now, gzip NEXT rotation (keeps .1 uncompressed)
+#    - Use delaycompress when you frequently inspect recent logs
+#    - Pattern: delaycompress gives you 1 day of uncompressed data for quick debugging
+#
+# 4. missingok + notifempty:
+#    - missingok: Don't error if file doesn't exist (laptop may be off)
+#    - notifempty: Don't rotate empty files (useless archives)
+#    - Pattern: Always use both for intermittent or optional logs
+#
+# 5. Retention period calculation:
+#    - daily + rotate 30 = 30 days of historical data
+#    - Sufficient for: weekly patterns, monthly trends, interval optimization
+#    - Trade-off: More data = better analysis vs disk usage
+#    - Formula: retention = rotate_interval × rotate_count
+#
+# 6. Hardcoded paths (/volumes/APM-cache):
+#    - These are system-specific; users must edit for their setup
+#    - Alternative: Use /var/cache/shadowcache or similar standard location
+#    - Documentation must clearly state path expectations
+#
+# ROTATION PROCESS (for understanding)
+# -----------------------------------
+# Day 1:  .shadowcache-metrics.csv      → .shadowcache-metrics.csv.1
+# Day 2:  .shadowcache-metrics.csv.1    → .shadowcache-metrics.csv.2 (gz)
+#          .shadowcache-metrics.csv      → .shadowcache-metrics.csv.1
+# Day 31: .shadowcache-metrics.csv.30   → deleted
+#
+# After rotation: shadowcache.sh recreates the file with CSV header
+
+# System scope metrics (root-owned)
+/volumes/APM-cache/.shadowcache-metrics.csv {
+    daily
+    rotate 30
+    compress
+    delaycompress
+    missingok
+    notifempty
+    # No create needed - shadowcache.sh recreates the file with header if missing
+}
+
+# User scope metrics (user-owned, in persistent storage)
+# The XDG symlink at ~/.local/state/shadowcache-metrics.csv points here
+/volumes/APM-cache/*-cache/.shadowcache-metrics.csv {
+    daily
+    rotate 30
+    compress
+    delaycompress
+    missingok
+    notifempty
+}

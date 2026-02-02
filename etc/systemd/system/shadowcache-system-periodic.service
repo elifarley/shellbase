@@ -1,0 +1,18 @@
+[Unit]
+Description=Shadowcache periodic save for system cache
+Documentation=file://%%h/.local/share/doc/shellbase/systemd/README.md
+# Don't wait for local-fs.target to avoid triggering stuck cryptsetup services
+# We only need the shadowcache wrapper to work, which handles its own validation
+After=shadowcache-system.timer
+
+[Service]
+Type=oneshot
+# No RemainAfterExit - service becomes inactive after completion,
+# allowing OnUnitActiveSec timer to work correctly
+Environment=SHELLBASE_USER=root
+Environment=SHELLBASE_SCOPE=system
+ExecStart=/usr/local/sbin/shadowcache-system system-save
+TimeoutStopSec=300
+
+[Install]
+WantedBy=default.target

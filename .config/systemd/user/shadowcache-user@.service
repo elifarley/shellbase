@@ -1,0 +1,16 @@
+[Unit]
+Description=Shadowcache user service for %i
+Documentation=file://%%h/.local/share/doc/shellbase/systemd/README.md
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=SHELLBASE_USER=%i
+Environment=SHELLBASE_CACHE_DIR=%h/.cache
+Environment=SHELLBASE_SCOPE=user
+ExecStart=%h/bin/shadowcache.sh user-load
+ExecStop=%h/bin/shadowcache.sh user-save
+TimeoutStopSec=300
+
+[Install]
+WantedBy=default.target

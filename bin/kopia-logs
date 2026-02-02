@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+#
+# kopia-logs - View Kopia backup logs from journalctl
+#
+# Usage:
+#   kopia-logs [options]
+#
+# Options:
+#   -s, --since TIME    How far back to look (default: 1 hour)
+#                       Accepts: 1h, 30m, 2d, today, yesterday, etc.
+#   -e, --errors        Show only errors
+#   -n, --lines NUM     Number of lines to show (default: 50)
+#   -f, --follow        Follow logs (like journalctl -f)
+#   -h, --help          Show this help message
+#
+# Examples:
+#   kopia-logs                    # Show last 1 hour of logs
+#   kopia-logs -s 30m             # Show last 30 minutes
+#   kopia-logs -s 2h -e           # Show last 2 hours, errors only
+#   kopia-logs -s today -n 100    # Show all from today, max 100 lines
+#   kopia-logs -f                 # Follow logs in real-time
+
+set -euo pipefail
+
+# Defaults
+SINCE="1 hour ago"
+ERRORS_ONLY=false
+LINES=50
+FOLLOW=false
+SHOW_HELP=false
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -s|--since)
+            SINCE="$2"
+            # Convert shorthand formats (30m, 2h, 1d) to journalctl format
+            case "$SINCE" in
+                *m) SINCE="${SINCE%m} minutes ago" ;;
+                *h) SINCE="${SINCE%h} hours ago" ;;
+                *d) SINCE="${SINCE%d} days ago" ;;
+                *s) SINCE="${SINCE%s} seconds ago" ;;
+            esac
+            shift 2
+            ;;
+        -e|--errors)
+            ERRORS_ONLY=true
+            shift
+            ;;
+        -n|--lines)
+            LINES="$2"
+            shift 2
+            ;;
+        -f|--follow)
+            FOLLOW=true
+            shift
+            ;;
+        -h|--help)
+            SHOW_HELP=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            echo "Use -h for help." >&2
+            exit 1
+            ;;
+    esac
+done
+
+# Show help and exit
+if [[ "$SHOW_HELP" == true ]]; then
+    grep '^#' "$0" | grep -v '#!' | sed 's/^# //; s/^#//' | sed 'N;N;s/\n/ /g;P;D'
+    exit 0
+fi
+
+# Build journalctl command
+JOURNALCTL_CMD=(journalctl --since "$SINCE")
+
+if [[ "$ERRORS_ONLY" == true ]]; then
+    JOURNALCTL_CMD+=(grep -E "(Error|ERROR|failed|Failed)")
+else
+    JOURNALCTL_CMD+=(--lines "$LINES")
+fi
+
+if [[ "$FOLLOW" == true ]]; then
+    JOURNALCTL_CMD+=(-f)
+fi
+
+# Execute and show logs
+if [[ "$ERRORS_ONLY" == true ]]; then
+    journalctl --since "$SINCE" | grep -E "(kopia|backup-prepare)" | grep -E "(Error|ERROR|failed|Failed)" | tail -"$LINES"
+elif [[ "$FOLLOW" == true ]]; then
+    journalctl --since "$SINCE" -f | grep -E "(kopia|backup-prepare)"
+else
+    journalctl --since "$SINCE" | grep -E "(kopia|backup-prepare)" | tail -"$LINES"
+fi

@@ -1,0 +1,23 @@
+[Unit]
+Description=Shadowcache periodic save for user %i
+Documentation=file://%%h/.local/share/doc/shellbase/systemd/README.md
+
+[Timer]
+# Start 30 minutes after boot
+OnBootSec=30min
+# Run every 4 hours (fixed schedule)
+# User cache has moderate writes (~40 MB/sync), balance SSD wear vs data loss risk
+# LESSON: OnCalendar comma-separated lists are invalid when times wrap around midnight
+# WRONG: OnCalendar=*-*-* 08:00,10:00,12:00,16:00,20:00,01:00 (parsed as single entry, fails validation)
+# CORRECT: Separate OnCalendar= lines for each time (systemd parses each independently)
+# Use systemd-analyze calendar "*-*-* HH:MM:SS" to validate before using
+OnCalendar=*-*-* 08:00:00
+OnCalendar=*-*-* 10:00:00
+OnCalendar=*-*-* 12:00:00
+OnCalendar=*-*-* 16:00:00
+OnCalendar=*-*-* 20:00:00
+OnCalendar=*-*-* 01:00:00
+Unit=shadowcache-user-periodic@%i.service
+
+[Install]
+WantedBy=timers.target

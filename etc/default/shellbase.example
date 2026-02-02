@@ -1,0 +1,22 @@
+# shellbase system environment - USER OVERRIDE
+#
+# Copy this file to ~/.shellbase-system.env and customize for your setup:
+#   cp etc/default/shellbase.example ~/.shellbase-system.env
+#
+# This file is NOT tracked by git (see .gitignore)
+# Customize these values for your environment
+
+# Example for different username:
+# export SHELLBASE_USER="john"
+# export SHELLBASE_USER_HOME="/home/john"
+
+# Example for different project directory:
+# export SHELLBASE_PROJECT_ROOT="$HOME/Projects"
+# export SHELLBASE_REPO_DIR="$SHELLBASE_PROJECT_ROOT/dotfiles"
+
+# Example for different cloud provider:
+# export SHELLBASE_CLOUD_DIR="$HOME/Dropbox"
+# export SHELLBASE_CLOUD_PASSWORD_FILE="$HOME/.ssh/dropbox_backup.pw"
+
+# Source tracking
+export SHELLBASE_ENV_SOURCE="user"
