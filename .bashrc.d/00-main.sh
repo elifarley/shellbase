@@ -37,6 +37,7 @@ bind -m vi-insert "\C-l":clear-screen
 
 bind -m vi-insert '\C-a':beginning-of-line
 bind -m vi-insert '\C-e':end-of-line
+bind -m vi-insert '\C-k':kill-line
 
 # Use `bind -P` to list current bindings
 
