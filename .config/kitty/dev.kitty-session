@@ -14,6 +14,8 @@ cd ~/src/shellbase
 launch --title "ShellBase" bash
 cd ~/src/system-priv
 launch --title "System Priv" bash
+cd ~/src/shadowcache
+launch --title "Shadow Cache" bash
 
 new_tab LLM-prompting
 layout fat

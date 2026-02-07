@@ -1044,7 +1044,8 @@ show_systemd_status() {
 
     # Check timer status and interval
     # LESSON: Declare all local variables upfront to avoid unbound variable errors
-    local timer_active timer_interval timer_info last_trigger next_trigger oncalendar_times
+    # LESSON: Initialize timer_interval to empty string to handle case where timer is not installed
+    local timer_active timer_interval="" timer_info last_trigger next_trigger oncalendar_times
     timer_active=$($systemctl_cmd is-active "$timer_name" 2>/dev/null) || timer_active="inactive"
 
     # Get timer interval - try OnCalendar first, then fallback to monotonic timers
@@ -1099,8 +1100,8 @@ show_systemd_status() {
             local next_short
             next_short=$(echo "$next_trigger" | sed 's/ [A-Z][a-z][a-z] //' | cut -d' ' -f1-3)
             echo "      Next: $next_short"
-        elif [[ -n "$last_trigger" && "$last_trigger" != "n/a" ]]; then
-            # Only show relative next if we have a last trigger
+        elif [[ -n "$last_trigger" && "$last_trigger" != "n/a" && -n "$timer_interval" ]]; then
+            # Only show relative next if we have a last trigger AND an interval
             echo "      Next: ~$timer_interval from last"
         fi
     elif [[ $timer_active == "inactive" && -n "$timer_interval" ]]; then
