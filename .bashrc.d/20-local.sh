@@ -12,7 +12,8 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
     fi
     # Verify agent is responsive
     if ! ssh-add -l &>/dev/null; then
-        eval $(ssh-agent) > ~/.ssh-agent-env
+        ssh-agent -s > ~/.ssh-agent-env
+        . ~/.ssh-agent-env
         ssh-add ~/.ssh/id_ed25519
     fi
 fi
