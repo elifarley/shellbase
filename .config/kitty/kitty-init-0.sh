@@ -2,7 +2,11 @@
 
 echo "### Kitty session: $PWD"
 
+bind -p | grep -vE 'self-insert|not bound|lowercase-version|digit-argument'
+
 cat <<'EOF'
+=====
+
 # set colors dynamically:
 # kitty_mod + <ESC>  : go to kitty shell
 # set-colors -a -c .config/kitty/custom.conf
@@ -79,6 +83,5 @@ cat <<'EOF'
 - A > L       : Decrease opacity
 - A > 1       : Fully opaque
 - A > D       : Reset opacity
-
 EOF
 
