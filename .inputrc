@@ -1,6 +1,15 @@
 # See https://wiki.archlinux.org/index.php/Readline
 # See https://wiki.archlinux.org/index.php/Home_and_End_keys_not_working
- 
+
+# Enable Meta (Alt) key support
+set meta-flag on
+set input-meta on
+set output-meta on
+set convert-meta off
+
+# Timeout for distinguishing Esc+key from Meta+key (Alt+key)
+set keyseq-timeout 100
+
 set show-all-if-ambiguous on
  
 "\e[1~": beginning-of-line

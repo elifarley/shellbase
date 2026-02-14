@@ -38,6 +38,9 @@ bind -m vi-insert "\C-l":clear-screen
 bind -m vi-insert '\C-a':beginning-of-line
 bind -m vi-insert '\C-e':end-of-line
 bind -m vi-insert '\C-k':kill-line
+# Alt-D cannot work in vi-insert mode because Esc is hardcoded to exit insert mode
+# Use Ctrl+Delete for kill-word (already bound by default)
+# Or configure Kitty to send a different key sequence for Alt-D
 
 # Use `bind -P` to list current bindings
 
