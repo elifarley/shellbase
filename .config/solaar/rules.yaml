@@ -42,17 +42,16 @@
 ...
 ---
 - Rule:
-  - Process: thorium
+  - Or:
+    - Process: thorium
+    - Process: firefox
+    - Process: ksnip
   - Key: [Smart Shift, pressed]
   - KeyPress: [Control_L, w]
 - Rule:
   - Process: idea
   - Key: [Smart Shift, pressed]
   - KeyPress: F4
-- Rule:
-  - Process: ksnip
-  - Key: [Smart Shift, pressed]
-  - KeyPress: [Control_L, w]
 - Rule:
   - Key: [Smart Shift, pressed]
   - KeyPress: [Alt_L, F4]
