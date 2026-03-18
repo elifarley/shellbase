@@ -45,6 +45,7 @@
   - Or:
     - Process: thorium
     - Process: firefox
+    - Process: geany
     - Process: ksnip
   - Key: [Smart Shift, pressed]
   - KeyPress: [Control_L, w]
