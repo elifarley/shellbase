@@ -3,6 +3,17 @@
 # Gradle: gradle.dep
 # SmartCTL: smartctl alias
 
+# path_prepend (11-functions.sh) handles dedup + existence check.
+# If not loaded (e.g. sourcing this file standalone), run: source ~/.bashrc
+
+# Go SDK (managed by Go toolchain)
+path_prepend "$HOME/go/bin"
+path_prepend "$HOME/sdk/go1.26.1/bin"
+
+# Google Cloud SDK
+path_prepend "$HOME/google-cloud-sdk/bin"
+[ -r "$HOME/google-cloud-sdk/completion.bash.inc" ] && . "$HOME/google-cloud-sdk/completion.bash.inc"
+
 # SmartCTL
 alias smartctl='smartctl -s on -i -A -f brief -f hex,id -l devstat'
 
