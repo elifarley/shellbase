@@ -5,7 +5,7 @@ title Projects
 layout fat
 enabled_layouts fat,tall,stack
 cd ~/src
-launch --title "Shortcuts" --hold --cwd=$HOME .config/kitty/kitty-init-0.sh
+launch --title "Shortcuts" --hold bash -c $HOME/.config/kitty/kitty-init-0.sh
 
 new_tab System
 layout fat
@@ -30,6 +30,14 @@ layout fat
 enabled_layouts fat,tall,stack
 cd ~/src/vandamme-proxy
 launch bash
+
+new_tab Browser
+layout fat
+enabled_layouts fat,tall,stack
+cd ~/src/chromtabs
+launch --title "ChromTabs" bash
+cd ~/src/pageclean-extension
+launch --title "ReideticReader" bash
 
 new_tab SLS
 layout fat
