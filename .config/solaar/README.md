@@ -67,6 +67,7 @@ sleep 5 && gdbus call --session \
 | App          | Binary / psutil name | GNOME `get_wm_class()` | Rule value     |
 |--------------|---------------------|------------------------|----------------|
 | Thorium      | `thorium`           | `Thorium-browser`      | `Thorium`      |
+| Chrome Dev   | `chrome` (Flatpak)  | `google-chrome-unstable` (verify!) | `google-chrome` |
 | Firefox      | `firefox`           | `firefox`              | `firefox`      |
 | Kitty        | `kitty`             | `kitty`                | `kitty`        |
 | IntelliJ     | `idea`              | (check with recipe)    | `jetbrains-idea` (typical) |

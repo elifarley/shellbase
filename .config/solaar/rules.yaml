@@ -44,6 +44,7 @@
 - Rule:
   - Or:
     - Process: Thorium
+    - Process: google-chrome
     - Process: firefox
     - Process: geany
     - Process: ksnip
