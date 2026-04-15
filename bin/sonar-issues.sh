@@ -82,7 +82,14 @@ fi
 # if any color var ever held `%s`, printf would consume the next arg out of
 # order. `%b` interprets ANSI escapes from a data argument, keeping the
 # format string a constant. Boring, safe, and the formatter knows what's data.
-die() { printf '%berror:%b %s\n' "$C_RED" "$C_RST" "$*" >&2; exit "${2:-1}"; }
+#
+# GOTCHA: use "$1" (not "$*") for the message. This function takes TWO args
+# with distinct semantics (message + optional exit code); $* would join them
+# with IFS-spaces, so `die "msg" 1` would print "msg 1" — the exit code
+# bleeding into the displayed text. Lifted-from-classic-shell trap: the
+# `die() { echo "$*"; exit 1; }` idiom is fine only when the function takes
+# a single semantic concept. Add a second positional arg, switch to "$1".
+die() { printf '%berror:%b %s\n' "$C_RED" "$C_RST" "$1" >&2; exit "${2:-1}"; }
 note() {
   if [ "$VERBOSE" = 1 ]; then
     printf '%b%s%b\n' "$C_DIM" "$*" "$C_RST" >&2
