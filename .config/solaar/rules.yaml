@@ -19,15 +19,21 @@
   - MouseGesture: Mouse Up
   - KeyPress: [Control_L, e]
 - Rule:
-  - Process: Thorium
+  - Or:
+    - Process: Thorium
+    - Process: thorium
   - MouseGesture: []
   - KeyPress: [Alt_L, z]
 - Rule:
-  - Process: Thorium
+  - Or:
+    - Process: Thorium
+    - Process: thorium
   - MouseGesture: Mouse Up
   - KeyPress: [Alt_L, a]
 - Rule:
-  - Process: Thorium
+  - Or:
+    - Process: Thorium
+    - Process: thorium
   - MouseGesture: Mouse Right
   - KeyPress: Return
 - Rule:
@@ -44,6 +50,7 @@
 - Rule:
   - Or:
     - Process: Thorium
+    - Process: thorium
     - Process: google-chrome
     - Process: firefox
     - Process: geany
