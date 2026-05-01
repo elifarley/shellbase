@@ -19,7 +19,19 @@
 #   -f, --format FMT     summary (default) | plan | md | csv | json | raw
 #   -l, --limit N        Page size (default 500, SonarQube hard max).
 #       --hotspots       Fetch Security Hotspots instead of Issues.
+#   -G, --gate           Prepend Quality Gate status (pass/fail conditions with
+#                        actual values vs thresholds). Shows duplication %,
+#                        coverage %, issue count — metrics absent from the
+#                        issues endpoint. Automatically drills into failing
+#                        metrics: shows which files are duplicated and which
+#                        blocks are paired, or which files lack coverage.
+#                        Composes with any --format.
 #   -v, --verbose        Print API URLs to stderr.
+#       --explain [RULE] Print canonical advice for a Sonar rule key
+#                        (S125, java:S125, S1134, S1135). With no RULE,
+#                        lists every rule with recorded advice. Pure
+#                        docs lookup — no API call, no project key, no
+#                        Sonar credentials required. See RULE GUIDANCE.
 #   -h, --help           Show this help.
 #
 # ENVIRONMENT:
@@ -29,6 +41,12 @@
 #
 # AUTO-DISCOVERY (when PROJECT_KEY arg + env are both empty):
 #   Reads `sonar.projectKey` from ./sonar-project.properties in CWD.
+#
+# KEY RESOLUTION:
+#   Short keys (e.g., "finpsti-dict" from sonar-project.properties) are
+#   automatically resolved to the full org-prefixed form (e.g.,
+#   "buildersbank_finpsti-dict") that SonarQube requires internally.
+#   Just `cd` into your repo — you never need to know the full key.
 #
 # OUTPUT FORMATS:
 #   summary  Compact human-readable counts grouped by --group-by.
@@ -40,11 +58,33 @@
 #   raw      Pretty JSON of every raw issue (no grouping).
 #
 # EXAMPLES:
-#   sonar-issues.sh                              # CWD project, default filters
+#   sonar-issues.sh --pr --gate -f plan           # recommended: full triage
 #   sonar-issues.sh --pr                          # auto-detect PR via gh
-#   sonar-issues.sh myorg_myproj --pr 42 -f plan  # actionable triage list
+#   sonar-issues.sh                              # CWD project, default filters
+#   sonar-issues.sh myorg_myproj --pr 42 -f plan  # explicit key + PR
 #   sonar-issues.sh -f md > findings.md           # paste into PR
 #   sonar-issues.sh -f json | jq '.[] | select(.count > 3)'
+#
+# TOKEN SETUP:
+#   1. SonarQube → My Account → Security → Generate Token (type: User Token).
+#   2. Minimum permissions (sufficient for --gate + issue queries):
+#        "Execute Analysis" on target projects.
+#   3. For full --gate drilldown (file-level duplication + coverage detail):
+#        also grant "Browse" on target projects
+#        (Project Settings → Permissions → Browse).
+#
+# RULE GUIDANCE:
+#   This script ships a small registry of canonical advice for Sonar
+#   rules with non-obvious handling — false-positive-prone rules, rules
+#   the registry recommends disabling, etc. Query it with --explain:
+#     sonar-issues.sh --explain S125    # advice for java:S125
+#     sonar-issues.sh --explain S1134   # FIXME / TODO recommendation
+#     sonar-issues.sh --explain         # list all rules with advice
+#   Designed for both humans ("what was that suppression syntax again?")
+#   and agents ("how should I handle this rule?"). Extend by adding a
+#   `_explain_<KEY>` function plus one case clause — both grep-able from
+#   `_explain_` so the next contributor can find the convention without
+#   reading docs.
 #
 # EXIT CODES:
 #   0  Success (issues found OR none — both are valid outcomes).
@@ -66,6 +106,8 @@ FORMAT="summary"
 PAGE_SIZE=500
 ENDPOINT="issues/search"   # vs hotspots/search
 VERBOSE=0
+SHOW_GATE=0                # --gate: prepend Quality Gate conditions before issues
+EXPLAIN=""                 # --explain: rule-key lookup mode (bypasses API + env)
 PROJECT_KEY="${SONAR_PROJECT_KEY:-}"
 
 # ---------- colors (TTY only) ----------
@@ -122,6 +164,132 @@ severity_color() {
   esac
 }
 
+# ---------- rule registry (--explain) ----------
+# WHY function-per-rule (not an associative array of strings): each entry
+# is multi-line prose with sub-sections (When it triggers / Why it
+# misfires / Canonical fix). Heredocs handle that cleanly; quoted array
+# values would force escape-sequence noise. Adding a rule = write a
+# `_explain_<KEY>` function + add one clause to the dispatcher's case —
+# both grep-able from `_explain_` so the convention is self-discovering.
+#
+# WHY canonical keys carry the `java:` prefix (not bare `S125`): Sonar
+# rule keys are language-namespaced — java:S125, csharpsquid:S125 and
+# python:S125 are three different rules with different remediations.
+# Storing the qualified key keeps us right when polyglot rules are added.
+# The dispatcher accepts shorthand (S125, s125, java:S125, Java:s125)
+# and normalizes by uppercasing then prepending `java:` — Java is the
+# only analyzer this registry currently covers.
+
+_explain_section() { printf '\n  %b%s%b\n' "$C_BOLD" "$1" "$C_RST"; }
+
+_explain_S125() {
+  printf '%bjava:S125%b — CommentedOutCodeLine\n' "$C_BOLD" "$C_RST"
+  _explain_section "When it triggers:"
+  cat <<'EOF'
+    Sonar interprets lines containing Java tokens (operators, keywords,
+    semicolons) inside comments as commented-out code that should be
+    deleted.
+EOF
+  _explain_section "Why it often misfires:"
+  cat <<'EOF'
+    Explanatory comments — Javadoc snippets, illustrative pseudocode,
+    TODO context, before/after examples — frequently look like code to
+    the heuristic. The signal-to-noise ratio is poor in practice.
+EOF
+  _explain_section "Canonical fix (preferred → fallback):"
+  cat <<'EOF'
+    1. @SuppressWarnings("java:S125") on the enclosing declaration
+       (class / method / field). One annotation silences the whole
+       scope, is grep-able for periodic audit, documents intent at the
+       unit boundary, and is visible to IDE inspections.
+    2. //NOSONAR at the end of an individual line. Use only when an
+       annotation would be overkill (truly one-off). Drawback: doesn't
+       name the rule being silenced, so future readers can't tell what
+       was disabled or why.
+EOF
+}
+
+# S1134 (FIXME) and S1135 (TODO) share the same recommendation, so the
+# dispatcher routes both keys to one explanation.
+_explain_S1134_S1135() {
+  printf '%bjava:S1134 / java:S1135%b — FIXME / TODO tag detection\n' \
+    "$C_BOLD" "$C_RST"
+  _explain_section "Recommendation: keep these markers in code."
+  cat <<'EOF'
+    FIXME and TODO are how a developer (or an agent) hands context to
+    the next person who touches the code. They are trivially grep-able
+    and easier to act on than the absence of a marker — almost always
+    better to keep than to drop. Sonar treats them as code smells; the
+    recommendation here is to disable the rules at the Quality Profile
+    level rather than suppress them per-occurrence.
+EOF
+  _explain_section "Canonical fix (in order):"
+  cat <<'EOF'
+    1. (Org/team admin, one-time) Disable java:S1134 and java:S1135 in
+       the active SonarQube Quality Profile:
+         Quality Profiles → <profile> → search S1134 / S1135 →
+         Activation → Deactivate.
+       Applies to every project sharing the profile — most durable fix,
+       removes the warnings everywhere with no per-occurrence noise.
+    2. (Per-occurrence, until the profile change is in place)
+       @SuppressWarnings({"java:S1134","java:S1135"}) on the enclosing
+       declaration, OR //NOSONAR at the end of the marker line.
+EOF
+}
+
+_explain_unknown() {
+  local rule="$1"
+  printf '%b%s%b — no canonical advice recorded yet.\n\n' \
+    "$C_BOLD" "$rule" "$C_RST"
+  printf '  Look it up in SonarQube:\n'
+  if [ -n "${SONAR_HOST_URL:-}" ]; then
+    printf '    %s/coding_rules?open=%s\n' "$SONAR_HOST_URL" "$rule"
+  else
+    printf '    <SONAR_HOST_URL>/coding_rules?open=%s\n' "$rule"
+  fi
+  printf '\n  To add canonical advice, edit the rule registry in:\n'
+  printf '    %s\n' "$0"
+  printf '  (write a _explain_<KEY> function + add one case clause to explain_rule).\n'
+}
+
+_explain_list() {
+  printf '%bSonar rules with canonical advice:%b\n\n' "$C_BOLD" "$C_RST"
+  cat <<'EOF'
+  java:S125    CommentedOutCodeLine — false-positive prone
+  java:S1134   FIXME tag (recommendation: keep)
+  java:S1135   TODO tag  (recommendation: keep)
+
+  Use `--explain RULE` for canonical guidance.
+  RULE may be the bare key (S125), lowercase (s125), or fully
+  qualified (java:S125) — all are normalized.
+EOF
+}
+
+# Normalize input → canonical `java:S<NNN>` then dispatch.
+explain_rule() {
+  local raw="$1" normalized
+
+  if [ "$raw" = "list" ]; then
+    _explain_list
+    return 0
+  fi
+
+  # Uppercase first, then ensure the `java:` prefix. Two-step keeps the
+  # case-fold and the prefix-fixup orthogonal — easier to extend if a
+  # second analyzer (e.g. `python:`) is ever supported.
+  normalized=$(printf '%s' "$raw" | tr '[:lower:]' '[:upper:]')
+  case "$normalized" in
+    JAVA:*) normalized="java:${normalized#JAVA:}" ;;
+    S*)     normalized="java:${normalized}" ;;
+  esac
+
+  case "$normalized" in
+    java:S125)             _explain_S125 ;;
+    java:S1134|java:S1135) _explain_S1134_S1135 ;;
+    *)                     _explain_unknown "$normalized" ;;
+  esac
+}
+
 # ---------- arg parsing ----------
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -145,7 +313,19 @@ while [ $# -gt 0 ]; do
     -f|--format)   FORMAT="$2"; shift 2 ;;
     -l|--limit)    PAGE_SIZE="$2"; shift 2 ;;
     --hotspots)    ENDPOINT="hotspots/search"; shift ;;
+    -G|--gate)     SHOW_GATE=1; shift ;;
     -v|--verbose)  VERBOSE=1; shift ;;
+    --explain)
+      shift
+      # Same optional-value idiom as --pr (see comment there): the next
+      # arg is the value unless it starts with `-` or is missing/empty;
+      # bare `--explain` (no value) becomes the sentinel "list" so the
+      # dispatcher prints the rule index.
+      if [ $# -gt 0 ] && [ "${1#-}" = "$1" ] && [ -n "$1" ]; then
+        EXPLAIN="$1"; shift
+      else
+        EXPLAIN="list"
+      fi ;;
     -h|--help)     usage; exit 0 ;;
     --)            shift; break ;;
     -*)            die "unknown option: $1" 1 ;;
@@ -153,13 +333,30 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+# ---------- --explain short-circuit ----------
+# WHY this lives BEFORE env validation: --explain is a pure documentation
+# lookup — no API calls, no project key, no Sonar credentials needed. Run
+# and exit before the `:?` checks below so it works in any directory and
+# from any shell, including for someone who hasn't set up Sonar at all
+# yet (e.g. a new joiner reading the source to learn how the org handles
+# rule X). Putting this AFTER validation would silently force every
+# --explain call to require SONAR_HOST_URL + SONAR_TOKEN, defeating the
+# point of a docs lookup.
+if [ -n "$EXPLAIN" ]; then
+  explain_rule "$EXPLAIN"
+  exit 0
+fi
+
 # ---------- validation ----------
 # WHY `: "${VAR:?msg}"` idiom: the `:` is the no-op builtin; bash evaluates the
 # parameter expansion for its side effect. `:?` aborts the script with `msg`
 # on stderr and a non-zero exit if VAR is unset OR empty. Cleanest fail-fast
 # for required env vars — no `if [ -z … ]` boilerplate, no double-message risk.
 : "${SONAR_HOST_URL:?SONAR_HOST_URL not set (e.g. https://sonarqube.example.com)}"
-: "${SONAR_TOKEN:?SONAR_TOKEN not set}"
+# WHY inline the URL: when this fires, the user has no token at all — they need
+# to know WHERE to create one, not just THAT they need one. $SONAR_HOST_URL is
+# already validated above, so the expansion is safe.
+: "${SONAR_TOKEN:?SONAR_TOKEN not set — generate at ${SONAR_HOST_URL}/account/security (see --help TOKEN SETUP)}"
 
 # Project key auto-discovery from sonar-project.properties.
 if [ -z "$PROJECT_KEY" ] && [ -f sonar-project.properties ]; then
@@ -191,6 +388,413 @@ esac
 case "$FORMAT" in summary|plan|md|csv|json|raw) ;; *)
   die "invalid --format '$FORMAT' (summary|plan|md|csv|json|raw)" 1 ;;
 esac
+
+# ---------- project key resolution ----------
+# WORKAROUND: SonarQube's API endpoints disagree on which project key formats
+# they accept. The issues/search endpoint (componentKeys param) sometimes
+# tolerates short keys like "finpsti-dict", but qualitygates/project_status
+# (projectKey param) REQUIRES the full org-prefixed key like
+# "buildersbank_finpsti-dict". In practice, some Sonar instances also reject
+# short keys on issues/search, making all operations silently return 0 results.
+#
+# This early-resolve step canonicalizes PROJECT_KEY BEFORE any API calls, so
+# all endpoints (issues, hotspots, qualitygates) use the same validated key.
+# Discovered 2026-04 on SonarQube CE 10.x.
+#
+# DECISION: probe with api/components/show (lightweight, single-component
+# lookup) rather than jumping straight to search. If the key is already valid,
+# this is one cheap call and we skip resolution entirely. The search fallback
+# only fires for short/ambiguous keys.
+# DECISION: probe via qualitygates (not components/show) because components/show
+# may return "Insufficient privileges" even for valid keys — the token's
+# permissions for component browsing can differ from analysis permissions.
+# qualitygates/project_status is the authoritative endpoint we actually need,
+# so probing against it tests exactly what matters.
+_probe_key() {
+  local key="$1"
+  local query="projectKey=${key}"
+  # WHY include PR/branch in probe: a key can exist in Sonar but have no data
+  # for this specific PR. Including the scope catches both "key not found" AND
+  # "PR not found in this project" — both mean this candidate is wrong.
+  [ -n "$PR" ]     && query+="&pullRequest=${PR}"
+  [ -n "$BRANCH" ] && query+="&branch=${BRANCH}"
+  local url="${SONAR_HOST_URL}/api/qualitygates/project_status?${query}"
+  note "probing project key: $key"
+  local body
+  body=$(curl -sS -u "${SONAR_TOKEN}:" "$url" 2>/dev/null) || return 1
+  echo "$body" | jq -e '.projectStatus.status' >/dev/null 2>&1
+}
+
+_resolve_project_key() {
+  # Fast path: key already valid (full org-prefixed form, or Sonar version
+  # that resolves short keys). Skip the search entirely.
+  if _probe_key "$PROJECT_KEY"; then
+    return 0
+  fi
+
+  note "key '${PROJECT_KEY}' not found — attempting auto-resolution via component search"
+
+  local search_url="${SONAR_HOST_URL}/api/components/search?qualifiers=TRK&q=${PROJECT_KEY}"
+  note "GET $search_url"
+  local search_body
+  search_body=$(curl -sS -u "${SONAR_TOKEN}:" "$search_url") || \
+    die "Component search failed (curl error)" 2
+
+  # WHY exact match on BOTH .name and .key: the search API is substring-based,
+  # so querying "finpsti-dict" also returns "finpsti-dict-out-api" etc.
+  # Matching .name handles the short-key case (sonar-project.properties value).
+  # Matching .key handles the full-key case (user passes "buildersbank_finpsti-dict"
+  # but the probe failed due to missing PR scope or permissions).
+  local candidates
+  candidates=$(echo "$search_body" | \
+    jq -r --arg q "$PROJECT_KEY" '[.components[] | select(.name == $q or .key == $q) | .key] | unique | .[]')
+
+  if [ -z "$candidates" ]; then
+    die "No SonarQube project found matching '${PROJECT_KEY}'. Verify the project exists." 2
+  fi
+
+  local count
+  count=$(echo "$candidates" | wc -l)
+
+  if [ "$count" -eq 1 ]; then
+    # Unambiguous: single exact match.
+    PROJECT_KEY="$candidates"
+    note "resolved project key: $PROJECT_KEY"
+    return 0
+  fi
+
+  # Multiple candidates — need a tiebreaker.
+  # DECISION: try each candidate against the qualitygates API with PR/branch
+  # scope. Only the correct project will have a matching PR. This is more
+  # reliable than heuristics like "key contains short name as suffix" because
+  # org naming conventions vary (underscores, colons, dots).
+  if [ -n "$PR" ] || [ -n "$BRANCH" ]; then
+    local candidate
+    while IFS= read -r candidate; do
+      local query="projectKey=${candidate}"
+      [ -n "$PR" ]     && query+="&pullRequest=${PR}"
+      [ -n "$BRANCH" ] && query+="&branch=${BRANCH}"
+      local url="${SONAR_HOST_URL}/api/qualitygates/project_status?${query}"
+      note "trying candidate: $candidate"
+      local body
+      body=$(curl -sS -u "${SONAR_TOKEN}:" "$url" 2>/dev/null) || continue
+      if echo "$body" | jq -e '.projectStatus.status' >/dev/null 2>&1; then
+        PROJECT_KEY="$candidate"
+        note "resolved project key: $PROJECT_KEY (matched PR/branch scope)"
+        return 0
+      fi
+    done <<< "$candidates"
+  fi
+
+  # No PR/branch to tiebreak — fall back to the candidate whose key ends with
+  # the short name. This handles the common "org_project" and "org:project"
+  # patterns without hardcoding a specific separator.
+  local candidate
+  while IFS= read -r candidate; do
+    # WHY case/esac glob (not grep/regex): pure bash, no subprocess, and the
+    # *SHORT_KEY pattern matches both "buildersbank_finpsti-dict" and
+    # "tech.finaya:finpsti-dict" for short key "finpsti-dict".
+    case "$candidate" in
+      *"$PROJECT_KEY") PROJECT_KEY="$candidate"
+                       note "resolved project key: $PROJECT_KEY (suffix match)"
+                       return 0 ;;
+    esac
+  done <<< "$candidates"
+
+  # Last resort: use the first candidate and warn.
+  PROJECT_KEY=$(echo "$candidates" | head -1)
+  note "WARNING: multiple matches, using first candidate: $PROJECT_KEY"
+}
+
+_resolve_project_key
+
+# ---------- Quality Gate (--gate / -G) ----------
+# WHY a separate function (not baked into fetch_all): Quality Gate status lives
+# at a different API endpoint (qualitygates/project_status) and has completely
+# different semantics — it returns pass/fail conditions with metric values and
+# thresholds, not individual issues. Mixing it into the issue pipeline would
+# couple unrelated data flows. Instead, --gate is an additive flag that
+# prepends gate status BEFORE the normal issue output. This means it composes
+# freely with any --format: `--gate -f plan` shows gate conditions + fix plan.
+#
+# WHY this is invaluable for triage: the issues endpoint shows WHAT's wrong,
+# but the Quality Gate shows WHETHER the PR is blocked and by which metrics.
+# Duplication % and coverage % only appear in the gate — they aren't "issues"
+# at all. Without --gate, you'd need to open the SonarQube web UI or manually
+# curl the qualitygates API to find out why a PR is red.
+# PROJECT_KEY is already canonicalized by _resolve_project_key above.
+# fetch_gate just makes the API call — no resolution needed.
+fetch_gate() {
+  local query="projectKey=${PROJECT_KEY}"
+  [ -n "$PR" ]     && query+="&pullRequest=${PR}"
+  [ -n "$BRANCH" ] && query+="&branch=${BRANCH}"
+
+  local url="${SONAR_HOST_URL}/api/qualitygates/project_status?${query}"
+  note "GET $url"
+  local body
+  body=$(curl -sS --fail-with-body -u "${SONAR_TOKEN}:" "$url") || \
+    die "Quality Gate API failed. Body: $body" 2
+
+  if echo "$body" | jq -e '.errors' >/dev/null 2>&1; then
+    die "Quality Gate API error: $body" 2
+  fi
+  echo "$body"
+}
+
+# Color-code a gate condition status.
+gate_status_color() {
+  case "$1" in
+    OK)    printf "%b" "$C_CYA" ;;
+    ERROR) printf "%b" "$C_RED" ;;
+    WARN)  printf "%b" "$C_YEL" ;;
+    *)     printf "" ;;
+  esac
+}
+
+# Human-readable metric names. SonarQube returns machine keys like
+# "new_duplicated_lines_density" — triage output should speak human.
+# Only map the common Quality Gate metrics; unknown keys pass through.
+metric_label() {
+  case "$1" in
+    new_duplicated_lines_density) echo "Duplicated Lines (new code)" ;;
+    new_coverage)                 echo "Coverage (new code)" ;;
+    new_violations)               echo "Issues (new code)" ;;
+    new_reliability_rating)       echo "Reliability Rating (new code)" ;;
+    new_security_rating)          echo "Security Rating (new code)" ;;
+    new_maintainability_rating)   echo "Maintainability Rating (new code)" ;;
+    new_security_hotspots_reviewed) echo "Security Hotspots Reviewed (new code)" ;;
+    *)                            echo "$1" ;;
+  esac
+}
+
+# Human-readable comparators ("GT" → ">", "LT" → "<").
+comparator_symbol() {
+  case "$1" in
+    GT) echo ">" ;; LT) echo "<" ;; EQ) echo "=" ;; NE) echo "≠" ;;
+    *)  echo "$1" ;;
+  esac
+}
+
+format_gate() {
+  local gate_json="$1"
+  local status
+  status=$(echo "$gate_json" | jq -r '.projectStatus.status')
+
+  local status_color
+  status_color=$(gate_status_color "$status")
+  printf '\n%b━━ Quality Gate: %b%s%b ━━%b\n\n' \
+    "$C_BOLD" "$status_color" "$status" "$C_RST" "$C_RST"
+
+  # Iterate conditions and show each metric with its actual vs threshold.
+  # WHY jq -c piped to read (not jq -r with tab delimiters): condition
+  # values can be floating-point or integer, and some metrics have no
+  # errorThreshold. Passing compact JSON per line and extracting fields
+  # individually is more robust than tab-splitting heterogeneous types.
+  echo "$gate_json" | jq -c '.projectStatus.conditions[]' | while IFS= read -r cond; do
+    local cond_status metric actual threshold comparator label symbol color
+    cond_status=$(echo "$cond" | jq -r '.status')
+    metric=$(echo "$cond" | jq -r '.metricKey')
+    actual=$(echo "$cond" | jq -r '.actualValue')
+    threshold=$(echo "$cond" | jq -r '.errorThreshold')
+    comparator=$(echo "$cond" | jq -r '.comparator')
+
+    label=$(metric_label "$metric")
+    symbol=$(comparator_symbol "$comparator")
+    color=$(gate_status_color "$cond_status")
+
+    # Format: ✓/✗ icon + metric label + actual value + threshold.
+    # WHY include the threshold: knowing "5.17% > 3%" is far more actionable
+    # than just "5.17% FAIL" — you know exactly how far you need to reduce.
+    local icon="✓"
+    [ "$cond_status" != "OK" ] && icon="✗"
+    printf '  %b%s  %-40s  %s  (threshold: %s %s)%b\n' \
+      "$color" "$icon" "$label" "$actual" "$symbol" "$threshold" "$C_RST"
+  done
+  echo
+}
+
+# ---------- Quality Gate drilldown (auto on failure) ----------
+# WHY auto-drilldown (not a separate flag): if you asked --gate and a metric
+# failed, you obviously want to know WHY — which files, which blocks. Adding
+# a --gate-detail flag would mean every triage invocation becomes
+# `--gate --gate-detail` — pointless ceremony. The extra API calls only fire
+# on failing conditions, so passing gates add zero overhead.
+
+# Generic fetcher for the measures/component_tree API.
+# Returns components sorted descending by $sort_metric so the worst offenders
+# appear first. Caller picks the metrics and display logic.
+#
+# WHY no --fail-with-body / no die: drilldowns are best-effort enhancements.
+# We return the raw response (including error JSON like "Insufficient privileges")
+# so the caller can show a helpful fallback instead of aborting the script.
+# Compare with fetch_gate / fetch_all which ARE critical path and rightly die.
+fetch_component_tree() {
+  local metrics="$1" sort_metric="$2" max_results="${3:-10}"
+  local query="component=${PROJECT_KEY}&metricKeys=${metrics}"
+  query+="&s=metric&metricSort=${sort_metric}&metricSortFilter=withMeasuresOnly&asc=false"
+  query+="&ps=${max_results}"
+  [ -n "$PR" ]     && query+="&pullRequest=${PR}"
+  [ -n "$BRANCH" ] && query+="&branch=${BRANCH}"
+
+  local url="${SONAR_HOST_URL}/api/measures/component_tree?${query}"
+  note "GET $url"
+  curl -sS -u "${SONAR_TOKEN}:" "$url" 2>/dev/null || echo "{}"
+}
+
+# Fetch block-level duplication pairs for a single component.
+# Returns the raw duplications/show JSON — caller parses the block pairs.
+# Same best-effort pattern as fetch_component_tree (no die on error).
+fetch_duplications() {
+  local component_key="$1"
+  local query="key=${component_key}"
+  [ -n "$PR" ]     && query+="&pullRequest=${PR}"
+  [ -n "$BRANCH" ] && query+="&branch=${BRANCH}"
+
+  local url="${SONAR_HOST_URL}/api/duplications/show?${query}"
+  note "GET $url"
+  curl -sS -u "${SONAR_TOKEN}:" "$url" 2>/dev/null || echo "{}"
+}
+
+# Build a SonarQube web UI URL for manual inspection when APIs fail.
+# Deterministic URL construction — works for any Sonar CE/EE instance.
+_sonar_web_url() {
+  local metric="$1" scope=""
+  [ -n "$PR" ]     && scope="&pullRequest=${PR}"
+  [ -n "$BRANCH" ] && scope="&branch=${BRANCH}"
+  printf '%s/component_measures?id=%s%s&metric=%s' \
+    "$SONAR_HOST_URL" "$PROJECT_KEY" "$scope" "$metric"
+}
+
+drilldown_duplication() {
+  local tree_json
+  tree_json=$(fetch_component_tree \
+    "duplicated_blocks,duplicated_lines,duplicated_lines_density" \
+    "duplicated_lines_density" 10)
+
+  # Best-effort: if the API returned an error (typically "Insufficient
+  # privileges" — the token needs Browse permission on the project), show
+  # a clickable web URL so the user can inspect duplication in the Sonar UI.
+  if echo "$tree_json" | jq -e '.errors' >/dev/null 2>&1; then
+    printf '  %bDuplication drilldown unavailable%b (token lacks Browse permission)\n' "$C_DIM" "$C_RST"
+    printf '  %bGrant at: Project Settings → Permissions → Browse%b\n' "$C_DIM" "$C_RST"
+    printf '  View in SonarQube: %s\n\n' "$(_sonar_web_url new_duplicated_lines_density)"
+    return 0
+  fi
+
+  local count
+  count=$(echo "$tree_json" | jq '.components | length // 0' 2>/dev/null)
+  [ "${count:-0}" -eq 0 ] && return 0
+
+  printf '  %bDuplication drilldown (top offenders):%b\n' "$C_BOLD" "$C_RST"
+
+  # WHY `head -5` (not all components): each component triggers a
+  # duplications/show API call. Capping at 5 keeps the drilldown fast while
+  # still surfacing the worst offenders. The component_tree is already sorted
+  # by density descending, so the first 5 are the most impactful to fix.
+  echo "$tree_json" | jq -c '.components[]' | head -5 | while IFS= read -r comp; do
+    local comp_key name dup_lines dup_blocks
+    comp_key=$(echo "$comp" | jq -r '.key')
+    name=$(echo "$comp" | jq -r '.key | sub("^[^:]+:"; "")')
+    dup_lines=$(echo "$comp" | jq -r '[.measures[] | select(.metric == "duplicated_lines") | .value] | first // "0"')
+    dup_blocks=$(echo "$comp" | jq -r '[.measures[] | select(.metric == "duplicated_blocks") | .value] | first // "0"')
+
+    [ "$dup_lines" = "0" ] && continue
+
+    printf '    %b%s%b   %s dup line(s), %s block(s)\n' \
+      "$C_CYA" "$name" "$C_RST" "$dup_lines" "$dup_blocks"
+
+    # Fetch paired-block details for this file (also best-effort — if Browse
+    # was granted for component_tree, duplications/show usually works too,
+    # but if it doesn't, the file-level summary above is still useful).
+    local dup_json
+    dup_json=$(fetch_duplications "$comp_key")
+    echo "$dup_json" | jq -e '.errors' >/dev/null 2>&1 && continue
+
+    # Parse duplication groups: for each group, find the block belonging to this
+    # component (self) and show the other side(s) as "self range ≈ other range".
+    # WHY sort -u at the end: the duplications API can return the same pair from
+    # both directions (A≈B and B≈A); dedup keeps output clean.
+    echo "$dup_json" | jq -c --arg self "$comp_key" '
+      (.files // {}) as $files |
+      (.duplications // [])[]? | .blocks as $all_blocks |
+      ($all_blocks | to_entries | map(select(($files[.value._ref].key // "") == $self)) | .[0]) as $self_entry |
+      if $self_entry then
+        $all_blocks | to_entries | map(select(.key != $self_entry.key)) | .[] |
+        {
+          self_from:  $self_entry.value.from,
+          self_to:    ($self_entry.value.from + $self_entry.value.size - 1),
+          other_file: (($files[.value._ref].key // "?") | sub("^[^:]+:"; "")),
+          other_from: .value.from,
+          other_to:   (.value.from + .value.size - 1)
+        }
+      else empty end
+    ' 2>/dev/null | sort -u | while IFS= read -r pair; do
+      local sf st of ofrom ot
+      sf=$(echo "$pair" | jq -r '.self_from')
+      st=$(echo "$pair" | jq -r '.self_to')
+      of=$(echo "$pair" | jq -r '.other_file')
+      ofrom=$(echo "$pair" | jq -r '.other_from')
+      ot=$(echo "$pair" | jq -r '.other_to')
+      printf '      %bL%s–%s  ≈  %s L%s–%s%b\n' \
+        "$C_DIM" "$sf" "$st" "$of" "$ofrom" "$ot" "$C_RST"
+    done
+  done
+  echo
+}
+
+drilldown_coverage() {
+  local tree_json
+  tree_json=$(fetch_component_tree \
+    "uncovered_lines,line_coverage,lines_to_cover" \
+    "uncovered_lines" 10)
+
+  if echo "$tree_json" | jq -e '.errors' >/dev/null 2>&1; then
+    printf '  %bCoverage drilldown unavailable%b (token lacks Browse permission)\n' "$C_DIM" "$C_RST"
+    printf '  %bGrant at: Project Settings → Permissions → Browse%b\n' "$C_DIM" "$C_RST"
+    printf '  View in SonarQube: %s\n\n' "$(_sonar_web_url new_coverage)"
+    return 0
+  fi
+
+  local count
+  count=$(echo "$tree_json" | jq '.components | length // 0' 2>/dev/null)
+  [ "${count:-0}" -eq 0 ] && return 0
+
+  printf '  %bCoverage drilldown (most uncovered):%b\n' "$C_BOLD" "$C_RST"
+
+  echo "$tree_json" | jq -c '.components[]' | while IFS= read -r comp; do
+    local name uncovered coverage to_cover
+    name=$(echo "$comp" | jq -r '.key | sub("^[^:]+:"; "")')
+    uncovered=$(echo "$comp" | jq -r '[.measures[] | select(.metric == "uncovered_lines") | .value] | first // "0"')
+    coverage=$(echo "$comp" | jq -r '[.measures[] | select(.metric == "line_coverage") | .value] | first // "—"')
+    to_cover=$(echo "$comp" | jq -r '[.measures[] | select(.metric == "lines_to_cover") | .value] | first // "—"')
+
+    [ "$uncovered" = "0" ] && continue
+
+    printf '    %b%s%b   %s uncovered of %s  (%s%% covered)\n' \
+      "$C_CYA" "$name" "$C_RST" "$uncovered" "$to_cover" "$coverage"
+  done
+  echo
+}
+
+# Orchestrator: inspect each failing gate condition and auto-drill where a
+# detail API exists. Metrics without a drilldown are silently skipped — the
+# gate line already showed the value vs threshold; there's nothing more to add.
+drilldown_gate_failures() {
+  local gate_json="$1"
+
+  local fail_count
+  fail_count=$(echo "$gate_json" | jq '[.projectStatus.conditions[] | select(.status != "OK")] | length')
+  [ "$fail_count" -eq 0 ] && return 0
+
+  echo "$gate_json" | jq -r '.projectStatus.conditions[] | select(.status != "OK") | .metricKey' | \
+  while IFS= read -r metric; do
+    case "$metric" in
+      new_duplicated_lines_density) drilldown_duplication ;;
+      new_coverage)                 drilldown_coverage ;;
+      # Future: add more metric drilldowns here as the need arises.
+    esac
+  done
+}
 
 # ---------- fetch (paginated) ----------
 # DECISION: accumulate per page into a temp file (not `jq -s` over all bodies).
@@ -293,6 +897,18 @@ group_key_for() {
 # place. Adding a new --format (say, `--format html`) means writing a
 # renderer, never re-deriving severity/count/sample. Pure separation of
 # analysis vs. presentation.
+# WHY gate runs first (before fetch_all): the Quality Gate is the top-level
+# verdict — it tells you WHETHER the PR is blocked before you dive into the
+# individual issues. Printing it first sets context: "this PR is red because
+# of duplication + 4 issues" → then the issue plan shows what those 4 are.
+# PROJECT_KEY is already canonical (resolved above), so fetch_gate and
+# fetch_all both use the same validated key — no propagation needed.
+if [ "$SHOW_GATE" = 1 ]; then
+  GATE_JSON=$(fetch_gate)
+  format_gate "$GATE_JSON"
+  drilldown_gate_failures "$GATE_JSON"
+fi
+
 ISSUES_JSON=$(fetch_all)
 
 GK=$(group_key_for "$GROUP_BY")
