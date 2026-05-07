@@ -327,6 +327,7 @@ The `installer/install.sh` script can be used to set up the environment on a new
 
 ## Development Notes
 
+- **Nitro** (`nitro "<request>"`) — lightweight Bash-first agent (~2.5K token prompt). Use for one-off shell command translation when you just need a quick CLI invocation and don't need file editing, code reasoning, or multi-tool orchestration. Not a replacement for Claude Code on anything beyond "translate English to Bash."
 - **No build system** - this is a configuration-only repository
 - Shell functions use POSIX-compatible syntax where possible
 - Prefer `[` over `[[` for portability (per README philosophy)
