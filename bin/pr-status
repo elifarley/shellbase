@@ -107,7 +107,7 @@ def render_bot_comments(comments: list, n: int) -> None:
             cid = c.get("id", "?")
             summary = truncate(first_meaningful_line(c.get("body", "")))
             created = (c.get("createdAt") or "")[:16]
-            print(f"  {author:30s} {cid}  {created}  {summary}")
+            print(f"  {author:30s} #{cid}  {created}  {summary}")
     print()
 
 
@@ -132,7 +132,7 @@ def render_reviews(reviews: list, n: int) -> None:
                 icon = "·"
             rid = r.get("id", "?")
             ts = (r.get("submittedAt") or "")[:16]
-            print(f"  {icon} {author:30s} {rid}  {state:20s} ({ts})")
+            print(f"  {icon} {author:30s} #{rid}  {state}  ({ts})")
             body = (r.get("body") or "").strip()
             if body:
                 first_line = truncate(first_meaningful_line(body))
