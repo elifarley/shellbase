@@ -1,0 +1,168 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# ///
+"""pr-status — Show CI checks, comments, and review state for a PR."""
+
+import argparse
+import json
+import subprocess
+import sys
+
+
+def run_gh(*args: str) -> str:
+    result = subprocess.run(
+        ["gh", *args], capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        print(f"Error: {result.stderr.strip()}", file=sys.stderr)
+        sys.exit(1)
+    return result.stdout.strip()
+
+
+def run_gh_json(*args: str) -> dict | list:
+    return json.loads(run_gh(*args))
+
+
+def detect_repo() -> str:
+    return run_gh("repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner")
+
+
+def detect_pr(repo: str) -> str:
+    return run_gh("pr", "view", "--json", "number", "-q", ".number", "--repo", repo)
+
+
+def fetch_pr_data(repo: str, pr_number: str) -> dict:
+    fields = "state,mergedAt,mergedBy,statusCheckRollup,reviews,comments,mergeable,mergeStateStatus"
+    return run_gh_json("pr", "view", "--json", fields, "--repo", repo, pr_number)
+
+
+def fetch_inline_comments(repo: str, pr_number: str) -> list:
+    try:
+        return run_gh_json("api", f"repos/{repo}/pulls/{pr_number}/comments")
+    except SystemExit:
+        return []
+
+
+def build_comment_index(pr_data: dict, inline_comments: list) -> dict:
+    index = {}
+    for c in pr_data.get("comments", []):
+        index[c["id"]] = ("issue", c)
+    for r in pr_data.get("reviews", []):
+        index[r["id"]] = ("review", r)
+    for c in inline_comments:
+        index[c["id"]] = ("inline", c)
+    return index
+
+
+def first_meaningful_line(body: str, skip_prefixes: tuple = ("#", "**Project")) -> str:
+    for line in body.split("\n"):
+        stripped = line.strip()
+        if stripped and not stripped.startswith(skip_prefixes):
+            return stripped
+    return ""
+
+
+def truncate(s: str, max_len: int = 100) -> str:
+    if len(s) > max_len:
+        return s[: max_len - 3] + "..."
+    return s
+
+
+# --- Render stubs (implement in subsequent tasks) ---
+def render_checks(checks: list) -> None: ...
+def render_bot_comments(comments: list, n: int) -> None: ...
+def render_reviews(reviews: list, n: int) -> None: ...
+def render_inline_comments(comments: list, n: int) -> None: ...
+def render_merge_state(pr_data: dict, skip: bool) -> None: ...
+def render_summary(pr_data: dict, skip: bool) -> None: ...
+
+
+def render_single_comment(
+    comment_id: int, index: dict, repo: str, pr_number: str
+) -> None:
+    entry = index.get(comment_id)
+    if entry:
+        ctype, data = entry
+        _print_full_comment(ctype, data)
+        return
+    # Fallback: try all 3 endpoints
+    for ctype, endpoint in [
+        ("issue", f"repos/{repo}/issues/comments/{comment_id}"),
+        ("inline", f"repos/{repo}/pulls/comments/{comment_id}"),
+        ("review", f"repos/{repo}/pulls/{pr_number}/reviews/{comment_id}"),
+    ]:
+        try:
+            data = run_gh_json("api", endpoint)
+            _print_full_comment(ctype, data)
+            return
+        except SystemExit:
+            continue
+    print(f"Comment #{comment_id} not found.", file=sys.stderr)
+    sys.exit(1)
+
+
+def _print_full_comment(ctype: str, data: dict) -> None:
+    print(f"=== COMMENT #{data.get('id', '?')} ({ctype}) ===")
+    if ctype == "inline":
+        path = data.get("path", "?")
+        line = data.get("line", "?")
+        print(f"Path: {path}:{line}")
+    author = data.get("user", data.get("author", {})).get("login", "?")
+    print(f"Author: {author}")
+    created = data.get("created_at", data.get("submittedAt", data.get("createdAt", "")))
+    if created:
+        print(f"Created: {created}")
+    print()
+    print(data.get("body", ""))
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        prog="pr-status",
+        description="Show CI checks, comments, and review state for a PR.",
+    )
+    parser.add_argument("pr_number", nargs="?", default=None, help="PR number (default: auto-detect from current branch)")
+    parser.add_argument("-R", "--repo", default=None, help="GitHub repo OWNER/REPO (default: auto-detect from CWD)")
+    parser.add_argument("--show-comment", type=int, default=None, metavar="ID", help="Print full body of a specific comment by numeric ID")
+    parser.add_argument("--comments", type=int, default=1, metavar="N", help="Show the last N comments/reviews per author (default: 1, latest only)")
+    args = parser.parse_args()
+
+    repo = args.repo or detect_repo()
+    pr_number = args.pr_number or detect_pr(repo)
+
+    pr_data = fetch_pr_data(repo, pr_number)
+    inline_comments = fetch_inline_comments(repo, pr_number)
+    index = build_comment_index(pr_data, inline_comments)
+
+    if args.show_comment is not None:
+        render_single_comment(args.show_comment, index, repo, pr_number)
+        return
+
+    # Normal triage output
+    checks = pr_data.get("statusCheckRollup", [])
+    reviews = pr_data.get("reviews", [])
+    bot_comments = pr_data.get("comments", [])
+
+    pr_state = pr_data.get("state", "OPEN")
+    is_closed = pr_state in ("MERGED", "CLOSED")
+
+    if is_closed:
+        merged_at = pr_data.get("mergedAt")
+        if pr_state == "MERGED" and merged_at:
+            merged_by = pr_data.get("mergedBy", {}).get("login", "?")
+            print(f"=== MERGED by {merged_by} at {merged_at[:16]} ===")
+        else:
+            closed_at = pr_data.get("closedAt", "?")[:16]
+            print(f"=== CLOSED (not merged) at {closed_at} ===")
+
+    render_checks(checks)
+    render_bot_comments(bot_comments, args.comments)
+    render_reviews(reviews, args.comments)
+    render_inline_comments(inline_comments, args.comments)
+    render_merge_state(pr_data, skip=is_closed)
+    render_summary(pr_data, skip=is_closed)
+
+
+if __name__ == "__main__":
+    main()
