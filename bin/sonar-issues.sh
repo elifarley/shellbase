@@ -11,6 +11,8 @@
 # OPTIONS:
 #   -p, --pr [NUM]       PR number. With no NUM, auto-detects via `gh pr view`.
 #   -b, --branch NAME    Branch name (alternative to --pr).
+#   -R, --repo OWNER/REPO GitHub repo. Derives SonarQube project key from repo
+#                        name and enables --pr auto-detection via `gh --repo`.
 #   -s, --status LIST    Comma-separated; default: OPEN,CONFIRMED,REOPENED.
 #                        Pass 'all' to disable status filter.
 #   -S, --severity LIST  BLOCKER,CRITICAL,MAJOR,MINOR,INFO  (comma-separated).
@@ -98,6 +100,7 @@ set -o pipefail
 # ---------- defaults ----------
 PR=""
 BRANCH=""
+REPO=""
 STATUSES="OPEN,CONFIRMED,REOPENED"
 SEVERITIES=""
 TYPES=""
@@ -306,6 +309,7 @@ while [ $# -gt 0 ]; do
         PR="auto"
       fi ;;
     -b|--branch)   BRANCH="$2"; shift 2 ;;
+    -R|--repo)     REPO="$2"; shift 2 ;;
     -s|--status)   STATUSES="$2"; shift 2 ;;
     -S|--severity) SEVERITIES="$2"; shift 2 ;;
     -T|--type)     TYPES="$2"; shift 2 ;;
@@ -358,6 +362,16 @@ fi
 # already validated above, so the expansion is safe.
 : "${SONAR_TOKEN:?SONAR_TOKEN not set — generate at ${SONAR_HOST_URL}/account/security (see --help TOKEN SETUP)}"
 
+# Project key derivation from -R/--repo.
+# WHY this takes precedence over sonar-project.properties: the -R flag is
+# explicit intent ("I want this repo"), whereas sonar-project.properties is
+# implicit ("happens to be in CWD"). Explicit beats implicit.
+if [ -n "$REPO" ] && [ -z "$PROJECT_KEY" ]; then
+  # "buildersbank/finpsti-med" → "finpsti-med"
+  PROJECT_KEY="${REPO#*/}"
+  note "derived project key from --repo: $PROJECT_KEY"
+fi
+
 # Project key auto-discovery from sonar-project.properties.
 if [ -z "$PROJECT_KEY" ] && [ -f sonar-project.properties ]; then
   PROJECT_KEY=$(awk -F= '/^sonar\.projectKey=/{print $2; exit}' sonar-project.properties | tr -d ' ')
@@ -368,7 +382,12 @@ fi
 # PR auto-detection via gh.
 if [ "$PR" = "auto" ]; then
   command -v gh >/dev/null 2>&1 || die "--pr (without number) needs the 'gh' CLI" 1
-  PR=$(gh pr view --json number --jq .number 2>/dev/null) || \
+  # WHY --repo flag when REPO is set: `gh pr view` auto-detects from CWD git
+  # context, but -R implies the user is running from a different directory (e.g.
+  # the meta-repo). Explicit --repo ensures gh looks up the right PR.
+  REPO_FLAG=()
+  [ -n "$REPO" ] && REPO_FLAG=(--repo "$REPO")
+  PR=$(gh pr view "${REPO_FLAG[@]}" --json number --jq .number 2>/dev/null) || \
     die "could not auto-detect PR from current branch (no PR open?)" 1
   note "auto-detected PR: #$PR"
 fi
@@ -432,6 +451,20 @@ _resolve_project_key() {
     return 0
   fi
 
+  # Second fast path: try the org-prefixed form when -R was used.
+  # The SonarQube component search is name-based, so projects whose name
+  # differs from the key (e.g. key="buildersbank_finpsti-dict-simulator",
+  # name="DICT Simulator") won't be found by search. Constructing the
+  # full key from the repo owner and probing directly is more reliable.
+  if [ -n "$REPO" ]; then
+    local prefixed_key="${REPO%%/*}_${PROJECT_KEY}"
+    if [ "$prefixed_key" != "$PROJECT_KEY" ] && _probe_key "$prefixed_key"; then
+      PROJECT_KEY="$prefixed_key"
+      note "resolved project key: $PROJECT_KEY (org prefix from --repo)"
+      return 0
+    fi
+  fi
+
   note "key '${PROJECT_KEY}' not found — attempting auto-resolution via component search"
 
   local search_url="${SONAR_HOST_URL}/api/components/search?qualifiers=TRK&q=${PROJECT_KEY}"
@@ -440,14 +473,14 @@ _resolve_project_key() {
   search_body=$(curl -sS -u "${SONAR_TOKEN}:" "$search_url") || \
     die "Component search failed (curl error)" 2
 
-  # WHY exact match on BOTH .name and .key: the search API is substring-based,
-  # so querying "finpsti-dict" also returns "finpsti-dict-out-api" etc.
-  # Matching .name handles the short-key case (sonar-project.properties value).
-  # Matching .key handles the full-key case (user passes "buildersbank_finpsti-dict"
-  # but the probe failed due to missing PR scope or permissions).
+  # WHY exact + suffix match: the search API is substring-based, so querying
+  # "finpsti-dict" also returns "finpsti-dict-out-api" etc. Exact match on
+  # .name handles sonar-project.properties values. Exact match on .key handles
+  # full keys. Suffix match on .key handles the common "org_shortkey" pattern
+  # where the user passes the short key but the SQ key is "buildersbank_shortkey".
   local candidates
   candidates=$(echo "$search_body" | \
-    jq -r --arg q "$PROJECT_KEY" '[.components[] | select(.name == $q or .key == $q) | .key] | unique | .[]')
+    jq -r --arg q "$PROJECT_KEY" '[.components[] | select(.name == $q or .key == $q or (.key | endswith("_" + $q))) | .key] | unique | .[]')
 
   if [ -z "$candidates" ]; then
     die "No SonarQube project found matching '${PROJECT_KEY}'. Verify the project exists." 2
@@ -903,10 +936,30 @@ group_key_for() {
 # of duplication + 4 issues" → then the issue plan shows what those 4 are.
 # PROJECT_KEY is already canonical (resolved above), so fetch_gate and
 # fetch_all both use the same validated key — no propagation needed.
+#
+# WHY redirect to stderr for machine formats: `--gate -f json` and
+# `--gate -f csv` must produce clean structured data on stdout. Gate text
+# is human commentary (like --verbose), so it belongs on stderr when a
+# machine parser is consuming stdout. The format field already tells us the
+# consumer type — no extra flag needed.
 if [ "$SHOW_GATE" = 1 ]; then
   GATE_JSON=$(fetch_gate)
-  format_gate "$GATE_JSON"
-  drilldown_gate_failures "$GATE_JSON"
+  # WHY SONAR_QUIET: callers (e.g. pr-status) that parse the structured output
+  # need the gate JSON in GATE_JSON for their own rendering but don't want any
+  # human-readable gate text printed anywhere. SONAR_QUIET=1 suppresses all
+  # gate + drilldown output while still keeping GATE_JSON available for the
+  # gate-exit-code logic below.
+  if [ "${SONAR_QUIET:-0}" != "1" ]; then
+    case "$FORMAT" in json|csv|raw)
+      format_gate "$GATE_JSON" >&2
+      drilldown_gate_failures "$GATE_JSON" >&2
+      ;;
+    *)
+      format_gate "$GATE_JSON"
+      drilldown_gate_failures "$GATE_JSON"
+      ;;
+    esac
+  fi
 fi
 
 ISSUES_JSON=$(fetch_all)

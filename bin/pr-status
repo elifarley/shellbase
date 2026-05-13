@@ -6,6 +6,7 @@
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 
@@ -185,6 +186,85 @@ def render_merge_state(pr_data: dict, skip: bool) -> None:
     print()
 
 
+def _find_sonar_script() -> str | None:
+    """Find the sonar wrapper script on PATH or at ~/finaya/sonar."""
+    import shutil
+    path = shutil.which("sonar")
+    if path:
+        return path
+    fallback = os.path.expanduser("~/finaya/sonar")
+    if os.path.isfile(fallback) and os.access(fallback, os.X_OK):
+        return fallback
+    return None
+
+
+def render_sonar(repo: str, pr_number: str) -> None:
+    """Render SonarQube Quality Gate + issue summary for the PR.
+
+    Calls the sonar script internally when SONAR_HOST_URL + SONAR_TOKEN
+    are set. Gracefully skips if sonar is unavailable or the project
+    doesn't exist in SonarQube.
+    """
+    if not os.environ.get("SONAR_HOST_URL") or not os.environ.get("SONAR_TOKEN"):
+        return
+
+    sonar = _find_sonar_script()
+    if not sonar:
+        return
+
+    # Pass -R to the sonar script so it can derive the project key and
+    # resolve it via the org-prefix probe (handles cases where the SQ
+    # project name differs from the repo name).
+    cmd = [sonar, "-R", repo, "--pr", pr_number, "--gate", "-f", "json"]
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True, text=True, timeout=30,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return
+
+    if result.returncode != 0:
+        return
+
+    # Issues JSON comes on stdout (gate text goes to stderr for -f json)
+    try:
+        issues = json.loads(result.stdout)
+    except (json.JSONDecodeError, ValueError):
+        return
+
+    # Gate text came on stderr — parse the human-readable format.
+    # Skip drilldown noise (permission hints, URLs) — not actionable here.
+    gate_lines = [
+        l for l in (result.stderr or "").split("\n")
+        if l.strip() and not l.strip().startswith(("Grant at:", "View in SonarQube:", "Coverage drilldown", "Duplication drilldown"))
+    ]
+    has_gate = any("Quality Gate" in l for l in gate_lines)
+    has_issues = len(issues) > 0
+
+    if not has_gate and not has_issues:
+        return
+
+    print("=== SONAR ===")
+    for line in gate_lines:
+        print(f"  {line}")
+
+    if has_issues:
+        if has_gate:
+            print()
+        print(f"  {len(issues)} issue(s) grouped by rule")
+        for entry in issues[:5]:
+            count = entry.get("count", "?")
+            severity = entry.get("severity", "?")
+            key = entry.get("key", "?")
+            icon = "✗" if severity in ("BLOCKER", "CRITICAL") else "·"
+            print(f"  {icon} {count:>3}  {severity:<9} {key}")
+        if len(issues) > 5:
+            print(f"  ... and {len(issues) - 5} more")
+    print()
+
+
 def render_summary(pr_data: dict, skip: bool) -> None:
     """Render final triage verdict: READY TO MERGE, BLOCKED, or PENDING."""
     if skip:
@@ -325,6 +405,7 @@ def main() -> None:
     render_bot_comments(bot_comments, args.comments)
     render_reviews(reviews, args.comments)
     render_inline_comments(inline_comments, args.comments)
+    render_sonar(repo, pr_number)
     render_merge_state(pr_data, skip=is_closed)
     render_summary(pr_data, skip=is_closed)
 
